@@ -1,0 +1,19 @@
+# Override http_archive for local testing
+local_repository(
+    name = "rules_distroless",
+    path = "../..",
+)
+
+#---SNIP--- Below here is re-used in the workspace snippet published on releases
+
+######################
+# rules_distroless setup #
+######################
+# Fetches the rules_distroless dependencies.
+# If you want to have a different version of some dependency,
+# you should fetch it *before* calling this.
+# Alternatively, you can skip calling this function, so long as you've
+# already fetched all the dependencies.
+load("@rules_distroless//distroless:repositories.bzl", "rules_distroless_dependencies")
+
+rules_distroless_dependencies()
