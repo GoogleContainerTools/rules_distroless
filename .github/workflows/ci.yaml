@@ -27,7 +27,5 @@ jobs:
       exclude: |
         [
           {"folder": ".", "bzlmodEnabled": false},
-          {"bazelversion": "5.4.0", "bzlmodEnabled": true},
-          {"bazelversion": "5.4.0", "os": "macos-latest"},
-          {"bazelversion": "5.4.0", "os": "windows-latest"},
+          {"bazelversion": "5.4.0"},
         ]

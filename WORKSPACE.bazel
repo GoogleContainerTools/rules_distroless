@@ -1,1 +1,12 @@
 # Marker that this is the root of a Bazel workspace.
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "ca-certificates",
+    build_file_content = 'exports_files(["data.tar.xz"])',
+    canonical_id = "test",
+    sha256 = "b2d488ad4d8d8adb3ba319fc9cb2cf9909fc42cb82ad239a26c570a2e749c389",
+    type = ".deb",
+    urls = ["https://snapshot.debian.org/archive/debian/20231106T210201Z/pool/main/c/ca-certificates/ca-certificates_20210119_all.deb"],
+)

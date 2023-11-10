@@ -1,0 +1,23 @@
+load("//distroless:defs.bzl", "cacerts")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+
+cacerts(
+    name = "example",
+    package = "@ca-certificates//:data.tar.xz",
+)
+
+assert_tar_listing(
+    name = "test_examples",
+    actual = "example",
+    expected = """\
+drwxr-xr-x  0 0      0           0 Jan  1  2023 etc/
+drwxr-xr-x  0 0      0           0 Jan  1  2023 etc/ssl/
+drwxr-xr-x  0 0      0           0 Jan  1  2023 etc/ssl/certs/
+-rwxr-xr-x  0 0      0      200313 Jan  1  2023 etc/ssl/certs/ca-certificates.crt
+drwxr-xr-x  0 0      0           0 Jan  1  2023 etc/usr/
+drwxr-xr-x  0 0      0           0 Jan  1  2023 usr/share/
+drwxr-xr-x  0 0      0           0 Jan  1  2023 usr/share/doc/
+drwxr-xr-x  0 0      0           0 Jan  1  2023 usr/share/doc/ca-certificates/
+-rwxr-xr-x  0 0      0       18940 Jan  1  2023 usr/share/doc/ca-certificates/copyright
+""",
+)
