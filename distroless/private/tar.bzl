@@ -15,7 +15,7 @@ def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "167256
         spec.append("content=" + content)
     return " ".join(spec)
 
-def _add_file_with_parents(path, file):
+def _add_parents(path):
     lines = []
     segments = path.split("/")
     for i in range(1, len(segments)):
@@ -23,24 +23,24 @@ def _add_file_with_parents(path, file):
         if parent == "":
             continue
         lines.append(_mtree_line(parent.lstrip("/"), "dir"))
+    return lines
 
+def _add_file_with_parents(path, file):
+    lines = _add_parents(path)
     lines.append(_mtree_line(path.lstrip("/"), "file", content = file.path))
     return lines
 
-def _build_tar(ctx, mtree, output, inputs, compression = "gzip", mnemonic = "Tar"):
+def _build_tar(ctx, mtree, output, inputs = [], compression = "gzip", mnemonic = "Tar"):
     bsdtar = ctx.toolchains[BSDTAR_TOOLCHAIN]
 
-    mtree_out = ctx.actions.declare_file(ctx.label.name + ".spec")
-    ctx.actions.write(mtree_out, content = mtree)
-
     inputs = inputs[:]
-    inputs.append(mtree_out)
+    inputs.append(mtree)
 
     args = ctx.actions.args()
     args.add("--create")
     args.add(compression, format = "--%s")
     args.add("--file", output)
-    args.add(mtree_out, format = "@%s")
+    args.add(mtree, format = "@%s")
 
     ctx.actions.run(
         executable = bsdtar.tarinfo.binary,
@@ -51,6 +51,11 @@ def _build_tar(ctx, mtree, output, inputs, compression = "gzip", mnemonic = "Tar
         mnemonic = mnemonic,
     )
 
+def _build_mtree(ctx, content):
+    mtree_out = ctx.actions.declare_file(ctx.label.name + ".spec")
+    ctx.actions.write(mtree_out, content = content)
+    return mtree_out
+
 def _create_mtree(ctx):
     content = ctx.actions.args()
     content.set_param_file_format("multiline")
@@ -58,12 +63,15 @@ def _create_mtree(ctx):
     return struct(
         line = lambda **kwargs: content.add(_mtree_line(**kwargs)),
         add_file_with_parents = lambda *args, **kwargs: content.add_all(_add_file_with_parents(*args), uniquify = kwargs.pop("uniqify", True)),
-        build = lambda **kwargs: _build_tar(ctx, content, **kwargs),
+        add_parents = lambda *args, **kwargs: content.add_all(_add_parents(*args), uniquify = kwargs.pop("uniqify", True)),
+        build = lambda **kwargs: _build_tar(ctx, _build_mtree(ctx, content), **kwargs),
+        build_mtree = lambda **kwargs: _build_mtree(ctx, content),
     )
 
 tar_lib = struct(
     create_mtree = _create_mtree,
     line = _mtree_line,
+    add_directory_with_parents = _add_file_with_parents,
     add_file_with_parents = _add_file_with_parents,
     TOOLCHAIN_TYPE = BSDTAR_TOOLCHAIN,
 )

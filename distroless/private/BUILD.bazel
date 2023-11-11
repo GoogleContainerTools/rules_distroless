@@ -10,6 +10,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "locale",
+    srcs = ["locale.bzl"],
+    visibility = ["//distroless:__subpackages__"],
+    deps = [":tar"],
+)
+
+bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
     visibility = ["//distroless:__subpackages__"],

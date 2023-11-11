@@ -50,3 +50,46 @@ cacerts(
 | <a id="cacerts-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
+<a id="locale"></a>
+
+## locale
+
+<pre>
+locale(<a href="#locale-name">name</a>, <a href="#locale-charset">charset</a>, <a href="#locale-package">package</a>)
+</pre>
+
+Create a locale archive from a Debian package.
+
+An example of this would be
+
+```starlark
+# MODULE.bazel
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "libc-bin",
+    build_file_content = 'exports_files(["data.tar.xz"])',
+    sha256 = "8b048ab5c7e9f5b7444655541230e689631fd9855c384e8c4a802586d9bbc65a",
+    urls = ["https://snapshot.debian.org/archive/debian-security/20231106T230332Z/pool/updates/main/g/glibc/libc-bin_2.31-13+deb11u7_amd64.deb"],
+)
+
+# BUILD.bazel
+load("@rules_distroless//distroless:defs.bzl", "locale")
+
+locale(
+    name = "example",
+    package = "@libc-bin//:data.tar.xz"
+)
+```
+
+
+**ATTRIBUTES**
+
+
+| Name  | Description | Type | Mandatory | Default |
+| :------------- | :------------- | :------------- | :------------- | :------------- |
+| <a id="locale-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
+| <a id="locale-charset"></a>charset |  -   | String | optional | <code>"C.utf8"</code> |
+| <a id="locale-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
+
+
