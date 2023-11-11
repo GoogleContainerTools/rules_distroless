@@ -12,7 +12,7 @@ def assert_tar_listing(name, actual, expected):
         name = actual_listing,
         srcs = [actual],
         outs = ["_{}.listing".format(name)],
-        cmd = "$(BSDTAR_BIN) -tvf $(execpath {}) >$@".format(actual),
+        cmd = "cat $(execpath {}) | $(BSDTAR_BIN) -cf $@ --format=mtree --options 'cksum,sha1' @-".format(actual),
         toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
     )
 
