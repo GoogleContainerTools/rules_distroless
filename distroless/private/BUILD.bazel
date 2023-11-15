@@ -17,6 +17,18 @@ bzl_library(
 )
 
 bzl_library(
+    name = "os_release",
+    srcs = ["os_release.bzl"],
+    visibility = ["//distroless:__subpackages__"],
+    deps = [
+        "@aspect_bazel_lib//lib:expand_template",
+        "@aspect_bazel_lib//lib:tar",
+        "@aspect_bazel_lib//lib:utils",
+        "@bazel_skylib//rules:write_file",
+    ],
+)
+
+bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
     visibility = ["//distroless:__subpackages__"],

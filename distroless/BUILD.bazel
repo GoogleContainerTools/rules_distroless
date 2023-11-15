@@ -20,6 +20,7 @@ bzl_library(
     deps = [
         "//distroless/private:cacerts",
         "//distroless/private:locale",
+        "//distroless/private:os_release",
     ],
 )
 

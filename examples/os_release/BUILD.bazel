@@ -1,0 +1,45 @@
+load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
+load("//distroless:defs.bzl", "os_release")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+
+os_release(
+    name = "os_release",
+    content = {
+        "PRETTY_NAME": "Distroless",
+        "VERSION": "Debian GNU/Linux",
+    },
+)
+
+diff_test(
+    name = "test_os_release_content",
+    file1 = "os_release_content",
+    file2 = "content.expected.txt",
+)
+
+assert_tar_listing(
+    name = "test_os_release",
+    actual = "os_release",
+    expected = """\
+#mtree
+./usr/lib/os-release nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=47 cksum=1353493935 sha1digest=ae180d07c7e29e34e1e74ee7c49f371c8cf006d5
+""",
+)
+
+os_release(
+    name = "os_release_alternative_path",
+    content = {
+        "PRETTY_NAME": "Distroless",
+        "VERSION": "Debian GNU/Linux",
+        "ARCHITECTURE": "arm64",
+    },
+    path = "/etc/os-release",
+)
+
+assert_tar_listing(
+    name = "test_os_release_alternative_path",
+    actual = "os_release_alternative_path",
+    expected = """\
+#mtree
+./etc/os-release nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=66 cksum=187595121 sha1digest=7db059bd2ee4a8606f310fa84fb29f56f151b218
+""",
+)
