@@ -1,0 +1,33 @@
+load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
+load("//distroless:defs.bzl", "group")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+
+group(
+    name = "group",
+    groups = [
+        # https://www.ibm.com/docs/kk/aix/7.2?topic=files-etcgroup-file#group_security__a3179518__title__1
+        dict(
+            name = "root",
+            gid = 0,
+            users = [
+                "shadow",
+                "cjf",
+            ],
+        ),
+    ],
+)
+
+diff_test(
+    name = "test_group_content",
+    file1 = "group_content",
+    file2 = "group.expected.txt",
+)
+
+assert_tar_listing(
+    name = "test_group",
+    actual = "group",
+    expected = """\
+#mtree
+./etc/group nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=19 cksum=290415485 sha1digest=20c70f96d7939eb77c7f07bb8c0f200d89ce33b0
+""",
+)

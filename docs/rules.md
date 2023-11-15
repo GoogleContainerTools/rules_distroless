@@ -93,6 +93,29 @@ locale(
 | <a id="locale-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
+<a id="group"></a>
+
+## group
+
+<pre>
+group(<a href="#group-name">name</a>, <a href="#group-groups">groups</a>, <a href="#group-kwargs">kwargs</a>)
+</pre>
+
+    Create a group file from array of dicts.
+
+https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a21597b8__title__1
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="group-name"></a>name |  name of the target   |  none |
+| <a id="group-groups"></a>groups |  an array of dicts which will be serialized into single group file.   |  none |
+| <a id="group-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
+
+
 <a id="os_release"></a>
 
 ## os_release
@@ -115,5 +138,28 @@ https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 | <a id="os_release-content"></a>content |  a key, value dictionary that will be serialized into <code>=</code> seperated lines.<br><br>See https://www.freedesktop.org/software/systemd/man/latest/os-release.html#Options for well known keys.   |  none |
 | <a id="os_release-path"></a>path |  where to put the file in the result archive. default: <code>/usr/lib/os-release</code>   |  <code>"/usr/lib/os-release"</code> |
 | <a id="os_release-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
+
+
+<a id="passwd"></a>
+
+## passwd
+
+<pre>
+passwd(<a href="#passwd-name">name</a>, <a href="#passwd-passwds">passwds</a>, <a href="#passwd-kwargs">kwargs</a>)
+</pre>
+
+    Create a passwd file from array of dicts.
+
+https://www.ibm.com/docs/en/aix/7.3?topic=passwords-using-etcpasswd-file
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="passwd-name"></a>name |  name of the target   |  none |
+| <a id="passwd-passwds"></a>passwds |  an array of dicts which will be serialized into single passwd file.<br><br>An example;<br><br><pre><code> dict(gid = 0, uid = 0, home = "/root", shell = "/bin/bash", username = "root") </code></pre>   |  none |
+| <a id="passwd-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 

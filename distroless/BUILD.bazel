@@ -19,8 +19,10 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = [
         "//distroless/private:cacerts",
+        "//distroless/private:group",
         "//distroless/private:locale",
         "//distroless/private:os_release",
+        "//distroless/private:passwd",
     ],
 )
 
