@@ -1,0 +1,32 @@
+load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
+load("//distroless:defs.bzl", "passwd")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+
+passwd(
+    name = "passwd",
+    passwds = [
+        dict(
+            gecos = ["root"],
+            gid = 0,
+            home = "/root",
+            shell = "/usr/bin/bash",
+            uid = 0,
+            username = "root",
+        ),
+    ],
+)
+
+diff_test(
+    name = "test_passwd_content",
+    file1 = "passwd_content",
+    file2 = "passwd.expected.txt",
+)
+
+assert_tar_listing(
+    name = "test_passwd",
+    actual = "passwd",
+    expected = """\
+#mtree
+./etc/passwd nlink=0 time=0.0 mode=700 gid=0 uid=0 type=file size=35 cksum=2298809208 sha1digest=31ad675c1210fd0413dd9b2441aaaf13c18d1547
+""",
+)
