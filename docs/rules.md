@@ -50,6 +50,28 @@ cacerts(
 | <a id="cacerts-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
+<a id="java_keystore"></a>
+
+## java_keystore
+
+<pre>
+java_keystore(<a href="#java_keystore-name">name</a>, <a href="#java_keystore-certificates">certificates</a>)
+</pre>
+
+Create a java keystore (database) of cryptographic keys, X.509 certificate chains, and trusted certificates.
+
+Currently only public  X.509 are supported as part of the PUBLIC API contract.
+
+
+**ATTRIBUTES**
+
+
+| Name  | Description | Type | Mandatory | Default |
+| :------------- | :------------- | :------------- | :------------- | :------------- |
+| <a id="java_keystore-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
+| <a id="java_keystore-certificates"></a>certificates |  -   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
+
+
 <a id="locale"></a>
 
 ## locale
