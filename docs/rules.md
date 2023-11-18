@@ -138,6 +138,26 @@ https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a2
 | <a id="group-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 
+<a id="home"></a>
+
+## home
+
+<pre>
+home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#home-kwargs">kwargs</a>)
+</pre>
+
+    Create home directories with specific uid and gids.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="home-name"></a>name |  name of the target   |  none |
+| <a id="home-dirs"></a>dirs |  an array of dicts   |  none |
+| <a id="home-kwargs"></a>kwargs |  other named arguments to that is passed to tar. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
+
+
 <a id="os_release"></a>
 
 ## os_release

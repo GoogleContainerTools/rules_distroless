@@ -15,19 +15,27 @@ def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "167256
         spec.append("content=" + content)
     return " ".join(spec)
 
-def _add_parents(path):
+def _add_parents(path, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     lines = []
     segments = path.split("/")
-    for i in range(1, len(segments)):
-        parent = "/".join(segments[:i])
-        if parent == "":
+    segments.pop()
+    for i in range(0, len(segments)):
+        parent = "/".join(segments[:i + 1])
+        if not parent or parent == ".":
             continue
-        lines.append(_mtree_line(parent.lstrip("/"), "dir"))
+        lines.append(
+            _mtree_line(parent.lstrip("/"), "dir", uid = uid, gid = gid, time = time, mode = mode),
+        )
     return lines
 
 def _add_file_with_parents(path, file):
     lines = _add_parents(path)
     lines.append(_mtree_line(path.lstrip("/"), "file", content = file.path))
+    return lines
+
+def _add_directory_with_parents(path, **kwargs):
+    lines = _add_parents(path)
+    lines.append(_mtree_line(path.lstrip("/"), "dir", **kwargs))
     return lines
 
 def _build_tar(ctx, mtree, output, inputs = [], compression = "gzip", mnemonic = "Tar"):
@@ -71,7 +79,7 @@ def _create_mtree(ctx):
 tar_lib = struct(
     create_mtree = _create_mtree,
     line = _mtree_line,
-    add_directory_with_parents = _add_file_with_parents,
+    add_directory_with_parents = _add_directory_with_parents,
     add_file_with_parents = _add_file_with_parents,
     TOOLCHAIN_TYPE = BSDTAR_TOOLCHAIN,
 )

@@ -21,6 +21,7 @@ bzl_library(
         "//distroless/private:cacerts",
         "//distroless/private:group",
         "//distroless/private:java_keystore",
+        "//distroless/private:home",
         "//distroless/private:locale",
         "//distroless/private:os_release",
         "//distroless/private:passwd",

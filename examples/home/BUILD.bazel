@@ -1,0 +1,29 @@
+load("//distroless:defs.bzl", "home")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+
+home(
+    name = "home",
+    dirs = [
+        {
+            "home": "./root",
+            "uid": 0,
+            "gid": 0,
+        },
+        {
+            "home": "./home/nonroot",
+            "uid": 666,
+            "gid": 666,
+        },
+    ],
+)
+
+assert_tar_listing(
+    name = "test_home",
+    actual = "home",
+    expected = """\
+#mtree
+./home time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./home/nonroot time=1672560000.0 mode=755 gid=666 uid=666 type=dir
+./root time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+""",
+)

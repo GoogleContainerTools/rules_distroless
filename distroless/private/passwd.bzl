@@ -50,7 +50,7 @@ def passwd(name, passwds, **kwargs):
         stamp = 0,
         template = [
             "#mtree",
-            "etc/passwd uid=0 gid=0 mode=0700 time=0 type=file content={content}",
+            "./etc/passwd uid=0 gid=0 mode=0700 time=0 type=file content={content}",
             "",
         ],
         substitutions = {
