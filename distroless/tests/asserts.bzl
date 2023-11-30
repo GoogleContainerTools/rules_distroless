@@ -44,7 +44,7 @@ def assert_jks_listing(name, actual, expected):
         cmd = """
 BINS=($(locations @rules_java//toolchains:current_java_runtime))
 KEYTOOL=$$(dirname $${BINS[1]})/keytool
-$$KEYTOOL -list -v -keystore $(location %s) -storepass changeit > $@
+TZ="UTC" $$KEYTOOL -list -keystore $(location %s) -storepass changeit > $@
 """ % actual,
     )
 

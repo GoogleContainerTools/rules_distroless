@@ -7,17 +7,17 @@ _DOC = """Create a java keystore (database) of cryptographic keys, X.509 certifi
 Currently only public  X.509 are supported as part of the PUBLIC API contract.
 """
 
-def _find_keytool(java_runtime):
-    for f in java_runtime.files.to_list():
+def _find_keytool(java):
+    for f in java.java_runtime.files.to_list():
         if f.basename == "keytool":
             return f
     fail("java toolchain does not contain `keytool`.")
 
 def _java_keystore_impl(ctx):
-    jdk = ctx.toolchains["@bazel_tools//tools/jdk:runtime_toolchain_type"]
+    jdk = ctx.toolchains["@bazel_tools//tools/jdk:toolchain_type"]
     coreutils = ctx.toolchains["@aspect_bazel_lib//lib:coreutils_toolchain_type"]
     bsdtar = ctx.toolchains[tar_lib.TOOLCHAIN_TYPE]
-    keytool = _find_keytool(jdk.java_runtime)
+    keytool = _find_keytool(jdk.java)
 
     jks = ctx.actions.declare_file(ctx.attr.name + ".jks")
 
@@ -70,7 +70,7 @@ java_keystore = rule(
     implementation = _java_keystore_impl,
     toolchains = [
         tar_lib.TOOLCHAIN_TYPE,
-        "@bazel_tools//tools/jdk:runtime_toolchain_type",
+        "@bazel_tools//tools/jdk:toolchain_type",
         "@aspect_bazel_lib//lib:coreutils_toolchain_type",
     ],
 )
