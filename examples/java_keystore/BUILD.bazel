@@ -32,6 +32,6 @@ assert_tar_listing(
 ./etc/ssl time=1672560000.0 mode=755 gid=0 uid=0 type=dir
 ./etc/ssl/certs time=1672560000.0 mode=755 gid=0 uid=0 type=dir
 ./etc/ssl/certs/java time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl/certs/java/cacerts nlink=0 time=1672560000.0 mode=755 gid=0 uid=0 type=file size=6230 cksum=1520748722 sha1digest=fa7c324a0b750e87dd8c8631be005184fb46e915
+./etc/ssl/certs/java/cacerts nlink=0 time=1672560000.0 mode=755 gid=0 uid=0 type=file size=6214 cksum=53117108 sha1digest=c84a267b4b57f6e9c18773e26c78da66091c7ea8
 """,
 )

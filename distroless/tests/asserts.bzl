@@ -47,13 +47,9 @@ set -o pipefail -o errexit -o nounset
 
 BINS=($(locations @rules_java//toolchains:current_java_runtime))
 KEYTOOL=$$(dirname $${BINS[1]})/keytool
-echo $${TZ:-}
-echo $${LANG:-}
-env
-export TZ="UTC"
-export LANG="en_CA"
-env
-$$KEYTOOL -list -keystore $(location %s) -storepass changeit > $@
+
+$$KEYTOOL -J-Duser.language=en -J-Duser.country=US -J-Duser.timezone=UTC \\
+-list -rfc -keystore $(location %s) -storepass changeit > $@
 """ % actual,
     )
 

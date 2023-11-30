@@ -13,7 +13,13 @@ while (( $# > 0 )); do
     shift;
 done
 
-for f in "$tmp"/*; do
-    subject=$(openssl x509 -noout -subject -in $f | tr -d " ")
+certs=$(echo "$tmp"/* | tr " " "\n" | sort -n | tr "\n" " ")
+
+certopt="no_header,no_version,no_serial,no_signame,no_validity,no_issuer,no_pubkey,no_sigdump,no_aux,no_extensions"
+
+for f in $certs; do
+    subject=$(openssl x509 -in $f -noout -text -certopt $certopt | tr -d " " | tr -d '"')
+    subject="${subject/#"Subject:"}" 
+    echo "$subject"
     $keytool -importcert -keystore $output -storepass changeit -file $f -alias "${subject#"subject="}" -noprompt
 done
