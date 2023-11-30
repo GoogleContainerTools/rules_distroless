@@ -42,9 +42,18 @@ def assert_jks_listing(name, actual, expected):
         ],
         outs = ["_{}.listing".format(name)],
         cmd = """
+#!/usr/bin/env bash
+set -o pipefail -o errexit -o nounset
+
 BINS=($(locations @rules_java//toolchains:current_java_runtime))
 KEYTOOL=$$(dirname $${BINS[1]})/keytool
-TZ="UTC" $$KEYTOOL -list -keystore $(location %s) -storepass changeit > $@
+echo $${TZ:-}
+echo $${LANG:-}
+env
+export TZ="UTC"
+export LANG="en_CA"
+env
+$$KEYTOOL -list -keystore $(location %s) -storepass changeit > $@
 """ % actual,
     )
 
