@@ -29,3 +29,33 @@ def assert_tar_listing(name, actual, expected):
         file2 = expected_listing,
         timeout = "short",
     )
+
+# buildifier: disable=function-docstring
+def assert_jks_listing(name, actual, expected):
+    actual_listing = "_{}_listing".format(name)
+
+    native.genrule(
+        name = actual_listing,
+        srcs = [
+            actual,
+            "@rules_java//toolchains:current_java_runtime",
+        ],
+        outs = ["_{}.listing".format(name)],
+        cmd = """
+#!/usr/bin/env bash
+set -o pipefail -o errexit -o nounset
+
+BINS=($(locations @rules_java//toolchains:current_java_runtime))
+KEYTOOL=$$(dirname $${BINS[1]})/keytool
+
+$$KEYTOOL -J-Duser.language=en -J-Duser.country=US -J-Duser.timezone=UTC \\
+-list -rfc -keystore $(location %s) -storepass changeit > $@
+""" % actual,
+    )
+
+    diff_test(
+        name = name,
+        file1 = actual_listing,
+        file2 = expected,
+        timeout = "short",
+    )

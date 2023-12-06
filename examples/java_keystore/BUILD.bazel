@@ -1,0 +1,37 @@
+load("//distroless:defs.bzl", "java_keystore")
+load("//distroless/tests:asserts.bzl", "assert_jks_listing", "assert_tar_listing")
+
+java_keystore(
+    name = "java_keystore",
+    certificates = [
+        # asserting that we support both bundle x509 certs
+        # and single x509 certs
+        "amazon.crt",
+        "bundle.crt",
+    ],
+)
+
+filegroup(
+    name = "java_keystore_jks",
+    srcs = [":java_keystore"],
+    output_group = "jks",
+)
+
+assert_jks_listing(
+    name = "test_java_keystore_jks",
+    actual = "java_keystore_jks",
+    expected = "expected.jks.output",
+)
+
+assert_tar_listing(
+    name = "test_java_keystore",
+    actual = "java_keystore",
+    expected = """\
+#mtree
+./etc time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl/certs time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl/certs/java time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl/certs/java/cacerts nlink=0 time=1672560000.0 mode=755 gid=0 uid=0 type=file size=5349 cksum=3752477219 sha1digest=015078faa5537fcabb6c7e73fe2dedf8241b106d
+""",
+)
