@@ -10,9 +10,16 @@ common --enable_bzlmod
 # https://bazelbuild.slack.com/archives/C014RARENH0/p1691158021917459?thread_ts=1691156601.420349&cid=C014RARENH0
 common --check_direct_dependencies=off
 
+# Enable platform specific options
+build --enable_platform_specific_config
 
 # Use a hermetic Java version
-build --java_runtime_version=remotejdk_17
+build --java_runtime_version=remotejdk_11
+
+# Newer versions jdk creates collisions on /tmp
+# See: https://github.com/bazelbuild/bazel/issues/3236
+# https://github.com/GoogleContainerTools/rules_distroless/actions/runs/7118944984/job/19382981899?pr=9#step:8:51
+common:linux --sandbox_tmpfs_path=/tmp
 
 # Load any settings specific to the current user.
 # .bazelrc.user should appear in .gitignore so that settings are not shared with team members

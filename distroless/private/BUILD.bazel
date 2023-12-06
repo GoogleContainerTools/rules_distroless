@@ -2,8 +2,17 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 exports_files([
     "cacerts.sh",
-    "java_keystore.sh",
 ])
+
+java_binary(
+    name = "keystore_binary",
+    srcs = ["JavaKeyStore.java"],
+    javacopts = [
+        "-Xlint:-options",
+    ],
+    main_class = "JavaKeyStore",
+    visibility = ["//visibility:public"],
+)
 
 bzl_library(
     name = "cacerts",
