@@ -5,12 +5,12 @@ home(
     name = "home",
     dirs = [
         {
-            "home": "./root",
+            "home": "/root",
             "uid": 0,
             "gid": 0,
         },
         {
-            "home": "./home/nonroot",
+            "home": "/home/nonroot",
             "uid": 666,
             "gid": 666,
         },

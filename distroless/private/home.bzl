@@ -9,7 +9,7 @@ def home(name, dirs, **kwargs):
 
     Args:
         name: name of the target
-        dirs: an array of dicts
+        dirs: array of home directory dicts.
         **kwargs: other named arguments to that is passed to tar. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).
     """
     mtree = []

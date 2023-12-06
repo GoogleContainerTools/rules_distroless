@@ -154,7 +154,7 @@ home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#hom
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="home-name"></a>name |  name of the target   |  none |
-| <a id="home-dirs"></a>dirs |  an array of dicts   |  none |
+| <a id="home-dirs"></a>dirs |  array of home directory dicts.   |  none |
 | <a id="home-kwargs"></a>kwargs |  other named arguments to that is passed to tar. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 
