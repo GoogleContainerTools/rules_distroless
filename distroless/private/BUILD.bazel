@@ -72,6 +72,16 @@ bzl_library(
 )
 
 bzl_library(
+    name = "home",
+    srcs = ["home.bzl"],
+    visibility = ["//distroless:__subpackages__"],
+    deps = [
+        ":tar",
+        "@aspect_bazel_lib//lib:tar",
+    ],
+)
+
+bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
     visibility = ["//distroless:__subpackages__"],
