@@ -28,10 +28,10 @@ assert_tar_listing(
     actual = "java_keystore",
     expected = """\
 #mtree
-./etc time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl/certs time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl/certs/java time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl/certs/java/cacerts nlink=0 time=1672560000.0 mode=755 gid=0 uid=0 type=file size=5349 cksum=3752477219 sha1digest=015078faa5537fcabb6c7e73fe2dedf8241b106d
+./etc time=0.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl time=0.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl/certs time=0.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl/certs/java time=0.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl/certs/java/cacerts nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=5349 cksum=3752477219 sha1digest=015078faa5537fcabb6c7e73fe2dedf8241b106d
 """,
 )

@@ -2,7 +2,12 @@
 
 BSDTAR_TOOLCHAIN = "@aspect_bazel_lib//lib:tar_toolchain_type"
 
-def _mtree_line(dest, type, content = None, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
+DEFAULT_GID = "0"
+DEFAULT_UID = "0"
+DEFAULT_TIME = "0.0"
+DEFAULT_MODE = "0755"
+
+def _mtree_line(dest, type, content = None, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE):
     # mtree expects paths to start with ./ so normalize paths that starts with
     # `/` or relative path (without / and ./)
     if not dest.startswith("."):
@@ -21,7 +26,7 @@ def _mtree_line(dest, type, content = None, uid = "0", gid = "0", time = "167256
         spec.append("content=" + content)
     return " ".join(spec)
 
-def _add_parents(path, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
+def _add_parents(path, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE):
     lines = []
     segments = path.split("/")
     segments.pop()
