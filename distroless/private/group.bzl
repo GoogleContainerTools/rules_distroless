@@ -41,7 +41,7 @@ def group(name, groups, **kwargs):
         stamp = 0,
         template = [
             "#mtree",
-            "etc/group uid=0 gid=0 mode=0644 time=0 type=file content={content}",
+            "etc/group uid=0 gid=0 mode=0644 time=0.0 type=file content={content}",
             "",
         ],
         substitutions = {

@@ -11,14 +11,14 @@ assert_tar_listing(
     actual = "cacerts",
     expected = """\
 #mtree
-./etc time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl/certs time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl/certs/ca-certificates.crt nlink=0 time=1672560000.0 mode=755 gid=0 uid=0 type=file size=200313 cksum=3175436394 sha1digest=01b4ff230afaeeda5cddaf9a002cec9bc9a6d1b4
-./usr time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./usr/share time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc/ca-certificates time=1672560000.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc/ca-certificates/copyright nlink=0 time=1672560000.0 mode=755 gid=0 uid=0 type=file size=18940 cksum=3142022593 sha1digest=4c49e10ddbcfc0f36816df7f9cb503d665621017
+./etc time=0.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl time=0.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl/certs time=0.0 mode=755 gid=0 uid=0 type=dir
+./etc/ssl/certs/ca-certificates.crt nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=200313 cksum=3175436394 sha1digest=01b4ff230afaeeda5cddaf9a002cec9bc9a6d1b4
+./usr time=0.0 mode=755 gid=0 uid=0 type=dir
+./usr/share time=0.0 mode=755 gid=0 uid=0 type=dir
+./usr/share/doc time=0.0 mode=755 gid=0 uid=0 type=dir
+./usr/share/doc/ca-certificates time=0.0 mode=755 gid=0 uid=0 type=dir
+./usr/share/doc/ca-certificates/copyright nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=18940 cksum=3142022593 sha1digest=4c49e10ddbcfc0f36816df7f9cb503d665621017
 """,
 )
