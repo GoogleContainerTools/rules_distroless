@@ -1,6 +1,6 @@
 "mtree helpers"
 
-BSDTAR_TOOLCHAIN = "@aspect_bazel_lib//lib:tar_toolchain_type"
+load("@aspect_bazel_lib//lib:tar.bzl", tar = "tar_lib")
 
 DEFAULT_GID = "0"
 DEFAULT_UID = "0"
@@ -50,7 +50,7 @@ def _add_directory_with_parents(path, **kwargs):
     return lines
 
 def _build_tar(ctx, mtree, output, inputs = [], compression = "gzip", mnemonic = "Tar"):
-    bsdtar = ctx.toolchains[BSDTAR_TOOLCHAIN]
+    bsdtar = ctx.toolchains[tar.toolchain_type]
 
     inputs = inputs[:]
     inputs.append(mtree)
@@ -88,9 +88,12 @@ def _create_mtree(ctx):
     )
 
 tar_lib = struct(
+    TOOLCHAIN_TYPE = tar.toolchain_type,
     create_mtree = _create_mtree,
-    line = _mtree_line,
-    add_directory_with_parents = _add_directory_with_parents,
-    add_file_with_parents = _add_file_with_parents,
-    TOOLCHAIN_TYPE = BSDTAR_TOOLCHAIN,
+    mtree = struct(
+        line = _mtree_line,
+        add_directory_with_parents = _add_directory_with_parents,
+        add_file_with_parents = _add_file_with_parents,
+    ),
+    common = tar.common,
 )

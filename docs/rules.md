@@ -50,6 +50,26 @@ cacerts(
 | <a id="cacerts-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
+<a id="flatten"></a>
+
+## flatten
+
+<pre>
+flatten(<a href="#flatten-name">name</a>, <a href="#flatten-compression">compression</a>, <a href="#flatten-tars">tars</a>)
+</pre>
+
+Flatten multiple archives into single archive.
+
+**ATTRIBUTES**
+
+
+| Name  | Description | Type | Mandatory | Default |
+| :------------- | :------------- | :------------- | :------------- | :------------- |
+| <a id="flatten-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
+| <a id="flatten-compression"></a>compression |  Compress the archive file with a supported algorithm.   | String | optional | <code>""</code> |
+| <a id="flatten-tars"></a>tars |  List of tars to flatten   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
+
+
 <a id="java_keystore"></a>
 
 ## java_keystore

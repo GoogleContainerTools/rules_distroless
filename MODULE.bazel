@@ -7,11 +7,10 @@ module(
 )
 
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
-bazel_dep(name = "aspect_bazel_lib", version = "2.0.0-rc1")
+bazel_dep(name = "aspect_bazel_lib", version = "2.0.3")
 
 bazel_lib_toolchains = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
-
-# bazel_lib_toolchains.tar()
+bazel_lib_toolchains.tar()
 use_repo(bazel_lib_toolchains, "bsd_tar_toolchains")
 
 bazel_dep(name = "gazelle", version = "0.34.0", dev_dependency = True, repo_name = "bazel_gazelle")

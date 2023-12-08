@@ -82,7 +82,15 @@ bzl_library(
 )
 
 bzl_library(
+    name = "flatten",
+    srcs = ["flatten.bzl"],
+    visibility = ["//distroless:__subpackages__"],
+    deps = [":tar"],
+)
+
+bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
     visibility = ["//distroless:__subpackages__"],
+    deps = ["@aspect_bazel_lib//lib:tar"],
 )
