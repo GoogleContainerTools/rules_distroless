@@ -19,6 +19,7 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = [
         "//distroless/private:cacerts",
+        "//distroless/private:flatten",
         "//distroless/private:group",
         "//distroless/private:home",
         "//distroless/private:java_keystore",

@@ -16,7 +16,7 @@ def home(name, dirs, **kwargs):
 
     for home in dirs:
         mtree.extend(
-            tar_lib.add_directory_with_parents(home["home"], uid = str(home["uid"]), gid = str(home["gid"])),
+            tar_lib.mtree.add_directory_with_parents(home["home"], uid = str(home["uid"]), gid = str(home["gid"])),
         )
 
     tar(

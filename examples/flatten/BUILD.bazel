@@ -1,0 +1,66 @@
+load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+load("//distroless:defs.bzl", "flatten", "home", "passwd")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+
+passwd(
+    name = "passwd",
+    passwds = [
+        {
+            "gecos": ["root"],
+            "gid": 0,
+            "home": "root",
+            "shell": "usr/bin/bash",
+            "uid": 0,
+            "username": "root",
+        },
+    ],
+)
+
+home(
+    name = "home",
+    dirs = [
+        {
+            "home": "root",
+            "uid": 0,
+            "gid": 0,
+        },
+        {
+            "home": "home/nonroot",
+            "uid": 666,
+            "gid": 666,
+        },
+    ],
+)
+
+tar(
+    name = "source",
+    srcs = glob(["dir/**/*"]),
+    compress = "xz",
+)
+
+flatten(
+    name = "flatten",
+    tars = [
+        ":passwd",
+        ":home",
+        ":source",
+    ],
+)
+
+assert_tar_listing(
+    name = "test_flatten",
+    actual = "flatten",
+    expected = """\
+#mtree
+./etc/passwd nlink=0 time=0.0 mode=700 gid=0 uid=0 type=file size=33 cksum=3891093834 sha1digest=94f013494b98f8ed618ce2e670d405f818ec3915
+./examples time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./examples/flatten time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./examples/flatten/dir time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./examples/flatten/dir/changelog nlink=0 time=1672560000.0 mode=755 gid=0 uid=0 type=file size=0 cksum=4294967295 sha1digest=da39a3ee5e6b4b0d3255bfef95601890afd80709
+./examples/flatten/dir/sub time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./examples/flatten/dir/sub/content.txt nlink=0 time=1672560000.0 mode=755 gid=0 uid=0 type=file size=0 cksum=4294967295 sha1digest=da39a3ee5e6b4b0d3255bfef95601890afd80709
+./home time=0.0 mode=755 gid=0 uid=0 type=dir
+./home/nonroot time=0.0 mode=755 gid=666 uid=666 type=dir
+./root time=0.0 mode=755 gid=0 uid=0 type=dir
+""",
+)
