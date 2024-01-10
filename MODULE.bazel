@@ -7,7 +7,8 @@ module(
 )
 
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
-bazel_dep(name = "aspect_bazel_lib", version = "2.0.3")
+bazel_dep(name = "aspect_bazel_lib", version = "2.2.0")
+bazel_dep(name = "rules_oci", version = "1.5.1")
 
 bazel_lib_toolchains = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
 bazel_lib_toolchains.tar()

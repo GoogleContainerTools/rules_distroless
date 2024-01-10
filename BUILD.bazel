@@ -1,11 +1,26 @@
-load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
+load("@rules_oci//oci:defs.bzl", "oci_image")
+load(":oci_rt_tarball.bzl", "oci_rt_tarball")
 
-gazelle_binary(
-    name = "gazelle_bin",
-    languages = ["@bazel_skylib_gazelle_plugin//bzl"],
+oci_image(
+    name = "image",
+    architecture = "arm64",
+    cmd = [
+        "--arg1",
+        "--arg2",
+    ],
+    entrypoint = ["/custom_bin"],
+    env = {
+        "ENV": "/test",
+    },
+    os = "linux",
 )
 
-gazelle(
-    name = "gazelle",
-    gazelle = "gazelle_bin",
+oci_rt_tarball(
+    name = "tarball",
+    image = ":image",
+    repo_tags = [
+        "gcr.io/empty_base:latest",
+        "two:is_a_company",
+        "three:is_a_crowd",  # Used to test support for more than two repo_tags.
+    ],
 )
