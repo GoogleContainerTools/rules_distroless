@@ -1,0 +1,8 @@
+load(":package_resolution_test.bzl", "version_depends_test")
+load(":version_test.bzl", "version_compare_test", "version_parse_test")
+
+version_compare_test(name = "version_compare_test")
+
+version_parse_test(name = "version_parse_test")
+
+version_depends_test(name = "version_depends")

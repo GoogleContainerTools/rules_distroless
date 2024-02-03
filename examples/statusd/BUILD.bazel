@@ -1,0 +1,19 @@
+# buildifier: disable=bzl-visibility
+load("//apt:defs.bzl", "dpkg_statusd")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+
+dpkg_statusd(
+    name = "statusd",
+    package_name = "ca-certificates",
+    control = "@example-bullseye-ca-certificates//:control.tar.xz",
+)
+
+assert_tar_listing(
+    name = "test_statusd",
+    actual = "statusd",
+    expected = """\
+#mtree
+./var/lib/dpkg/status.d/ca-certificates/control time=1611051064.0 mode=644 gid=0 uid=0 type=file size=793 sha1digest=214a8bc9b7e7ce33fbd2e08b0b01aa5e2b717495
+./var/lib/dpkg/status.d/ca-certificates/md5sums time=1611051064.0 mode=644 gid=0 uid=0 type=file size=14644 sha1digest=80ae4d6a7dbfeefd6e16ccab344671c6f7426422
+""",
+)

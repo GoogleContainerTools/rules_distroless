@@ -1,0 +1,73 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+exports_files([
+    "dpkg_statusd.sh",
+    "dpkg_status.sh",
+])
+
+bzl_library(
+    name = "dpkg_status",
+    srcs = ["dpkg_status.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = ["//distroless/private:tar"],
+)
+
+bzl_library(
+    name = "dpkg_statusd",
+    srcs = ["dpkg_statusd.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = ["//distroless/private:tar"],
+)
+
+bzl_library(
+    name = "index",
+    srcs = ["index.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [":lockfile"],
+)
+
+bzl_library(
+    name = "lockfile",
+    srcs = ["lockfile.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [":util"],
+)
+
+bzl_library(
+    name = "package_index",
+    srcs = ["package_index.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [":util"],
+)
+
+bzl_library(
+    name = "package_resolution",
+    srcs = ["package_resolution.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [":version"],
+)
+
+bzl_library(
+    name = "resolve",
+    srcs = ["resolve.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [
+        ":lockfile",
+        ":package_index",
+        ":package_resolution",
+        "@aspect_bazel_lib//lib:repo_utils",
+    ],
+)
+
+bzl_library(
+    name = "version",
+    srcs = ["version.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = ["@aspect_bazel_lib//lib:strings"],
+)
+
+bzl_library(
+    name = "util",
+    srcs = ["util.bzl"],
+    visibility = ["//apt:__subpackages__"],
+)
