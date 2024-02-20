@@ -5,7 +5,9 @@ load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:utils.bzl", "propagate_common_rule_attributes")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 
-def passwd(name, passwds, **kwargs):
+# WARNING: the mode `0o644` is important
+# See: https://github.com/bazelbuild/rules_docker/blob/3040e1fd74659a52d1cdaff81359f57ee0e2bb41/contrib/passwd.bzl#L149C54-L149C57
+def passwd(name, passwds, mode = "644", **kwargs):
     """
     Create a passwd file from array of dicts.
 
@@ -20,6 +22,7 @@ def passwd(name, passwds, **kwargs):
             ```
             dict(gid = 0, uid = 0, home = "/root", shell = "/bin/bash", username = "root")
             ```
+        mode: the mode bits for the passwd file
         **kwargs: other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).
     """
     common_kwargs = propagate_common_rule_attributes(kwargs)
@@ -50,11 +53,12 @@ def passwd(name, passwds, **kwargs):
         stamp = 0,
         template = [
             "#mtree",
-            "./etc/passwd uid=0 gid=0 mode=0700 time=0 type=file content={content}",
+            "./etc/passwd uid=0 gid=0 mode={mode} time=0 type=file content={content}",
             "",
         ],
         substitutions = {
             "{content}": "$(BINDIR)/$(rootpath :%s_content)" % name,
+            "{mode}": mode,
         },
         **common_kwargs
     )

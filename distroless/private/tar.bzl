@@ -45,7 +45,7 @@ def _add_file_with_parents(path, file):
     return lines
 
 def _add_directory_with_parents(path, **kwargs):
-    lines = _add_parents(path)
+    lines = _add_parents(path, **kwargs)
     lines.append(_mtree_line(path, "dir", **kwargs))
     return lines
 

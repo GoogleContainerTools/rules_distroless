@@ -22,8 +22,8 @@ assert_tar_listing(
     actual = "home",
     expected = """\
 #mtree
-./home time=0.0 mode=755 gid=0 uid=0 type=dir
-./home/nonroot time=0.0 mode=755 gid=666 uid=666 type=dir
-./root time=0.0 mode=755 gid=0 uid=0 type=dir
+./home time=0.0 mode=700 gid=666 uid=666 type=dir
+./home/nonroot time=0.0 mode=700 gid=666 uid=666 type=dir
+./root time=0.0 mode=700 gid=0 uid=0 type=dir
 """,
 )
