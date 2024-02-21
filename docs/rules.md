@@ -207,7 +207,7 @@ https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 ## passwd
 
 <pre>
-passwd(<a href="#passwd-name">name</a>, <a href="#passwd-passwds">passwds</a>, <a href="#passwd-kwargs">kwargs</a>)
+passwd(<a href="#passwd-name">name</a>, <a href="#passwd-passwds">passwds</a>, <a href="#passwd-mode">mode</a>, <a href="#passwd-kwargs">kwargs</a>)
 </pre>
 
     Create a passwd file from array of dicts.
@@ -222,6 +222,7 @@ https://www.ibm.com/docs/en/aix/7.3?topic=passwords-using-etcpasswd-file
 | :------------- | :------------- | :------------- |
 | <a id="passwd-name"></a>name |  name of the target   |  none |
 | <a id="passwd-passwds"></a>passwds |  an array of dicts which will be serialized into single passwd file.<br><br>An example;<br><br><pre><code> dict(gid = 0, uid = 0, home = "/root", shell = "/bin/bash", username = "root") </code></pre>   |  none |
+| <a id="passwd-mode"></a>mode |  the mode bits for the passwd file   |  <code>"644"</code> |
 | <a id="passwd-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 

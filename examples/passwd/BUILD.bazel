@@ -27,6 +27,6 @@ assert_tar_listing(
     actual = "passwd",
     expected = """\
 #mtree
-./etc/passwd nlink=0 time=0.0 mode=700 gid=0 uid=0 type=file size=35 cksum=2298809208 sha1digest=31ad675c1210fd0413dd9b2441aaaf13c18d1547
+./etc/passwd nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=35 cksum=2298809208 sha1digest=31ad675c1210fd0413dd9b2441aaaf13c18d1547
 """,
 )
