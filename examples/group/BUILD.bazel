@@ -14,6 +14,15 @@ group(
                 "cjf",
             ],
         ),
+        dict(
+            name = "nonroot",
+            gid = 4656,
+            password = "x",
+            users = [
+                "shadow",
+                "cjf",
+            ],
+        ),
     ],
 )
 
@@ -28,6 +37,6 @@ assert_tar_listing(
     actual = "group",
     expected = """\
 #mtree
-./etc/group nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=19 cksum=290415485 sha1digest=20c70f96d7939eb77c7f07bb8c0f200d89ce33b0
+./etc/group nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=45 cksum=2713330152 sha1digest=678b20cf36fcb71cb93ca225e9990e00a49e778b
 """,
 )
