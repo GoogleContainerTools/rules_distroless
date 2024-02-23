@@ -37,6 +37,6 @@ assert_tar_listing(
     actual = "group",
     expected = """\
 #mtree
-./etc/group nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=45 cksum=2713330152 sha1digest=678b20cf36fcb71cb93ca225e9990e00a49e778b
+./etc/group nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=46 cksum=1308212548 sha1digest=73eab1fb5cf810c5811e9594a9180bee97011ed1
 """,
 )

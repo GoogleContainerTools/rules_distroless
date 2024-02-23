@@ -40,7 +40,7 @@ def passwd(name, passwds, mode = "644", **kwargs):
                 entry["shell"],
             ])
             for entry in passwds
-        ],
+        ] + [""],
         out = "%s.content" % name,
         **common_kwargs
     )

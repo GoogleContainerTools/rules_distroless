@@ -35,7 +35,7 @@ def group(name, groups, **kwargs):
                 ",".join(entry["users"]),
             ])
             for entry in groups
-        ],
+        ] + [""],
         out = "%s.content" % name,
         **common_kwargs
     )
