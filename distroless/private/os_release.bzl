@@ -25,7 +25,7 @@ def os_release(name, content, path = "/usr/lib/os-release", **kwargs):
         content = [
             "{}={}".format(key, value)
             for (key, value) in content.items()
-        ],
+        ] + [""],
         out = "%s.content" % name,
         **common_kwargs
     )

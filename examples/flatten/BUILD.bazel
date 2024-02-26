@@ -52,7 +52,7 @@ assert_tar_listing(
     actual = "flatten",
     expected = """\
 #mtree
-./etc/passwd nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=33 cksum=3891093834 sha1digest=94f013494b98f8ed618ce2e670d405f818ec3915
+./etc/passwd nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=34 cksum=3470383902 sha1digest=240bc4b96dc5e13ffcc715bda7aaa9665fc1069c
 ./examples time=1672560000.0 mode=755 gid=0 uid=0 type=dir
 ./examples/flatten time=1672560000.0 mode=755 gid=0 uid=0 type=dir
 ./examples/flatten/dir time=1672560000.0 mode=755 gid=0 uid=0 type=dir

@@ -21,7 +21,7 @@ assert_tar_listing(
     actual = "os_release",
     expected = """\
 #mtree
-./usr/lib/os-release nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=47 cksum=1353493935 sha1digest=ae180d07c7e29e34e1e74ee7c49f371c8cf006d5
+./usr/lib/os-release nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=48 cksum=107085711 sha1digest=956eb93b9476f9fc8f93cb450adc4f716d158500
 """,
 )
 
@@ -40,6 +40,6 @@ assert_tar_listing(
     actual = "os_release_alternative_path",
     expected = """\
 #mtree
-./etc/os-release nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=66 cksum=187595121 sha1digest=7db059bd2ee4a8606f310fa84fb29f56f151b218
+./etc/os-release nlink=0 time=0.0 mode=755 gid=0 uid=0 type=file size=67 cksum=1175356314 sha1digest=ebdde6fdd9cf9876b4b592772d85817b4b482327
 """,
 )

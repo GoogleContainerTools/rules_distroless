@@ -5,6 +5,13 @@ load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:utils.bzl", "propagate_common_rule_attributes")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 
+def _get_attr(o, k, d):
+    if k in o:
+        return o[k]
+    if hasattr(o, k):
+        return getattr(o, k)
+    return d
+
 def group(name, groups, **kwargs):
     """
     Create a group file from array of dicts.
@@ -23,12 +30,12 @@ def group(name, groups, **kwargs):
             # See https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a3179518__title__1
             ":".join([
                 entry["name"],
-                "!",  # not used. Group administrators are provided instead of group passwords.
+                _get_attr(entry, "password", "!"),  # not used. Group administrators are provided instead of group passwords.
                 str(entry["gid"]),
                 ",".join(entry["users"]),
             ])
             for entry in groups
-        ],
+        ] + [""],
         out = "%s.content" % name,
         **common_kwargs
     )
