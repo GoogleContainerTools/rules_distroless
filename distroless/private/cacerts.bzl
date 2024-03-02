@@ -53,8 +53,10 @@ def _cacerts_impl(ctx):
 
     output = ctx.actions.declare_file(ctx.attr.name + ".tar.gz")
     mtree = tar_lib.create_mtree(ctx)
-    mtree.add_file_with_parents("/etc/ssl/certs/ca-certificates.crt", cacerts)
-    mtree.add_file_with_parents("/usr/share/doc/ca-certificates/copyright", copyright)
+    mtree.add_parents("/etc/ssl/certs", time = ctx.attr.time)
+    mtree.add_file("/etc/ssl/certs/ca-certificates.crt", cacerts, time = ctx.attr.time, mode = ctx.attr.mode)
+    mtree.add_parents("/usr/share/doc/ca-certificates", time = ctx.attr.time)
+    mtree.add_file("/usr/share/doc/ca-certificates/copyright", copyright, time = ctx.attr.time, mode = ctx.attr.mode)
     mtree.build(output = output, mnemonic = "CaCertsTarGz", inputs = [cacerts, copyright])
 
     return [
@@ -73,6 +75,14 @@ cacerts = rule(
         "package": attr.label(
             allow_single_file = [".tar.xz", ".tar.gz", ".tar"],
             mandatory = True,
+        ),
+        "mode": attr.string(
+            doc = "mode for the entries",
+            default = "0555",
+        ),
+        "time": attr.string(
+            doc = "time for the entries",
+            default = "0.0",
         ),
     },
     implementation = _cacerts_impl,

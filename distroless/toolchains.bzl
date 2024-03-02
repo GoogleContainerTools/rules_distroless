@@ -1,4 +1,7 @@
 "macro for registering toolchains required"
 
-def distroless_register_toolchains(name, register = True):
-    register_tar_toolchains(register = register)
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_expand_template_toolchains", "register_tar_toolchains")
+
+def distroless_register_toolchains():
+    register_tar_toolchains()
+    register_expand_template_toolchains()

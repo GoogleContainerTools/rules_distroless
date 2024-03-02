@@ -1,11 +1,17 @@
-"osrelease"
+"os release"
 
-load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template")
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:utils.bzl", "propagate_common_rule_attributes")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load(":tar.bzl", "tar_lib")
 
-def os_release(name, content, path = "/usr/lib/os-release", **kwargs):
+def os_release(
+        name,
+        content,
+        path = "/usr/lib/os-release",
+        mode = "0555",
+        time = "0",
+        **kwargs):
     """
     Create an Operating System Identification file from a key, value dictionary.
 
@@ -17,6 +23,8 @@ def os_release(name, content, path = "/usr/lib/os-release", **kwargs):
 
             See https://www.freedesktop.org/software/systemd/man/latest/os-release.html#Options for well known keys.
         path: where to put the file in the result archive. default: `/usr/lib/os-release`
+        mode: mode for the entry
+        time: time for the entry
         **kwargs: other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).
     """
     common_kwargs = propagate_common_rule_attributes(kwargs)
@@ -30,25 +38,21 @@ def os_release(name, content, path = "/usr/lib/os-release", **kwargs):
         **common_kwargs
     )
 
-    # TODO: remove this expansion target once https://github.com/aspect-build/bazel-lib/issues/653 is fixed.
-    expand_template(
-        name = "%s_mtree" % name,
-        out = "%s.mtree" % name,
-        data = [":%s_content" % name],
-        stamp = 0,
-        template = [
-            "#mtree",
-            "%s uid=0 gid=0 mode=0755 time=0 type=file content={content}" % path.lstrip("/"),
-            "",
-        ],
-        substitutions = {
-            "{content}": "$(BINDIR)/$(rootpath :%s_content)" % name,
-        },
-        **common_kwargs
+    mtree = tar_lib.create_mtree()
+
+    i = path.rfind("/")
+    mtree.add_parents(path[0:i], time = time)
+    mtree.entry(
+        path.lstrip("/").lstrip("./"),
+        "file",
+        mode = mode,
+        time = time,
+        content = "$(BINDIR)/$(rootpath :%s_content)" % name,
     )
+
     tar(
         name = name,
         srcs = [":%s_content" % name],
-        mtree = ":%s_mtree" % name,
+        mtree = mtree.content(),
         **common_kwargs
     )

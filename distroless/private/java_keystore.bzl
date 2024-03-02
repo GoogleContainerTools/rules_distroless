@@ -23,7 +23,8 @@ def _java_keystore_impl(ctx):
 
     output = ctx.actions.declare_file(ctx.attr.name + ".tar.gz")
     mtree = tar_lib.create_mtree(ctx)
-    mtree.add_file_with_parents("/etc/ssl/certs/java/cacerts", jks)
+    mtree.add_parents("/etc/ssl/certs/java", mode = ctx.attr.mode, time = ctx.attr.time)
+    mtree.add_file("/etc/ssl/certs/java/cacerts", jks, mode = ctx.attr.mode, time = ctx.attr.time)
     mtree.build(output = output, mnemonic = "JavaKeyStore", inputs = [jks])
 
     return [
@@ -45,6 +46,14 @@ java_keystore = rule(
             allow_files = True,
             mandatory = True,
             allow_empty = False,
+        ),
+        "mode": attr.string(
+            doc = "mode for the entries",
+            default = "0555",
+        ),
+        "time": attr.string(
+            doc = "time for the entries",
+            default = "0.0",
         ),
     },
     implementation = _java_keystore_impl,

@@ -57,6 +57,7 @@ bzl_library(
     srcs = ["passwd.bzl"],
     visibility = ["//distroless:__subpackages__"],
     deps = [
+        ":util",
         "@aspect_bazel_lib//lib:expand_template",
         "@aspect_bazel_lib//lib:tar",
         "@aspect_bazel_lib//lib:utils",
@@ -77,6 +78,7 @@ bzl_library(
     visibility = ["//distroless:__subpackages__"],
     deps = [
         ":tar",
+        ":util",
         "@aspect_bazel_lib//lib:tar",
     ],
 )
@@ -92,5 +94,14 @@ bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
     visibility = ["//distroless:__subpackages__"],
-    deps = ["@aspect_bazel_lib//lib:tar"],
+    deps = [
+        "@aspect_bazel_lib//lib:tar",
+        "@bazel_skylib//lib:sets",
+    ],
+)
+
+bzl_library(
+    name = "util",
+    srcs = ["util.bzl"],
+    visibility = ["//distroless:__subpackages__"],
 )
