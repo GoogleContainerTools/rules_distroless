@@ -1,6 +1,7 @@
 "mtree helpers"
 
 load("@aspect_bazel_lib//lib:tar.bzl", tar = "tar_lib")
+load("@bazel_skylib//lib:sets.bzl", "sets")
 
 DEFAULT_GID = "0"
 DEFAULT_UID = "0"
@@ -14,6 +15,11 @@ def _mtree_line(dest, type, content = None, uid = DEFAULT_UID, gid = DEFAULT_GID
         if not dest.startswith("/"):
             dest = "/" + dest
         dest = "." + dest
+
+    # dest = dest.removeprefix("./")
+    # if type == "dir" and not dest.endswith("/"):
+    #     dest = dest + "/"
+
     spec = [
         dest,
         "uid=" + uid,
@@ -29,7 +35,6 @@ def _mtree_line(dest, type, content = None, uid = DEFAULT_UID, gid = DEFAULT_GID
 def _add_parents(path, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE):
     lines = []
     segments = path.split("/")
-    segments.pop()
     for i in range(0, len(segments)):
         parent = "/".join(segments[:i + 1])
         if not parent:
@@ -37,16 +42,6 @@ def _add_parents(path, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME
         lines.append(
             _mtree_line(parent, "dir", uid = uid, gid = gid, time = time, mode = mode),
         )
-    return lines
-
-def _add_file_with_parents(path, file):
-    lines = _add_parents(path)
-    lines.append(_mtree_line(path, "file", content = file.path))
-    return lines
-
-def _add_directory_with_parents(path, **kwargs):
-    lines = _add_parents(path, **kwargs)
-    lines.append(_mtree_line(path, "dir", **kwargs))
     return lines
 
 def _build_tar(ctx, mtree, output, inputs = [], compression = "gzip", mnemonic = "Tar"):
@@ -72,28 +67,37 @@ def _build_tar(ctx, mtree, output, inputs = [], compression = "gzip", mnemonic =
 
 def _build_mtree(ctx, content):
     mtree_out = ctx.actions.declare_file(ctx.label.name + ".spec")
+    content.add("#end")
     ctx.actions.write(mtree_out, content = content)
     return mtree_out
 
-def _create_mtree(ctx):
-    content = ctx.actions.args()
-    content.set_param_file_format("multiline")
+def _array_content():
+    content = []
+    return struct(
+        add = lambda c: content.append(c),
+        add_all = lambda c, uniquify = False: content.extend(c) if uniquify else content.extend(sets.make(c).to_list()),
+        to_list = lambda: content,
+    )
+
+def _create_mtree(ctx = None):
+    if ctx:
+        content = ctx.actions.args()
+        content.set_param_file_format("multiline")
+    else:
+        content = _array_content()
+
     content.add("#mtree")
     return struct(
-        line = lambda **kwargs: content.add(_mtree_line(**kwargs)),
-        add_file_with_parents = lambda *args, **kwargs: content.add_all(_add_file_with_parents(*args), uniquify = kwargs.pop("uniqify", True)),
-        add_parents = lambda *args, **kwargs: content.add_all(_add_parents(*args), uniquify = kwargs.pop("uniqify", True)),
+        entry = lambda path, type, **kwargs: content.add(_mtree_line(path, type, **kwargs)),
+        add_file = lambda path, file, **kwargs: content.add(_mtree_line(path, "file", content = file.path, **kwargs)),
+        add_dir = lambda path, **kwargs: content.add(_mtree_line(path, "dir", **kwargs)),
+        add_parents = lambda path, **kwargs: content.add_all(_add_parents(path, **kwargs), uniquify = True),
         build = lambda **kwargs: _build_tar(ctx, _build_mtree(ctx, content), **kwargs),
-        build_mtree = lambda **kwargs: _build_mtree(ctx, content),
+        content = lambda: content.to_list() + ["#end"],
     )
 
 tar_lib = struct(
     TOOLCHAIN_TYPE = tar.toolchain_type,
     create_mtree = _create_mtree,
-    mtree = struct(
-        line = _mtree_line,
-        add_directory_with_parents = _add_directory_with_parents,
-        add_file_with_parents = _add_file_with_parents,
-    ),
     common = tar.common,
 )

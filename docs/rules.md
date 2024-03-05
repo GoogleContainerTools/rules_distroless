@@ -7,7 +7,7 @@ Public API re-exports
 ## cacerts
 
 <pre>
-cacerts(<a href="#cacerts-name">name</a>, <a href="#cacerts-package">package</a>)
+cacerts(<a href="#cacerts-name">name</a>, <a href="#cacerts-mode">mode</a>, <a href="#cacerts-package">package</a>, <a href="#cacerts-time">time</a>)
 </pre>
 
 Create a ca-certificates.crt bundle from Common CA certificates.
@@ -47,7 +47,9 @@ cacerts(
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="cacerts-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
+| <a id="cacerts-mode"></a>mode |  mode for the entries   | String | optional | <code>"0555"</code> |
 | <a id="cacerts-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
+| <a id="cacerts-time"></a>time |  time for the entries   | String | optional | <code>"0.0"</code> |
 
 
 <a id="flatten"></a>
@@ -75,7 +77,7 @@ Flatten multiple archives into single archive.
 ## java_keystore
 
 <pre>
-java_keystore(<a href="#java_keystore-name">name</a>, <a href="#java_keystore-certificates">certificates</a>)
+java_keystore(<a href="#java_keystore-name">name</a>, <a href="#java_keystore-certificates">certificates</a>, <a href="#java_keystore-mode">mode</a>, <a href="#java_keystore-time">time</a>)
 </pre>
 
 Create a java keystore (database) of cryptographic keys, X.509 certificate chains, and trusted certificates.
@@ -90,6 +92,8 @@ Currently only public  X.509 are supported as part of the PUBLIC API contract.
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="java_keystore-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="java_keystore-certificates"></a>certificates |  -   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
+| <a id="java_keystore-mode"></a>mode |  mode for the entries   | String | optional | <code>"0555"</code> |
+| <a id="java_keystore-time"></a>time |  time for the entries   | String | optional | <code>"0.0"</code> |
 
 
 <a id="locale"></a>
@@ -140,7 +144,7 @@ locale(
 ## group
 
 <pre>
-group(<a href="#group-name">name</a>, <a href="#group-groups">groups</a>, <a href="#group-kwargs">kwargs</a>)
+group(<a href="#group-name">name</a>, <a href="#group-entries">entries</a>, <a href="#group-time">time</a>, <a href="#group-mode">mode</a>, <a href="#group-kwargs">kwargs</a>)
 </pre>
 
     Create a group file from array of dicts.
@@ -154,7 +158,9 @@ https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a2
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="group-name"></a>name |  name of the target   |  none |
-| <a id="group-groups"></a>groups |  an array of dicts which will be serialized into single group file.   |  none |
+| <a id="group-entries"></a>entries |  an array of dicts which will be serialized into single group file.   |  none |
+| <a id="group-time"></a>time |  time for the entry   |  <code>"0.0"</code> |
+| <a id="group-mode"></a>mode |  mode for the entry   |  <code>"0644"</code> |
 | <a id="group-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 
@@ -183,7 +189,7 @@ home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#hom
 ## os_release
 
 <pre>
-os_release(<a href="#os_release-name">name</a>, <a href="#os_release-content">content</a>, <a href="#os_release-path">path</a>, <a href="#os_release-kwargs">kwargs</a>)
+os_release(<a href="#os_release-name">name</a>, <a href="#os_release-content">content</a>, <a href="#os_release-path">path</a>, <a href="#os_release-mode">mode</a>, <a href="#os_release-time">time</a>, <a href="#os_release-kwargs">kwargs</a>)
 </pre>
 
     Create an Operating System Identification file from a key, value dictionary.
@@ -199,6 +205,8 @@ https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 | <a id="os_release-name"></a>name |  name of the target   |  none |
 | <a id="os_release-content"></a>content |  a key, value dictionary that will be serialized into <code>=</code> seperated lines.<br><br>See https://www.freedesktop.org/software/systemd/man/latest/os-release.html#Options for well known keys.   |  none |
 | <a id="os_release-path"></a>path |  where to put the file in the result archive. default: <code>/usr/lib/os-release</code>   |  <code>"/usr/lib/os-release"</code> |
+| <a id="os_release-mode"></a>mode |  mode for the entry   |  <code>"0555"</code> |
+| <a id="os_release-time"></a>time |  time for the entry   |  <code>"0"</code> |
 | <a id="os_release-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 
@@ -207,7 +215,7 @@ https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 ## passwd
 
 <pre>
-passwd(<a href="#passwd-name">name</a>, <a href="#passwd-passwds">passwds</a>, <a href="#passwd-mode">mode</a>, <a href="#passwd-kwargs">kwargs</a>)
+passwd(<a href="#passwd-name">name</a>, <a href="#passwd-entries">entries</a>, <a href="#passwd-mode">mode</a>, <a href="#passwd-time">time</a>, <a href="#passwd-kwargs">kwargs</a>)
 </pre>
 
     Create a passwd file from array of dicts.
@@ -221,8 +229,9 @@ https://www.ibm.com/docs/en/aix/7.3?topic=passwords-using-etcpasswd-file
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="passwd-name"></a>name |  name of the target   |  none |
-| <a id="passwd-passwds"></a>passwds |  an array of dicts which will be serialized into single passwd file.<br><br>An example;<br><br><pre><code> dict(gid = 0, uid = 0, home = "/root", shell = "/bin/bash", username = "root") </code></pre>   |  none |
-| <a id="passwd-mode"></a>mode |  the mode bits for the passwd file   |  <code>"644"</code> |
+| <a id="passwd-entries"></a>entries |  an array of dicts which will be serialized into single passwd file.<br><br>An example;<br><br><pre><code> dict(gid = 0, uid = 0, home = "/root", shell = "/bin/bash", username = "root") </code></pre>   |  none |
+| <a id="passwd-mode"></a>mode |  mode for the entry   |  <code>"0644"</code> |
+| <a id="passwd-time"></a>time |  time for the entry   |  <code>"0.0"</code> |
 | <a id="passwd-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 

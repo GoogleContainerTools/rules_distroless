@@ -14,6 +14,6 @@ local_repository(
 # you should fetch it *before* calling this.
 # Alternatively, you can skip calling this function, so long as you've
 # already fetched all the dependencies.
-load("@rules_distroless//distroless:dependencies.bzl", "rules_distroless_dependencies")
+load("@rules_distroless//distroless:dependencies.bzl", "distroless_dependencies")
 
-rules_distroless_dependencies()
+distroless_dependencies()

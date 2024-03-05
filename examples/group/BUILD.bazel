@@ -4,7 +4,7 @@ load("//distroless/tests:asserts.bzl", "assert_tar_listing")
 
 group(
     name = "group",
-    groups = [
+    entries = [
         # https://www.ibm.com/docs/kk/aix/7.2?topic=files-etcgroup-file#group_security__a3179518__title__1
         dict(
             name = "root",
@@ -37,6 +37,6 @@ assert_tar_listing(
     actual = "group",
     expected = """\
 #mtree
-./etc/group nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=46 cksum=1308212548 sha1digest=73eab1fb5cf810c5811e9594a9180bee97011ed1
+./etc/group time=0.0 mode=644 gid=0 uid=0 type=file size=46 sha1digest=73eab1fb5cf810c5811e9594a9180bee97011ed1
 """,
 )

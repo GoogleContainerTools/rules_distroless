@@ -4,7 +4,7 @@ load("//distroless/tests:asserts.bzl", "assert_tar_listing")
 
 passwd(
     name = "passwd",
-    passwds = [
+    entries = [
         dict(
             gecos = ["root"],
             gid = 0,
@@ -27,6 +27,6 @@ assert_tar_listing(
     actual = "passwd",
     expected = """\
 #mtree
-./etc/passwd nlink=0 time=0.0 mode=644 gid=0 uid=0 type=file size=36 cksum=216816702 sha1digest=a158dcecfd75d6502cdb1086eb5b0756d08fc423
+./etc/passwd time=0.0 mode=644 gid=0 uid=0 type=file size=36 sha1digest=a158dcecfd75d6502cdb1086eb5b0756d08fc423
 """,
 )

@@ -1,13 +1,13 @@
 "osrelease"
 
-load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template")
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:utils.bzl", "propagate_common_rule_attributes")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load(":tar.bzl", "tar_lib")
 
 # WARNING: the mode `0o644` is important
 # See: https://github.com/bazelbuild/rules_docker/blob/3040e1fd74659a52d1cdaff81359f57ee0e2bb41/contrib/passwd.bzl#L149C54-L149C57
-def passwd(name, passwds, mode = "644", **kwargs):
+def passwd(name, entries, mode = "0644", time = "0.0", **kwargs):
     """
     Create a passwd file from array of dicts.
 
@@ -15,14 +15,15 @@ def passwd(name, passwds, mode = "644", **kwargs):
 
     Args:
         name: name of the target
-        passwds: an array of dicts which will be serialized into single passwd file.
+        entries: an array of dicts which will be serialized into single passwd file.
 
             An example;
 
             ```
             dict(gid = 0, uid = 0, home = "/root", shell = "/bin/bash", username = "root")
             ```
-        mode: the mode bits for the passwd file
+        mode: mode for the entry
+        time: time for the entry
         **kwargs: other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).
     """
     common_kwargs = propagate_common_rule_attributes(kwargs)
@@ -39,32 +40,24 @@ def passwd(name, passwds, mode = "644", **kwargs):
                 entry["home"],
                 entry["shell"],
             ])
-            for entry in passwds
+            for entry in entries
         ] + [""],
         out = "%s.content" % name,
         **common_kwargs
     )
 
-    # TODO: remove this expansion target once https://github.com/aspect-build/bazel-lib/issues/653 is fixed.
-    expand_template(
-        name = "%s_mtree" % name,
-        out = "%s.mtree" % name,
-        data = [":%s_content" % name],
-        stamp = 0,
-        template = [
-            "#mtree",
-            "./etc/passwd uid=0 gid=0 mode={mode} time=0 type=file content={content}",
-            "",
-        ],
-        substitutions = {
-            "{content}": "$(BINDIR)/$(rootpath :%s_content)" % name,
-            "{mode}": mode,
-        },
-        **common_kwargs
+    mtree = tar_lib.create_mtree()
+    mtree.entry(
+        "/etc/passwd",
+        "file",
+        mode = mode,
+        time = time,
+        content = "$(BINDIR)/$(rootpath :%s_content)" % name,
     )
+
     tar(
         name = name,
         srcs = [":%s_content" % name],
-        mtree = ":%s_mtree" % name,
+        mtree = mtree.content(),
         **common_kwargs
     )

@@ -1,18 +1,12 @@
-"osrelease"
+"group"
 
-load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template")
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:utils.bzl", "propagate_common_rule_attributes")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load(":tar.bzl", "tar_lib")
+load(":util.bzl", "util")
 
-def _get_attr(o, k, d):
-    if k in o:
-        return o[k]
-    if hasattr(o, k):
-        return getattr(o, k)
-    return d
-
-def group(name, groups, **kwargs):
+def group(name, entries, time = "0.0", mode = "0644", **kwargs):
     """
     Create a group file from array of dicts.
 
@@ -20,7 +14,9 @@ def group(name, groups, **kwargs):
 
     Args:
         name: name of the target
-        groups: an array of dicts which will be serialized into single group file.
+        entries: an array of dicts which will be serialized into single group file.
+        mode: mode for the entry
+        time: time for the entry
         **kwargs: other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).
     """
     common_kwargs = propagate_common_rule_attributes(kwargs)
@@ -29,36 +25,29 @@ def group(name, groups, **kwargs):
         content = [
             # See https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a3179518__title__1
             ":".join([
-                entry["name"],
-                _get_attr(entry, "password", "!"),  # not used. Group administrators are provided instead of group passwords.
-                str(entry["gid"]),
-                ",".join(entry["users"]),
+                util.get_attr(entry, "name"),
+                util.get_attr(entry, "password", "!"),  # not used. Group administrators are provided instead of group passwords.
+                str(util.get_attr(entry, "gid")),
+                ",".join(util.get_attr(entry, "users", [])),
             ])
-            for entry in groups
+            for entry in entries
         ] + [""],
         out = "%s.content" % name,
         **common_kwargs
     )
 
-    # TODO: remove this expansion target once https://github.com/aspect-build/bazel-lib/issues/653 is fixed.
-    expand_template(
-        name = "%s_mtree" % name,
-        out = "%s.mtree" % name,
-        data = [":%s_content" % name],
-        stamp = 0,
-        template = [
-            "#mtree",
-            "etc/group uid=0 gid=0 mode=0644 time=0.0 type=file content={content}",
-            "",
-        ],
-        substitutions = {
-            "{content}": "$(BINDIR)/$(rootpath :%s_content)" % name,
-        },
-        **common_kwargs
+    mtree = tar_lib.create_mtree()
+    mtree.entry(
+        "etc/group",
+        "file",
+        mode = mode,
+        time = time,
+        content = "$(BINDIR)/$(rootpath :%s_content)" % name,
     )
+
     tar(
         name = name,
         srcs = [":%s_content" % name],
-        mtree = ":%s_mtree" % name,
+        mtree = mtree.content(),
         **common_kwargs
     )
