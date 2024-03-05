@@ -23,7 +23,11 @@ def _java_keystore_impl(ctx):
 
     output = ctx.actions.declare_file(ctx.attr.name + ".tar.gz")
     mtree = tar_lib.create_mtree(ctx)
-    mtree.add_parents("/etc/ssl/certs/java", mode = ctx.attr.mode, time = ctx.attr.time)
+
+    # TODO: We should have a rule `rootfs` that creates the filesystem root.
+    # We'll add this for now to match distroless images.
+    mtree.add_dir("/etc", mode = "0755", time = "946684800")
+    mtree.add_parents("/etc/ssl/certs/java", mode = ctx.attr.mode, time = ctx.attr.time, skip = [1])
     mtree.add_file("/etc/ssl/certs/java/cacerts", jks, mode = ctx.attr.mode, time = ctx.attr.time)
     mtree.build(output = output, mnemonic = "JavaKeyStore", inputs = [jks])
 
