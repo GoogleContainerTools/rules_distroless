@@ -37,6 +37,7 @@ assert_tar_listing(
     actual = "group",
     expected = """\
 #mtree
+./etc time=946684800.0 mode=755 gid=0 uid=0 type=dir
 ./etc/group time=0.0 mode=644 gid=0 uid=0 type=file size=46 sha1digest=73eab1fb5cf810c5811e9594a9180bee97011ed1
 """,
 )

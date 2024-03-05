@@ -53,7 +53,11 @@ def _cacerts_impl(ctx):
 
     output = ctx.actions.declare_file(ctx.attr.name + ".tar.gz")
     mtree = tar_lib.create_mtree(ctx)
-    mtree.add_parents("/etc/ssl/certs", time = ctx.attr.time)
+
+    # TODO: We should have a rule `rootfs` that creates the filesystem root.
+    # We'll add this for now to match distroless images.
+    mtree.add_dir("/etc", mode = "0755", time = "946684800")
+    mtree.add_parents("/etc/ssl/certs", mode = "0755", time = ctx.attr.time, skip = [1])
     mtree.add_file("/etc/ssl/certs/ca-certificates.crt", cacerts, time = ctx.attr.time, mode = ctx.attr.mode)
     mtree.add_parents("/usr/share/doc/ca-certificates", time = ctx.attr.time)
     mtree.add_file("/usr/share/doc/ca-certificates/copyright", copyright, time = ctx.attr.time, mode = ctx.attr.mode)

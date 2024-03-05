@@ -32,12 +32,12 @@ def _mtree_line(dest, type, content = None, uid = DEFAULT_UID, gid = DEFAULT_GID
         spec.append("content=" + content)
     return " ".join(spec)
 
-def _add_parents(path, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE):
+def _add_parents(path, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE, skip = []):
     lines = []
     segments = path.split("/")
     for i in range(0, len(segments)):
         parent = "/".join(segments[:i + 1])
-        if not parent:
+        if not parent or i in skip:
             continue
         lines.append(
             _mtree_line(parent, "dir", uid = uid, gid = gid, time = time, mode = mode),
