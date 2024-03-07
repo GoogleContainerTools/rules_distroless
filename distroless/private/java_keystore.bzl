@@ -26,9 +26,11 @@ def _java_keystore_impl(ctx):
 
     # TODO: We should have a rule `rootfs` that creates the filesystem root.
     # We'll add this for now to match distroless images.
-    mtree.add_dir("/etc", mode = "0755", time = "946684800")
+    mtree.add_dir("/etc", mode = ctx.attr.mode, time = "946684800")
     mtree.add_parents("/etc/ssl/certs/java", mode = ctx.attr.mode, time = ctx.attr.time, skip = [1])
-    mtree.add_file("/etc/ssl/certs/java/cacerts", jks, mode = ctx.attr.mode, time = ctx.attr.time)
+
+    # TODO: remove??
+    mtree.add_file("/etc/ssl/certs/java/cacerts", jks, mode = "0555", time = ctx.attr.time)
     mtree.build(output = output, mnemonic = "JavaKeyStore", inputs = [jks])
 
     return [
@@ -53,7 +55,7 @@ java_keystore = rule(
         ),
         "mode": attr.string(
             doc = "mode for the entries",
-            default = "0555",
+            default = "0755",
         ),
         "time": attr.string(
             doc = "time for the entries",

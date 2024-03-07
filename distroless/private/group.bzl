@@ -40,7 +40,7 @@ def group(name, entries, time = "0.0", mode = "0644", **kwargs):
 
     # TODO: We should have a rule `rootfs` that creates the filesystem root.
     # We'll add this for now to match distroless images.
-    mtree.add_dir("/etc", mode = "0755", time = "946684800")
+    mtree.add_dir("/etc", mode = "0755", time = time)
     mtree.entry(
         "/etc/group",
         "file",
@@ -53,5 +53,7 @@ def group(name, entries, time = "0.0", mode = "0644", **kwargs):
         name = name,
         srcs = [":%s_content" % name],
         mtree = mtree.content(),
+        args = tar_lib.DEFAULT_ARGS,
+        compress = "gzip",
         **common_kwargs
     )
