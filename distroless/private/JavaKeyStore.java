@@ -16,9 +16,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -47,14 +46,13 @@ class JavaKeyStore {
         MessageDigest md = getPreKeyedHash(PASSWORD);
         DataOutputStream dos = new DataOutputStream(new DigestOutputStream(stream, md));
 
-        HashMap<String, X509Certificate> certs = new HashMap<String, X509Certificate>();
+        ArrayList<X509Certificate> certs = new ArrayList<X509Certificate>();
 
         for (String entry : entries) {
             try (InputStream fis = Files.newInputStream(Path.of(entry))) {
                 for (Certificate rcert : cf.generateCertificates(fis)) {
                     X509Certificate cert = (X509Certificate) rcert;
-                    String alias = cert.getSubjectX500Principal().getName(X500Principal.CANONICAL);
-                    certs.put(alias, cert);
+                    certs.add(cert);
                 }
             }
         }
@@ -63,11 +61,10 @@ class JavaKeyStore {
         dos.writeInt(VERSION);
         dos.writeInt(certs.size());
 
-        for (Entry<String, X509Certificate> entry : certs.entrySet()) {
+        for (X509Certificate cert : certs) {
 
-            X509Certificate cert = entry.getValue();
-            String alias = entry.getKey();
-
+            String alias = cert.getSubjectX500Principal().getName(X500Principal.CANONICAL);
+            
             dos.writeInt(TRUSTED_CERT_TAG);
 
             // Write the alias

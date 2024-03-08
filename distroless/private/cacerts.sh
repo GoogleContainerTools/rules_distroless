@@ -13,7 +13,7 @@ mv "$tmp/doc/ca-certificates/copyright" "$copyright_out"
 
 function add_cert () {
     local dir="$1"
-    for cert in "$dir"/*; do
+    for cert in $(ls -d -1 "$dir"/* | sort); do
         if [[ -d "$cert" ]]; then
             add_cert "$cert"
             continue
@@ -23,4 +23,4 @@ function add_cert () {
 }
 
 add_cert "$tmp/ca-certificates"
-
+rm -rf "$tmp"

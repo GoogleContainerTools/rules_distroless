@@ -30,7 +30,7 @@ def distroless_dependencies():
 
     http_archive(
         name = "aspect_bazel_lib",
-        sha256 = "a59096e01b43d86c6667a869f0e90e0c4b1d4cb03c3d3a972a32ff687c750ac2",
-        strip_prefix = "bazel-lib-2.5.1",
-        url = "https://github.com/aspect-build/bazel-lib/releases/download/v2.5.1/bazel-lib-v2.5.1.tar.gz",
+        sha256 = "9bb90581f11926192ccc84f9a798d90153ea04b833f6b46e8dbbe5ebf3c51d01",
+        strip_prefix = "bazel-lib-2.5.2",
+        url = "https://github.com/aspect-build/bazel-lib/releases/download/v2.5.2/bazel-lib-v2.5.2.tar.gz",
     )

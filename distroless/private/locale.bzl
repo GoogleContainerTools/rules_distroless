@@ -33,9 +33,11 @@ def _locale_impl(ctx):
     output = ctx.actions.declare_file(ctx.attr.name + ".tar.gz")
 
     args = ctx.actions.args()
-    args.add("--create")
-    args.add("--gzip")
-    args.add("--file", output)
+
+    args.add(bsdtar.tarinfo.binary)
+    args.add(output)
+    args.add(ctx.file.package)
+    args.add(ctx.attr.time)
     args.add("--include", "^./usr/$")
     args.add("--include", "^./usr/lib/$")
     args.add("--include", "^./usr/lib/locale/$")
@@ -44,10 +46,9 @@ def _locale_impl(ctx):
     args.add("--include", "^./usr/share/doc/$")
     args.add("--include", "^./usr/share/doc/libc-bin/$")
     args.add("--include", "^./usr/share/doc/libc-bin/copyright$")
-    args.add(ctx.file.package, format = "@%s")
 
     ctx.actions.run(
-        executable = bsdtar.tarinfo.binary,
+        executable = ctx.executable._locale_sh,
         inputs = [ctx.file.package],
         outputs = [output],
         tools = bsdtar.default.files,
@@ -60,12 +61,22 @@ def _locale_impl(ctx):
 locale = rule(
     doc = _DOC,
     attrs = {
+        "_locale_sh": attr.label(
+            allow_single_file = True,
+            executable = True,
+            cfg = "exec",
+            default = ":locale.sh",
+        ),
         "package": attr.label(
             allow_single_file = [".tar.xz", ".tar.gz", ".tar"],
             mandatory = True,
         ),
         "charset": attr.string(
             default = "C.utf8",
+        ),
+        "time": attr.string(
+            doc = "time for the entries",
+            default = "0.0",
         ),
     },
     implementation = _locale_impl,

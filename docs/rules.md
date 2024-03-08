@@ -92,7 +92,7 @@ Currently only public  X.509 are supported as part of the PUBLIC API contract.
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="java_keystore-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="java_keystore-certificates"></a>certificates |  -   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
-| <a id="java_keystore-mode"></a>mode |  mode for the entries   | String | optional | <code>"0555"</code> |
+| <a id="java_keystore-mode"></a>mode |  mode for the entries   | String | optional | <code>"0755"</code> |
 | <a id="java_keystore-time"></a>time |  time for the entries   | String | optional | <code>"0.0"</code> |
 
 
@@ -101,7 +101,7 @@ Currently only public  X.509 are supported as part of the PUBLIC API contract.
 ## locale
 
 <pre>
-locale(<a href="#locale-name">name</a>, <a href="#locale-charset">charset</a>, <a href="#locale-package">package</a>)
+locale(<a href="#locale-name">name</a>, <a href="#locale-charset">charset</a>, <a href="#locale-package">package</a>, <a href="#locale-time">time</a>)
 </pre>
 
 Create a locale archive from a Debian package.
@@ -137,6 +137,7 @@ locale(
 | <a id="locale-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="locale-charset"></a>charset |  -   | String | optional | <code>"C.utf8"</code> |
 | <a id="locale-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
+| <a id="locale-time"></a>time |  time for the entries   | String | optional | <code>"0.0"</code> |
 
 
 <a id="group"></a>
