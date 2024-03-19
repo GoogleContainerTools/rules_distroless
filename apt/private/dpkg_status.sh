@@ -16,7 +16,11 @@ while  (( $# > 0 )); do
     shift
 done
 
+mtree_out=$(mktemp)
 echo "#mtree
 ./var/lib/dpkg/status type=file uid=0 gid=0 mode=0644 contents=$tmp_out
-" | "$bsdtar" $@ -cf "$out" @-
+" > $mtree_out
 
+"$bsdtar" $@ -cf "$out" "@$mtree_out"
+
+rm $tmp_out $mtree_out
