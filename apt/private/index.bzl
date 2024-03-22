@@ -8,29 +8,10 @@ _DEB_IMPORT_TMPL = '''\
         urls = {urls},
         sha256 = "{sha256}",
         build_file_content = """\
-load("@rules_distroless//apt/private:dpkg_statusd.bzl", "dpkg_statusd")
-load("@rules_distroless//distroless:defs.bzl", "flatten")
-
 filegroup(
-    name = "odata",
-    srcs = ["data.tar.xz"]
-)
-
-dpkg_statusd(
-    name = "statusd",
-    control = ":control",
-    package_name = "{package_name}",
-    visibility = ["//visibility:public"],
-)
-
-flatten(
     name = "data",
     visibility = ["//visibility:public"],
-    tars = [
-        ":odata",
-        ":statusd"
-    ],
-    compression = "gzip"
+    srcs = ["data.tar.xz"]
 )
 
 filegroup(
@@ -43,12 +24,22 @@ filegroup(
 '''
 
 _PACKAGE_TMPL = '''\
+
+load("@rules_distroless//distroless:defs.bzl", "flatten")
+
+# TODO: https://github.com/bazel-contrib/rules_oci/pull/523
+flatten(
+    name = "data",
+    tars = [{src}],
+    compression = "gzip"
+)
+
 filegroup(
     name = "{target_name}",
     visibility = ["//visibility:public"],
     srcs = [
         {deps}
-    ]
+    ] + [":data"]
 )
 
 alias(
@@ -92,7 +83,11 @@ def _deb_package_index_impl(rctx):
             "%s/%s/BUILD.bazel" % (package["name"], package["arch"]),
             rctx.attr.package_template.format(
                 target_name = package["arch"],
-                deps = ",\n        ".join(['"@%s_%s//:data"' % (rctx.attr.name, dep) for dep in package["dependencies"] + [name]]),
+                src = '"@%s_%s//:data"' % (rctx.attr.name, name),
+                deps = ",\n        ".join([
+                    '"@%s_%s//:data"' % (rctx.attr.name, dep)
+                    for dep in package["dependencies"]
+                ]),
                 urls = [package["url"]],
                 name = package["name"],
                 arch = package["arch"],
