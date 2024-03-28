@@ -8,7 +8,7 @@ shift 2
 tmp_out=$(mktemp)
 
 while  (( $# > 0 )); do
-    control="$($bsdtar -xf "$1"  --to-stdout ./control)"
+    control="$($bsdtar -xf "$1" --to-stdout ./control)"
     echo "$control" | head -n 1 >> $tmp_out
     echo "Status: install ok installed" >> $tmp_out
     echo "$control" | tail -n +2 >> $tmp_out

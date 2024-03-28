@@ -32,7 +32,11 @@ def _add_package_dependency(lock, package, dependency, arch):
     if k not in lock.fast_package_lookup:
         fail("Broken state: %s is not in the lockfile." % package["Package"])
     i = lock.fast_package_lookup[k]
-    lock.packages[i]["dependencies"].append(_package_key(dependency, arch))
+    lock.packages[i]["dependencies"].append(dict(
+        key = _package_key(dependency, arch),
+        name = dependency["Package"],
+        version = dependency["Version"],
+    ))
 
 def _has_package(lock, name, version, arch):
     key = "%s_%s_%s" % (util.sanitize(name), util.sanitize(version), arch)

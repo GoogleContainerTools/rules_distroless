@@ -23,7 +23,7 @@ common:linux --sandbox_tmpfs_path=/tmp
 
 
 # Allow external dependencies to be retried. debian snapshot is unreliable and needs retries.
-common --experimental_repository_downloader_retries=200
+common --experimental_repository_downloader_retries=10
 
 # Load any settings specific to the current user.
 # .bazelrc.user should appear in .gitignore so that settings are not shared with team members

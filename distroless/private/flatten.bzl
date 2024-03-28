@@ -7,12 +7,12 @@ _DOC = """Flatten multiple archives into single archive."""
 def _flatten_impl(ctx):
     bsdtar = ctx.toolchains[tar_lib.TOOLCHAIN_TYPE]
 
-    ext = tar_lib.common.compression_to_extension[ctx.attr.compression] if ctx.attr.compression else ".tar"
+    ext = tar_lib.common.compression_to_extension[ctx.attr.compress] if ctx.attr.compress else ".tar"
     output = ctx.actions.declare_file(ctx.attr.name + ext)
 
     args = ctx.actions.args()
     args.add("--create")
-    tar_lib.common.add_compression_args(ctx.attr.compression, args)
+    tar_lib.common.add_compression_args(ctx.attr.compress, args)
     args.add("--file", output)
     args.add_all(ctx.files.tars, format_each = "@%s")
 
@@ -37,7 +37,7 @@ flatten = rule(
             allow_empty = False,
             doc = "List of tars to flatten",
         ),
-        "compression": attr.string(
+        "compress": attr.string(
             doc = "Compress the archive file with a supported algorithm.",
             values = tar_lib.common.accepted_compression_types,
         ),

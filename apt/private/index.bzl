@@ -31,7 +31,13 @@ load("@rules_distroless//distroless:defs.bzl", "flatten")
 flatten(
     name = "data",
     tars = [{src}],
-    compression = "gzip"
+    compress = "gzip"
+)
+
+alias(
+    name = "control",
+    actual = "@{repo_name}//:control",
+    visibility = ["//visibility:public"],
 )
 
 filegroup(
@@ -40,12 +46,6 @@ filegroup(
     srcs = [
         {deps}
     ] + [":data"]
-)
-
-alias(
-    name = "control",
-    actual = "@{repo_name}//:control",
-    visibility = ["//visibility:public"],
 )
 '''
 
@@ -85,7 +85,7 @@ def _deb_package_index_impl(rctx):
                 target_name = package["arch"],
                 src = '"@%s_%s//:data"' % (rctx.attr.name, name),
                 deps = ",\n        ".join([
-                    '"@%s_%s//:data"' % (rctx.attr.name, dep)
+                    '"//%s/%s"' % (dep["name"], package["arch"])
                     for dep in package["dependencies"]
                 ]),
                 urls = [package["url"]],

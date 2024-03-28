@@ -7,7 +7,7 @@ module(
 )
 
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
-bazel_dep(name = "aspect_bazel_lib", version = "2.5.3")
+bazel_dep(name = "aspect_bazel_lib", version = "2.6.0")
 bazel_dep(name = "container_structure_test", version = "1.16.0")
 bazel_dep(name = "rules_oci", version = "1.7.4")
 
