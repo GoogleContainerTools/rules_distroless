@@ -94,7 +94,10 @@ bzl_library(
 bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
-    visibility = ["//distroless:__subpackages__"],
+    visibility = [
+        "//apt:__subpackages__",
+        "//distroless:__subpackages__",
+    ],
     deps = [
         "@aspect_bazel_lib//lib:tar",
         "@bazel_skylib//lib:sets",

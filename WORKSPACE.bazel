@@ -4,7 +4,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "example-bullseye-ca-certificates",
-    build_file_content = 'exports_files(["data.tar.xz"])',
+    build_file_content = 'exports_files(["data.tar.xz", "control.tar.xz"])',
     sha256 = "b2d488ad4d8d8adb3ba319fc9cb2cf9909fc42cb82ad239a26c570a2e749c389",
     urls = ["https://snapshot.debian.org/archive/debian/20231106T210201Z/pool/main/c/ca-certificates/ca-certificates_20210119_all.deb"],
 )
@@ -22,3 +22,16 @@ http_archive(
     sha256 = "38c44247c5b3e864d6db2877edd9c9a0555fc4e23ae271b73d7f527802616df5",
     urls = ["https://snapshot.debian.org/archive/debian-security/20231106T230332Z/pool/updates/main/g/glibc/libc-bin_2.36-9+deb12u3_armhf.deb"],
 )
+
+load("//apt:index.bzl", "deb_index")
+
+# bazel run @bullseye//:lock
+deb_index(
+    name = "bullseye",
+    lock = "//examples/apt:bullseye.lock.json",
+    manifest = "//examples/apt:bullseye.yaml",
+)
+
+load("@bullseye//:packages.bzl", "bullseye_packages")
+
+bullseye_packages()

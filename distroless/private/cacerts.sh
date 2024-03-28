@@ -7,9 +7,9 @@ readonly cacerts_out="$3"
 readonly copyright_out="$4"
 readonly tmp="$(mktemp -d)"
 
-"$bsdtar" -xf "$package_path" -C "$tmp" --strip-components 3 ./usr/share/ca-certificates ./usr/share/doc/ca-certificates/copyright
+"$bsdtar" -xf "$package_path" -C "$tmp" ./usr/share/ca-certificates ./usr/share/doc/ca-certificates/copyright
 
-mv "$tmp/doc/ca-certificates/copyright" "$copyright_out"
+mv "$tmp/usr/share/doc/ca-certificates/copyright" "$copyright_out"
 
 function add_cert () {
     local dir="$1"
@@ -22,5 +22,5 @@ function add_cert () {
     done
 }
 
-add_cert "$tmp/ca-certificates"
+add_cert "$tmp/usr/share/ca-certificates"
 rm -rf "$tmp"

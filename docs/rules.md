@@ -25,7 +25,6 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 http_archive(
     name = "ca-certificates",
     type = ".deb",
-    canonical_id = "test",
     sha256 = "b2d488ad4d8d8adb3ba319fc9cb2cf9909fc42cb82ad239a26c570a2e749c389",
     urls = ["https://snapshot.debian.org/archive/debian/20231106T210201Z/pool/main/c/ca-certificates/ca-certificates_20210119_all.deb"],
     build_file_content = "exports_files(["data.tar.xz"])"
@@ -57,7 +56,7 @@ cacerts(
 ## flatten
 
 <pre>
-flatten(<a href="#flatten-name">name</a>, <a href="#flatten-compression">compression</a>, <a href="#flatten-tars">tars</a>)
+flatten(<a href="#flatten-name">name</a>, <a href="#flatten-compress">compress</a>, <a href="#flatten-tars">tars</a>)
 </pre>
 
 Flatten multiple archives into single archive.
@@ -68,7 +67,7 @@ Flatten multiple archives into single archive.
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="flatten-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="flatten-compression"></a>compression |  Compress the archive file with a supported algorithm.   | String | optional | <code>""</code> |
+| <a id="flatten-compress"></a>compress |  Compress the archive file with a supported algorithm.   | String | optional | <code>""</code> |
 | <a id="flatten-tars"></a>tars |  List of tars to flatten   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
 
 

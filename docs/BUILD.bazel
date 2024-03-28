@@ -7,4 +7,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//distroless:defs",
 )
 
+stardoc_with_diff_test(
+    name = "apt",
+    bzl_library_target = "//apt:index",
+)
+
 update_docs(name = "update")
