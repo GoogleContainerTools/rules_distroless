@@ -100,11 +100,6 @@ def _resolve_all(state, name, version, arch, in_lock, include_transitive):
             # Set the root package
             root_package = package
 
-        # PERF: If the lockfile has this package already, it means we did the transitive closure
-        # resolution already.
-        if in_lock(package["Package"], package["Version"]):
-            continue
-
         key = "%s~~%s" % (package["Package"], package["Version"])
 
         # If we encountered package before in the transitive closure, skip it

@@ -1,0 +1,110 @@
+load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+load("@container_structure_test//:defs.bzl", "container_structure_test")
+load("@rules_distroless//apt:defs.bzl", "dpkg_status")
+load("@rules_distroless//distroless:defs.bzl", "group", "passwd")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
+
+passwd(
+    name = "passwd",
+    entries = [
+        {
+            "uid": 0,
+            "gid": 0,
+            "home": "/root",
+            "shell": "/bin/bash",
+            "username": "r00t",
+        },
+        {
+            "uid": 100,
+            "gid": 65534,
+            "home": "/home/_apt",
+            "shell": "/usr/sbin/nologin",
+            "username": "_apt",
+        },
+    ],
+)
+
+group(
+    name = "group",
+    entries = [
+        {
+            "name": "root",
+            "gid": 0,
+        },
+        {
+            "name": "_apt",
+            "gid": 65534,
+        },
+    ],
+)
+
+tar(
+    name = "sh",
+    mtree = [
+        # needed as dpkg assumes sh is installed in a typical debian installation.
+        "./bin/sh type=link link=/bin/bash",
+    ],
+)
+
+PACKAGES = [
+    "@bullseye//tzdata",
+    "@bullseye//bash",
+    "@bullseye//coreutils",
+    "@bullseye//nginx-core",
+]
+
+# Creates /var/lib/dpkg/status with installed package information.
+dpkg_status(
+    name = "dpkg_status",
+    controls = select({
+        "@platforms//cpu:arm64": [
+            "%s/arm64:control" % package
+            for package in PACKAGES
+        ],
+        "@platforms//cpu:x86_64": [
+            "%s/amd64:control" % package
+            for package in PACKAGES
+        ],
+    }),
+)
+
+oci_image(
+    name = "apt",
+    architecture = select({
+        "@platforms//cpu:arm64": "arm64",
+        "@platforms//cpu:x86_64": "amd64",
+    }),
+    os = "linux",
+    tars = [
+        ":sh",
+        ":passwd",
+        ":group",
+        ":dpkg_status",
+    ] + select({
+        "@platforms//cpu:arm64": [
+            "%s/arm64" % package
+            for package in PACKAGES
+        ],
+        "@platforms//cpu:x86_64": [
+            "%s/amd64" % package
+            for package in PACKAGES
+        ],
+    }),
+)
+
+oci_tarball(
+    name = "tarball",
+    image = ":apt",
+    repo_tags = [
+        "distroless/test:latest",
+    ],
+)
+
+container_structure_test(
+    name = "test",
+    configs = select({
+        "@platforms//cpu:arm64": ["test_linux_arm64.yaml"],
+        "@platforms//cpu:x86_64": ["test_linux_amd64.yaml"],
+    }),
+    image = ":apt",
+)

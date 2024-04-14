@@ -1,0 +1,46 @@
+workspace(name = "shared_dependencies")
+
+# Marker that this is the root of a Bazel workspace.
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "example-bullseye-ca-certificates",
+    build_file_content = 'exports_files(["data.tar.xz", "control.tar.xz"])',
+    sha256 = "b2d488ad4d8d8adb3ba319fc9cb2cf9909fc42cb82ad239a26c570a2e749c389",
+    urls = ["https://snapshot.debian.org/archive/debian/20231106T210201Z/pool/main/c/ca-certificates/ca-certificates_20210119_all.deb"],
+)
+
+http_archive(
+    name = "example-bullseye-libc-bin",
+    build_file_content = 'exports_files(["data.tar.xz"])',
+    sha256 = "8b048ab5c7e9f5b7444655541230e689631fd9855c384e8c4a802586d9bbc65a",
+    urls = ["https://snapshot.debian.org/archive/debian-security/20231106T230332Z/pool/updates/main/g/glibc/libc-bin_2.31-13+deb11u7_amd64.deb"],
+)
+
+http_archive(
+    name = "example-bookworm-libc-bin",
+    build_file_content = 'exports_files(["data.tar.xz"])',
+    sha256 = "38c44247c5b3e864d6db2877edd9c9a0555fc4e23ae271b73d7f527802616df5",
+    urls = ["https://snapshot.debian.org/archive/debian-security/20231106T230332Z/pool/updates/main/g/glibc/libc-bin_2.36-9+deb12u3_armhf.deb"],
+)
+
+local_repository(
+    name = "rules_distroless",
+    path = "../..",
+)
+load("@rules_distroless//distroless:dependencies.bzl", "distroless_dependencies")
+
+distroless_dependencies()
+
+load("@rules_distroless//apt:index.bzl", "deb_index")
+# bazel run @bullseye//:lock
+deb_index(
+    name = "bullseye",
+    lock = "//:bullseye.lock.json",
+    manifest = "//:bullseye.yaml",
+)
+
+load("@bullseye//:packages.bzl", "bullseye_packages")
+
+bullseye_packages()
