@@ -110,7 +110,7 @@ def _deb_resolve_impl(rctx):
         _COPY_SH.format(
             name = rctx.name.removesuffix("_resolution"),
             label = locklabel,
-            workspace_relative_path = "%s/%s" % (locklabel.package, locklabel.name),
+            workspace_relative_path = (("%s/" % locklabel.package) if locklabel.package else "") + locklabel.name,
         ),
         executable = True,
     )
