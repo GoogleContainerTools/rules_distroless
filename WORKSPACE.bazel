@@ -35,3 +35,14 @@ deb_index(
 load("@bullseye//:packages.bzl", "bullseye_packages")
 
 bullseye_packages()
+
+# bazel run @apt_security//:lock
+deb_index(
+    name = "apt_security",
+    # lock = "//examples/apt_security:security.lock.json",
+    manifest = "//examples/apt_security:security.yaml",
+)
+
+load("@apt_security//:packages.bzl", "apt_security_packages")
+
+apt_security_packages()

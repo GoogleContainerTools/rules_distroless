@@ -120,6 +120,7 @@ filegroup(
     name = "lockfile",
     srcs = ["lock.json"],
     tags = ["manual"],
+    visibility = ["//visibility:public"]
 )
 sh_binary(
     name = "lock",

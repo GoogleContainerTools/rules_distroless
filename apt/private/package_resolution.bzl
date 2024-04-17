@@ -1,6 +1,6 @@
 "package resolution"
 
-load(":version.bzl", "version")
+load(":version.bzl", version_lib = "version")
 
 def _parse_dep(raw):
     raw = raw.strip()  # remove leading & trailing whitespace
@@ -49,28 +49,37 @@ def _parse_depends(depends_raw):
 
 def _version_relop(va, vb, op):
     if op == "<<":
-        return version.lt(va, vb)
+        return version_lib.lt(va, vb)
     elif op == ">>":
-        return version.gt(va, vb)
+        return version_lib.gt(va, vb)
     elif op == "<=":
-        return version.lte(va, vb)
+        return version_lib.lte(va, vb)
     elif op == ">=":
-        return version.gte(va, vb)
+        return version_lib.gte(va, vb)
     elif op == "=":
-        return version.eq(va, vb)
+        return version_lib.eq(va, vb)
     fail("unknown op %s" % op)
 
 def _resolve_package(state, name, version, arch):
+    # Get available versions of the package
     versions = state.index.package_versions(name = name, arch = arch)
+
+    # Order packages by highest to lowest
+    versions = version_lib.sort(versions, reverse = True)
     package = None
     if version:
         for av in versions:
             if _version_relop(av, version[1], version[0]):
                 package = state.index.package(name = name, version = av, arch = arch)
+
+                # Since versions are ordered by hight to low, the first satisfied version will be
+                # the highest version and rules_distroless ignores Priority field so it's safe.
+                # TODO: rethink this `break` with https://github.com/GoogleContainerTools/rules_distroless/issues/34
                 break
     elif len(versions) > 0:
-        # TODO: what do we do when there is no version constraint?
-        package = state.index.package(name = name, version = versions[0], arch = arch)
+        # First element in the versions list is the latest version.
+        version = versions[0]
+        package = state.index.package(name = name, version = version, arch = arch)
     return package
 
 def _resolve_all(state, name, version, arch, in_lock, include_transitive):
