@@ -32,7 +32,7 @@ def _parse_package_index(state, contents, arch, root):
             # which may contain patterns that are non-standard. This logic is intended to closely follow
             # the Debian team's parser logic:
             # * https://salsa.debian.org/python-debian-team/python-debian/-/blob/master/src/debian/deb822.py?ref_type=heads#L788
-            split = line.split(":")
+            split = line.split(": ", 1)
             key = split[0]
             value = ""
 
