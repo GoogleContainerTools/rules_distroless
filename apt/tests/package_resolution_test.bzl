@@ -50,6 +50,14 @@ def _parse_depends_test(ctx):
         package_resolution.parse_depends("libcap-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], autoconf, debhelper (>> 5.0.0), file, libc6 (>= 2.7-1), libpaper1, psutils"),
     )
 
+    asserts.equals(
+        env,
+        [
+            {"name": "python3", "version": None, "arch": ["any"]},
+        ],
+        package_resolution.parse_depends("python3:any"),
+    )
+
     return unittest.end(env)
 
 version_depends_test = unittest.make(_parse_depends_test)
