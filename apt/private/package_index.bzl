@@ -37,8 +37,7 @@ def _parse_package_index(state, contents, arch, root):
             value = ""
 
             if len(split) == 2:
-                # Strip out any leading/trailing whitespace if present
-                value = split[1].strip(" ")
+                value = split[1]
 
             if not last_key and len(pkg) == 0 and key != "Package":
                 fail("do not expect this. fix it.")
