@@ -47,10 +47,10 @@ tar(
 )
 
 PACKAGES = [
-    "@bullseye//tzdata",
-    "@bullseye//bash",
-    "@bullseye//coreutils",
-    "@bullseye//nginx-core",
+    "@shared_dependencies//tzdata",
+    "@shared_dependencies//bash",
+    "@shared_dependencies//coreutils",
+    "@shared_dependencies//nginx-core",
 ]
 
 # Creates /var/lib/dpkg/status with installed package information.

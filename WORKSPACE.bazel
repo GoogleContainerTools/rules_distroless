@@ -46,3 +46,14 @@ deb_index(
 load("@apt_security//:packages.bzl", "apt_security_packages")
 
 apt_security_packages()
+
+# bazel run @shared_dependencies//:lock
+deb_index(
+    name = "shared_dependencies",
+    lock = "//examples/shared_dependencies:bullseye.lock.json",
+    manifest = "//examples/shared_dependencies:bullseye.yaml",
+)
+
+load("@shared_dependencies//:packages.bzl", "shared_dependencies_packages")
+
+shared_dependencies_packages()
