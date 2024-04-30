@@ -1,0 +1,17 @@
+load("@aspect_bazel_lib//lib:jq.bzl", "jq")
+load("@aspect_bazel_lib//lib:testing.bzl", "assert_contains")
+
+jq(
+    name = "pick_libuuid_version",
+    srcs = [
+        "@apt_security_resolution//:lockfile",
+    ],
+    args = ["-rj"],
+    filter = '.packages | map(select(.name == "libuuid1")) | .[0].version',
+)
+
+assert_contains(
+    name = "test_libuuid_version",
+    actual = ":pick_libuuid_version",
+    expected = "2.38.1-5+deb12u1",
+)

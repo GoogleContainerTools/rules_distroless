@@ -131,6 +131,19 @@ def _compare_version(va, vb):
     # compare debian revision
     return _version_cmp_part(vap[2] or "0", vbp[2] or "0")
 
+def _sort(versions, reverse = False):
+    vr = versions
+    for i in range(len(vr)):
+        for j in range(i + 1, len(vr)):
+            # if vr[i] is greater than vr[i+1] then swap their indices.
+            if _compare_version(vr[i], vr[j]) == 1:
+                vri = vr[i]
+                vr[i] = vr[j]
+                vr[j] = vri
+    if reverse:
+        vr = reversed(vr)
+    return vr
+
 version = struct(
     parse = _parse_version,
     gt = lambda va, vb: _compare_version(va, vb) == 1,
@@ -138,4 +151,5 @@ version = struct(
     lt = lambda va, vb: _compare_version(va, vb) == -1,
     lte = lambda va, vb: _compare_version(va, vb) <= 0,
     eq = lambda va, vb: _compare_version(va, vb) == 0,
+    sort = lambda versions, reverse = False: _sort(versions, reverse = reverse),
 )

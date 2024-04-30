@@ -53,3 +53,11 @@ def _version_compare_test(ctx):
     return unittest.end(env)
 
 version_compare_test = unittest.make(_version_compare_test)
+
+def _version_sort_test(ctx):
+    env = unittest.begin(ctx)
+    asserts.equals(env, version.sort(["1.5~rc2", "1.0.4-2", "1.5~rc1"]), ["1.0.4-2", "1.5~rc1", "1.5~rc2"])
+    asserts.equals(env, version.sort(["1.0a7-2", "1.0final-5sarge1", "1.0final-5"], reverse = True), ["1.0final-5sarge1", "1.0final-5", "1.0a7-2"])
+    return unittest.end(env)
+
+version_sort_test = unittest.make(_version_sort_test)

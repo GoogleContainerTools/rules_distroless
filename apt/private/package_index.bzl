@@ -28,7 +28,17 @@ def _parse_package_index(state, contents, arch, root):
                 pkg[last_key] += "\n" + line
                 continue
 
-            (key, value) = line.split(": ", 1)
+            # This allows for (more) graceful parsing of Package metadata (such as X-* attributes)
+            # which may contain patterns that are non-standard. This logic is intended to closely follow
+            # the Debian team's parser logic:
+            # * https://salsa.debian.org/python-debian-team/python-debian/-/blob/master/src/debian/deb822.py?ref_type=heads#L788
+            split = line.split(": ", 1)
+            key = split[0]
+            value = ""
+
+            if len(split) == 2:
+                value = split[1]
+
             if not last_key and len(pkg) == 0 and key != "Package":
                 fail("do not expect this. fix it.")
 
