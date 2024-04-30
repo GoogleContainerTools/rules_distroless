@@ -82,7 +82,7 @@ def _resolve_package(state, name, version, arch):
         package = state.index.package(name = name, version = version, arch = arch)
     return package
 
-def _resolve_all(state, name, version, arch, in_lock, include_transitive):
+def _resolve_all(state, name, version, arch, include_transitive):
     root_package = None
     already_recursed = {}
     unmet_dependencies = []
@@ -108,11 +108,6 @@ def _resolve_all(state, name, version, arch, in_lock, include_transitive):
         if i == 0:
             # Set the root package
             root_package = package
-
-        # PERF: If the lockfile has this package already, it means we did the transitive closure
-        # resolution already.
-        if in_lock(package["Package"], package["Version"]):
-            continue
 
         key = "%s~~%s" % (package["Package"], package["Version"])
 

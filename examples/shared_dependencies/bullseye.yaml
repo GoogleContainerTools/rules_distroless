@@ -1,0 +1,29 @@
+# Packages for examples/apt.
+#
+#  Anytime this file is changed, the lockfile needs to be regenerated.
+#
+#  To generate the bullseye.lock.json run the following command
+#
+#     bazel run @bullseye//:lock
+#
+# See debian_package_index at WORKSPACE.bazel
+version: 1
+
+sources:
+  - channel: bullseye main
+    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z
+  - channel: bullseye-security main
+    url: https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z
+  - channel: bullseye-updates main
+    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z
+
+archs:
+  - "amd64"
+  - "arm64"
+
+packages:
+  - "nginx-full"
+  - "nginx-core"
+  - "tzdata"
+  - "bash"
+  - "coreutils"
