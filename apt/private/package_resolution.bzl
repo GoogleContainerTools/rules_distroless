@@ -82,7 +82,7 @@ def _resolve_package(state, name, version, arch):
         package = state.index.package(name = name, version = version, arch = arch)
     return package
 
-def _resolve_all(state, name, version, arch, in_lock, include_transitive):
+def _resolve_all(state, name, version, arch, include_transitive):
     root_package = None
     already_recursed = {}
     unmet_dependencies = []
