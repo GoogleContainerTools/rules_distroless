@@ -31,4 +31,3 @@ packages:
   - "dpkg"
   - "apt"
   - "perl"
-  - "acme-tiny"

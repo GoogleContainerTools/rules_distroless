@@ -55,7 +55,6 @@ PACKAGES = [
     "@bullseye//dpkg",
     "@bullseye//apt",
     "@bullseye//perl",
-    "@bullseye//acme-tiny",
 ]
 
 # Creates /var/lib/dpkg/status with installed package information.
