@@ -70,6 +70,13 @@ def _create(rctx, sources, archs):
 
     for arch in archs:
         for (url, dist, comp) in sources:
+            # We assume that `url` does not contain a trailing forward slash when passing to
+            # functions below. If one is present, remove it. Some HTTP servers do not handle
+            # redirects properly when a path contains "//"
+            # (ie. https://mymirror.com/ubuntu//dists/noble/stable/... may return a 404
+            # on misconfigured HTTP servers)
+            url = url.rstrip("/")
+
             rctx.report_progress("Fetching package index: {}/{}".format(dist, arch))
             (output, _) = _fetch_package_index(rctx, url, dist, comp, arch, "")
 
