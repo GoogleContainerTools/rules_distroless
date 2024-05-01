@@ -15,20 +15,15 @@ sources:
   - channel: bullseye-security main
     url: https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z
   - channel: bullseye-updates main
-    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/
+    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z
 
 archs:
   - "amd64"
   - "arm64"
 
 packages:
-  - "ncurses-base"
-  - "libncurses6"
+  - "nginx-full"
+  - "nginx-core"
   - "tzdata"
   - "bash"
-  - "coreutils" # for commands like `ls`
-  # for apt list --installed
-  - "dpkg"
-  - "apt"
-  - "perl"
-  - "acme-tiny"
+  - "coreutils"

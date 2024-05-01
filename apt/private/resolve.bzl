@@ -85,7 +85,6 @@ def _deb_resolve_impl(rctx):
                 version = constraint["version"],
                 arch = arch,
                 include_transitive = rctx.attr.resolve_transitive,
-                in_lock = lambda name, version: lockf.has_package(name, version, arch),
             )
 
             if not package:

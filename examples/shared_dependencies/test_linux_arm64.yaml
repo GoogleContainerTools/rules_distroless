@@ -1,0 +1,8 @@
+schemaVersion: "2.0.0"
+
+commandTests:
+  - name: "/bin/ls -a /usr/lib/nginx/modules/ngx_http_geoip_module.so"
+    command: "ls"
+    args: ["/usr/lib/nginx/modules/ngx_http_geoip_module.so"]
+    expectedOutput:
+      - /usr/lib/nginx/modules/ngx_http_geoip_module.so
