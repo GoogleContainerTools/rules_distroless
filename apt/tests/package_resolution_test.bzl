@@ -50,6 +50,46 @@ def _parse_depends_test(ctx):
         package_resolution.parse_depends("libcap-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], autoconf, debhelper (>> 5.0.0), file, libc6 (>= 2.7-1), libpaper1, psutils"),
     )
 
+    asserts.equals(
+        env,
+        [
+            {"name": "python3", "version": None, "arch": ["any"]},
+        ],
+        package_resolution.parse_depends("python3:any"),
+    )
+
+    asserts.equals(
+        env,
+        [
+            [
+                {"name": "gcc-i686-linux-gnu", "version": (">=", "4:10.2"), "arch": None},
+                {"name": "gcc", "version": None, "arch": ["i386"]},
+            ],
+            [
+                {"name": "g++-i686-linux-gnu", "version": (">=", "4:10.2"), "arch": None},
+                {"name": "g++", "version": None, "arch": ["i386"]},
+            ],
+            {"name": "dpkg-cross", "version": None, "arch": None},
+        ],
+        package_resolution.parse_depends("gcc-i686-linux-gnu (>= 4:10.2) | gcc:i386, g++-i686-linux-gnu (>= 4:10.2) | g++:i386, dpkg-cross"),
+    )
+
+    asserts.equals(
+        env,
+        [
+            [
+                {"name": "gcc-x86-64-linux-gnu", "version": (">=", "4:10.2"), "arch": None},
+                {"name": "gcc", "version": None, "arch": ["amd64"]},
+            ],
+            [
+                {"name": "g++-x86-64-linux-gnu", "version": (">=", "4:10.2"), "arch": None},
+                {"name": "g++", "version": None, "arch": ["amd64"]},
+            ],
+            {"name": "dpkg-cross", "version": None, "arch": None},
+        ],
+        package_resolution.parse_depends("gcc-x86-64-linux-gnu (>= 4:10.2) | gcc:amd64, g++-x86-64-linux-gnu (>= 4:10.2) | g++:amd64, dpkg-cross"),
+    )
+
     return unittest.end(env)
 
 version_depends_test = unittest.make(_parse_depends_test)

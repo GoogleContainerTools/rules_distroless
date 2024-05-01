@@ -31,6 +31,15 @@ def _parse_dep(raw):
 
         version = (version_and_const[:vconst_i], version_and_const[vconst_i + 1:])
 
+    # Depends: python3:any
+    # is equivalent to
+    # Depends: python3 [any]
+    colon_i = raw.find(":")
+    if colon_i != -1:
+        arch_after_colon = raw[colon_i + 1:]
+        raw = raw[:colon_i]
+        archs = [arch_after_colon.strip()]
+
     name = raw.strip()
     return {"name": name, "version": version, "arch": archs}
 
