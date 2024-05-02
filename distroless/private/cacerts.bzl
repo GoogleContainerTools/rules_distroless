@@ -76,7 +76,7 @@ cacerts = rule(
             default = ":cacerts.sh",
         ),
         "package": attr.label(
-            allow_single_file = [".tar.xz", ".tar.gz", ".tar"],
+            allow_single_file = [".tar.zst", ".tar.xz", ".tar.gz", ".tar"],
             mandatory = True,
         ),
         "mode": attr.string(

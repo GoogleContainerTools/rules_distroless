@@ -11,13 +11,13 @@ _DEB_IMPORT_TMPL = '''\
 filegroup(
     name = "data",
     visibility = ["//visibility:public"],
-    srcs = ["data.tar.xz"]
+    srcs = glob(["data.tar.*"]),
 )
 
 filegroup(
     name = "control",
     visibility = ["//visibility:public"],
-    srcs = ["control.tar.xz"]
+    srcs = glob(["control.tar.*"]),
 )
 """
     )

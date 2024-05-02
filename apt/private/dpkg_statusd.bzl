@@ -41,7 +41,7 @@ dpkg_statusd = rule(
         ),
         "package_name": attr.string(mandatory = True),
         "control": attr.label(
-            allow_single_file = [".tar.xz", ".tar.gz", ".tar"],
+            allow_single_file = [".tar.zst", ".tar.xz", ".tar.gz", ".tar"],
             mandatory = True,
         ),
         "compression": attr.string(

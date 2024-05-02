@@ -37,7 +37,7 @@ dpkg_status = rule(
             default = ":dpkg_status.sh",
         ),
         "controls": attr.label_list(
-            allow_files = [".tar.xz", ".tar.gz", ".tar"],
+            allow_files = [".tar.zst", ".tar.xz", ".tar.gz", ".tar"],
             mandatory = True,
         ),
     },
