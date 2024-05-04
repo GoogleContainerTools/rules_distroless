@@ -1142,6 +1142,55 @@
 			"version": "1.19-2"
 		},
 		{
+			"arch": "amd64",
+			"dependencies": [
+				{
+					"key": "openssl_1.1.1w-0-p-deb11u1_amd64",
+					"name": "openssl",
+					"version": "1.1.1w-0+deb11u1"
+				},
+				{
+					"key": "libssl1.1_1.1.1w-0-p-deb11u1_amd64",
+					"name": "libssl1.1",
+					"version": "1.1.1w-0+deb11u1"
+				},
+				{
+					"key": "libc6_2.31-13-p-deb11u8_amd64",
+					"name": "libc6",
+					"version": "2.31-13+deb11u8"
+				},
+				{
+					"key": "libcrypt1_1-4.4.18-4_amd64",
+					"name": "libcrypt1",
+					"version": "1:4.4.18-4"
+				},
+				{
+					"key": "libgcc-s1_10.2.1-6_amd64",
+					"name": "libgcc-s1",
+					"version": "10.2.1-6"
+				},
+				{
+					"key": "gcc-10-base_10.2.1-6_amd64",
+					"name": "gcc-10-base",
+					"version": "10.2.1-6"
+				}
+			],
+			"key": "ca-certificates_20210119_amd64",
+			"name": "ca-certificates",
+			"sha256": "b2d488ad4d8d8adb3ba319fc9cb2cf9909fc42cb82ad239a26c570a2e749c389",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/main/c/ca-certificates/ca-certificates_20210119_all.deb",
+			"version": "20210119"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "openssl_1.1.1w-0-p-deb11u1_amd64",
+			"name": "openssl",
+			"sha256": "04873d74cbe86bad3a9901f6e57f1150040eba9891b443c5c975a72a97238e35",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/main/o/openssl/openssl_1.1.1w-0+deb11u1_amd64.deb",
+			"version": "1.1.1w-0+deb11u1"
+		},
+		{
 			"arch": "arm64",
 			"dependencies": [],
 			"key": "ncurses-base_6.2-p-20201114-2-p-deb11u2_arm64",
@@ -2281,6 +2330,55 @@
 			"sha256": "0853cc0b0f92784b7fbd193d737c63b1d95f932e2b95dc1bb10c273e01a0f754",
 			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/main/g/gdbm/libgdbm-compat4_1.19-2_arm64.deb",
 			"version": "1.19-2"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [
+				{
+					"key": "openssl_1.1.1w-0-p-deb11u1_arm64",
+					"name": "openssl",
+					"version": "1.1.1w-0+deb11u1"
+				},
+				{
+					"key": "libssl1.1_1.1.1w-0-p-deb11u1_arm64",
+					"name": "libssl1.1",
+					"version": "1.1.1w-0+deb11u1"
+				},
+				{
+					"key": "libc6_2.31-13-p-deb11u8_arm64",
+					"name": "libc6",
+					"version": "2.31-13+deb11u8"
+				},
+				{
+					"key": "libcrypt1_1-4.4.18-4_arm64",
+					"name": "libcrypt1",
+					"version": "1:4.4.18-4"
+				},
+				{
+					"key": "libgcc-s1_10.2.1-6_arm64",
+					"name": "libgcc-s1",
+					"version": "10.2.1-6"
+				},
+				{
+					"key": "gcc-10-base_10.2.1-6_arm64",
+					"name": "gcc-10-base",
+					"version": "10.2.1-6"
+				}
+			],
+			"key": "ca-certificates_20210119_arm64",
+			"name": "ca-certificates",
+			"sha256": "b2d488ad4d8d8adb3ba319fc9cb2cf9909fc42cb82ad239a26c570a2e749c389",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/main/c/ca-certificates/ca-certificates_20210119_all.deb",
+			"version": "20210119"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "openssl_1.1.1w-0-p-deb11u1_arm64",
+			"name": "openssl",
+			"sha256": "d9159af073e95641e7eda440fa1d7623873b8c0034c9826a353f890bed107f3c",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/main/o/openssl/openssl_1.1.1w-0+deb11u1_arm64.deb",
+			"version": "1.1.1w-0+deb11u1"
 		}
 	],
 	"version": 1
