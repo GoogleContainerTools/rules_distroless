@@ -21,3 +21,7 @@ commandTests:
   - name: "whoami"
     command: "whoami"
     expectedOutput: [r00t]
+  - name: "naive ca-certs check"
+    command: "head"
+    args: ["-1", "/etc/ssl/certs/ca-certificates.crt"]
+    expectedOutput: [-----BEGIN CERTIFICATE-----]

@@ -31,3 +31,5 @@ packages:
   - "dpkg"
   - "apt"
   - "perl"
+  # test cacerts() compatibility
+  - "ca-certificates"

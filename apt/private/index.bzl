@@ -31,7 +31,8 @@ load("@rules_distroless//distroless:defs.bzl", "flatten")
 flatten(
     name = "data",
     tars = [{src}],
-    compress = "gzip"
+    compress = "gzip",
+    visibility = ["//visibility:public"],
 )
 
 alias(
