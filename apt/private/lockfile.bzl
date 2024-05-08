@@ -16,11 +16,29 @@ def _add_package(lock, package, arch):
     k = _package_key(package, arch)
     if k in lock.fast_package_lookup:
         return
+
+    filename = package["Filename"]
+    url_root = package["Root"]
+
+    # Takes element following last '/' in string, evaluates if it is a known archive type
+    url_last_elem = package["Root"].rsplit("/", 1)[-1]
+    if url_last_elem.endswith(".gz") or url_last_elem.endswith(".xz"):
+        url_root = url_root.replace(url_last_elem, "")
+
+    # Package filename may be parsed as a relative path. Deconstruct the string, see if there is overlap with the URL
+    if filename.split("/", 1)[0] in url_root:
+        filename = filename.replace(filename.split("/", 1)[0], "")
+
+    url_root = url_root.removesuffix("/")
+    filename = filename.removeprefix("/")
+
+    url = "%s/%s" % (url_root, filename)
+
     lock.packages.append({
         "key": k,
         "name": package["Package"],
         "version": package["Version"],
-        "url": "%s/%s" % (package["Root"], package["Filename"]),
+        "url": url,
         "sha256": package["SHA256"],
         "arch": arch,
         "dependencies": [],
