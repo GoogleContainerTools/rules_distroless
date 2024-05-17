@@ -14,11 +14,11 @@ assert_tar_listing(
 ./etc time=0.0 mode=755 gid=0 uid=0 type=dir
 ./etc/ssl time=0.0 mode=755 gid=0 uid=0 type=dir
 ./etc/ssl/certs time=0.0 mode=755 gid=0 uid=0 type=dir
-./etc/ssl/certs/ca-certificates.crt time=0.0 mode=555 gid=0 uid=0 type=file size=200313 sha1digest=01b4ff230afaeeda5cddaf9a002cec9bc9a6d1b4
+./etc/ssl/certs/ca-certificates.crt time=0.0 mode=555 gid=0 uid=0 type=file size=200313
 ./usr time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share/doc time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share/doc/ca-certificates time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc/ca-certificates/copyright time=0.0 mode=555 gid=0 uid=0 type=file size=18940 sha1digest=4c49e10ddbcfc0f36816df7f9cb503d665621017
+./usr/share/doc/ca-certificates/copyright time=0.0 mode=555 gid=0 uid=0 type=file size=18940
 """,
 )

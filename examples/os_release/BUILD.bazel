@@ -23,7 +23,7 @@ assert_tar_listing(
 #mtree
 ./usr time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/lib time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/os-release time=0.0 mode=555 gid=0 uid=0 type=file size=48 sha1digest=956eb93b9476f9fc8f93cb450adc4f716d158500
+./usr/lib/os-release time=0.0 mode=555 gid=0 uid=0 type=file size=48
 """,
 )
 
@@ -43,6 +43,6 @@ assert_tar_listing(
     expected = """\
 #mtree
 ./etc time=0.0 mode=755 gid=0 uid=0 type=dir
-./etc/os-release time=0.0 mode=555 gid=0 uid=0 type=file size=67 sha1digest=ebdde6fdd9cf9876b4b592772d85817b4b482327
+./etc/os-release time=0.0 mode=555 gid=0 uid=0 type=file size=67
 """,
 )
