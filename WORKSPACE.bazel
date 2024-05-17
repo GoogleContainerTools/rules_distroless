@@ -28,8 +28,8 @@ load("//apt:index.bzl", "deb_index")
 # bazel run @bullseye//:lock
 deb_index(
     name = "bullseye",
-    lock = "//examples/apt:bullseye.lock.json",
-    manifest = "//examples/apt:bullseye.yaml",
+    lock = "//examples/debian_snapshot:bullseye.lock.json",
+    manifest = "//examples/debian_snapshot:bullseye.yaml",
 )
 
 load("@bullseye//:packages.bzl", "bullseye_packages")
@@ -39,8 +39,8 @@ bullseye_packages()
 # bazel run @apt_security//:lock
 deb_index(
     name = "apt_security",
-    # lock = "//examples/apt_security:security.lock.json",
-    manifest = "//examples/apt_security:security.yaml",
+    # lock = "//examples/debian_snapshot_security:security.lock.json",
+    manifest = "//examples/debian_snapshot_security:security.yaml",
 )
 
 load("@apt_security//:packages.bzl", "apt_security_packages")
@@ -50,8 +50,8 @@ apt_security_packages()
 # bazel run @shared_dependencies//:lock
 deb_index(
     name = "shared_dependencies",
-    lock = "//examples/shared_dependencies:bullseye.lock.json",
-    manifest = "//examples/shared_dependencies:bullseye.yaml",
+    lock = "//examples/debian_shared_dependencies:bullseye.lock.json",
+    manifest = "//examples/debian_shared_dependencies:bullseye.yaml",
 )
 
 load("@shared_dependencies//:packages.bzl", "shared_dependencies_packages")
