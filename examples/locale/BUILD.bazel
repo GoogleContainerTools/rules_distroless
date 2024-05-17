@@ -16,23 +16,23 @@ assert_tar_listing(
 ./usr/lib time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/lib/locale time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/lib/locale/C.UTF-8 time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/locale/C.UTF-8/LC_ADDRESS time=0.0 mode=644 gid=0 uid=0 type=file size=131 sha1digest=e17f64601d95342e6977b3fe6779532c8a67a765
-./usr/lib/locale/C.UTF-8/LC_COLLATE time=0.0 mode=644 gid=0 uid=0 type=file size=1519554 sha1digest=5e4c048c98c444ac74ee722fc98a5a83b12c53e2
-./usr/lib/locale/C.UTF-8/LC_CTYPE time=0.0 mode=644 gid=0 uid=0 type=file size=346132 sha1digest=6a1ad80ed9b5b267137260eceb61ba2377a9d402
-./usr/lib/locale/C.UTF-8/LC_IDENTIFICATION time=0.0 mode=644 gid=0 uid=0 type=file size=252 sha1digest=7e5c3b48f452c3bd65d3185db6d568f83bdaa976
-./usr/lib/locale/C.UTF-8/LC_MEASUREMENT time=0.0 mode=644 gid=0 uid=0 type=file size=23 sha1digest=0a7d0d264f9ded94057020e807bfaa13a7573821
-./usr/lib/locale/C.UTF-8/LC_MONETARY time=0.0 mode=644 gid=0 uid=0 type=file size=270 sha1digest=e15e804a83f37be7902e75fe50b4791a32d8d1c0
-./usr/lib/locale/C.UTF-8/LC_NAME time=0.0 mode=644 gid=0 uid=0 type=file size=62 sha1digest=b5d16f1042c3c1c4bef85766aa2c20c1b0d8cff6
-./usr/lib/locale/C.UTF-8/LC_NUMERIC time=0.0 mode=644 gid=0 uid=0 type=file size=50 sha1digest=1bd2f3db04022b8cfe5cd7a7f90176f191e19425
-./usr/lib/locale/C.UTF-8/LC_PAPER time=0.0 mode=644 gid=0 uid=0 type=file size=34 sha1digest=567aaf639393135b76e22e72aaee1df95764e990
-./usr/lib/locale/C.UTF-8/LC_TELEPHONE time=0.0 mode=644 gid=0 uid=0 type=file size=47 sha1digest=3316c99e183186c5cad97a71674ef7431c3da845
-./usr/lib/locale/C.UTF-8/LC_TIME time=0.0 mode=644 gid=0 uid=0 type=file size=3360 sha1digest=e619a4db877e0b54fa14b8a3992da2b561b3239b
+./usr/lib/locale/C.UTF-8/LC_ADDRESS time=0.0 mode=644 gid=0 uid=0 type=file size=131
+./usr/lib/locale/C.UTF-8/LC_COLLATE time=0.0 mode=644 gid=0 uid=0 type=file size=1519554
+./usr/lib/locale/C.UTF-8/LC_CTYPE time=0.0 mode=644 gid=0 uid=0 type=file size=346132
+./usr/lib/locale/C.UTF-8/LC_IDENTIFICATION time=0.0 mode=644 gid=0 uid=0 type=file size=252
+./usr/lib/locale/C.UTF-8/LC_MEASUREMENT time=0.0 mode=644 gid=0 uid=0 type=file size=23
+./usr/lib/locale/C.UTF-8/LC_MONETARY time=0.0 mode=644 gid=0 uid=0 type=file size=270
+./usr/lib/locale/C.UTF-8/LC_NAME time=0.0 mode=644 gid=0 uid=0 type=file size=62
+./usr/lib/locale/C.UTF-8/LC_NUMERIC time=0.0 mode=644 gid=0 uid=0 type=file size=50
+./usr/lib/locale/C.UTF-8/LC_PAPER time=0.0 mode=644 gid=0 uid=0 type=file size=34
+./usr/lib/locale/C.UTF-8/LC_TELEPHONE time=0.0 mode=644 gid=0 uid=0 type=file size=47
+./usr/lib/locale/C.UTF-8/LC_TIME time=0.0 mode=644 gid=0 uid=0 type=file size=3360
 ./usr/lib/locale/C.UTF-8/LC_MESSAGES time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/locale/C.UTF-8/LC_MESSAGES/SYS_LC_MESSAGES time=0.0 mode=644 gid=0 uid=0 type=file size=48 sha1digest=574d7e92bedf1373ec9506859b0d55ee7babbf20
+./usr/lib/locale/C.UTF-8/LC_MESSAGES/SYS_LC_MESSAGES time=0.0 mode=644 gid=0 uid=0 type=file size=48
 ./usr/share time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share/doc time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share/doc/libc-bin time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc/libc-bin/copyright time=0.0 mode=644 gid=0 uid=0 type=file size=25467 sha1digest=5c4df62d190848821200ce4041d2753bd431a7eb
+./usr/share/doc/libc-bin/copyright time=0.0 mode=644 gid=0 uid=0 type=file size=25467
 """,
 )
 
@@ -50,22 +50,22 @@ assert_tar_listing(
 ./usr/lib time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/lib/locale time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/lib/locale/C.utf8 time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/locale/C.utf8/LC_ADDRESS time=0.0 mode=644 gid=0 uid=0 type=file size=127 sha1digest=12d0e0600557e0dcb3c64e56894b81230e2eaa72
-./usr/lib/locale/C.utf8/LC_COLLATE time=0.0 mode=644 gid=0 uid=0 type=file size=1406 sha1digest=f245e3207984879d0b736c9aa42f4268e27221b9
-./usr/lib/locale/C.utf8/LC_CTYPE time=0.0 mode=644 gid=0 uid=0 type=file size=353616 sha1digest=86e9c921184546cc60c20c150de13f3da4266304
-./usr/lib/locale/C.utf8/LC_IDENTIFICATION time=0.0 mode=644 gid=0 uid=0 type=file size=258 sha1digest=1eeec3b2cb259530d76ef717e24af0fd34d94624
-./usr/lib/locale/C.utf8/LC_MEASUREMENT time=0.0 mode=644 gid=0 uid=0 type=file size=23 sha1digest=0a7d0d264f9ded94057020e807bfaa13a7573821
-./usr/lib/locale/C.utf8/LC_MONETARY time=0.0 mode=644 gid=0 uid=0 type=file size=270 sha1digest=110ed47e32d65c61ab8240202faa2114d025a009
-./usr/lib/locale/C.utf8/LC_NAME time=0.0 mode=644 gid=0 uid=0 type=file size=62 sha1digest=b5d16f1042c3c1c4bef85766aa2c20c1b0d8cff6
-./usr/lib/locale/C.utf8/LC_NUMERIC time=0.0 mode=644 gid=0 uid=0 type=file size=50 sha1digest=1bd2f3db04022b8cfe5cd7a7f90176f191e19425
-./usr/lib/locale/C.utf8/LC_PAPER time=0.0 mode=644 gid=0 uid=0 type=file size=34 sha1digest=567aaf639393135b76e22e72aaee1df95764e990
-./usr/lib/locale/C.utf8/LC_TELEPHONE time=0.0 mode=644 gid=0 uid=0 type=file size=47 sha1digest=3316c99e183186c5cad97a71674ef7431c3da845
-./usr/lib/locale/C.utf8/LC_TIME time=0.0 mode=644 gid=0 uid=0 type=file size=3360 sha1digest=e619a4db877e0b54fa14b8a3992da2b561b3239b
+./usr/lib/locale/C.utf8/LC_ADDRESS time=0.0 mode=644 gid=0 uid=0 type=file size=127
+./usr/lib/locale/C.utf8/LC_COLLATE time=0.0 mode=644 gid=0 uid=0 type=file size=1406
+./usr/lib/locale/C.utf8/LC_CTYPE time=0.0 mode=644 gid=0 uid=0 type=file size=353616
+./usr/lib/locale/C.utf8/LC_IDENTIFICATION time=0.0 mode=644 gid=0 uid=0 type=file size=258
+./usr/lib/locale/C.utf8/LC_MEASUREMENT time=0.0 mode=644 gid=0 uid=0 type=file size=23
+./usr/lib/locale/C.utf8/LC_MONETARY time=0.0 mode=644 gid=0 uid=0 type=file size=270
+./usr/lib/locale/C.utf8/LC_NAME time=0.0 mode=644 gid=0 uid=0 type=file size=62
+./usr/lib/locale/C.utf8/LC_NUMERIC time=0.0 mode=644 gid=0 uid=0 type=file size=50
+./usr/lib/locale/C.utf8/LC_PAPER time=0.0 mode=644 gid=0 uid=0 type=file size=34
+./usr/lib/locale/C.utf8/LC_TELEPHONE time=0.0 mode=644 gid=0 uid=0 type=file size=47
+./usr/lib/locale/C.utf8/LC_TIME time=0.0 mode=644 gid=0 uid=0 type=file size=3360
 ./usr/lib/locale/C.utf8/LC_MESSAGES time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/locale/C.utf8/LC_MESSAGES/SYS_LC_MESSAGES time=0.0 mode=644 gid=0 uid=0 type=file size=48 sha1digest=574d7e92bedf1373ec9506859b0d55ee7babbf20
+./usr/lib/locale/C.utf8/LC_MESSAGES/SYS_LC_MESSAGES time=0.0 mode=644 gid=0 uid=0 type=file size=48
 ./usr/share time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share/doc time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share/doc/libc-bin time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc/libc-bin/copyright time=0.0 mode=644 gid=0 uid=0 type=file size=25467 sha1digest=5c4df62d190848821200ce4041d2753bd431a7eb
+./usr/share/doc/libc-bin/copyright time=0.0 mode=644 gid=0 uid=0 type=file size=25467
 """,
 )
