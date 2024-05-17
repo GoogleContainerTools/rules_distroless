@@ -57,3 +57,14 @@ deb_index(
 load("@shared_dependencies//:packages.bzl", "shared_dependencies_packages")
 
 shared_dependencies_packages()
+
+# bazel run @noble//:lock
+deb_index(
+    name = "noble",
+    lock = "//examples/ubuntu_snapshot:noble.lock.json",
+    manifest = "//examples/ubuntu_snapshot:noble.yaml",
+)
+
+load("@noble//:packages.bzl", "noble_packages")
+
+noble_packages()
