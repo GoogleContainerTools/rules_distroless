@@ -1,0 +1,23 @@
+schemaVersion: "2.0.0"
+
+commandTests:
+  - name: "echo hello"
+    command: "/bin/bash"
+    args: ["-c", "echo hello world!"]
+    expectedOutput: ["hello world!"]
+  - name: "apt list --installed"
+    command: "apt"
+    args: ["list", "--installed"]
+    expectedOutput:
+      - Listing\.\.\.
+      - apt/now 2\.7\.12 arm64 \[installed,local\]
+      - bash/now 5\.2\.21\-2ubuntu2 arm64 \[installed,local\]
+      - coreutils/now 9\.4\-2ubuntu4 arm64 \[installed,local\]
+      - dpkg/now 1\.22\.4ubuntu5 arm64 \[installed,local\]
+      - libncurses6/now 6\.4\+20240113\-1ubuntu1 arm64 \[installed,local\]
+      - ncurses-base/now 6\.4\+20240113\-1ubuntu1 all \[installed,local\]
+      - perl/now 5\.38\.2\-3 arm64 \[installed,local\]
+      - tzdata/now 2024a\-1ubuntu1 all \[installed,local\]
+  - name: "whoami"
+    command: "whoami"
+    expectedOutput: [r00t]

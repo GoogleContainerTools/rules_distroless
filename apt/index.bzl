@@ -44,15 +44,20 @@ def deb_index(
 
     While we strongly encourage users to check in the generated lockfile, it's not always
     possible to check in the generated lockfile as by default Debian repositories are rolling,
-    therefore a lockfile generated today might not work work tomorrow  as the upstream
-    repository might publish new version of a package.
+    therefore a lockfile generated today might not work later if the upstream repository
+    removes or publishes a new version of a package.
 
-    That said, users can still use a `debian archive snapshot` repository and check-in the
-    generated lockfiles. This is possible because by design `debian snapshot` repositories
-    are immutable point-in-time snapshot of the upstream repositories, which means packages
-    never get deleted or updated in a specific snapshot.
+    However, users can still use a `debian archive snapshot` repository and check-in the
+    generated lockfiles. This is possible because by design since `snapshot.debian.org`
+    repository is an immutable point-in-time snapshot of the upstream repositories which
+    means packages that packages never get deleted or updated in a specific snapshot.
 
-    An example of this could be found [here](/examples/apt).
+    An example of this could be found at [/examples/debian_snapshot](/examples/debian_snapshot).
+
+    Ubuntu also has a similar point-in-time snapshot service hosted at `snapshot.ubuntu.com`
+    which can be used in similarly.
+
+    For an example of this can be found at [/examples/ubuntu_snapshot](/examples/ubuntu_snapshot).
 
     Args:
         name: name of the repository
