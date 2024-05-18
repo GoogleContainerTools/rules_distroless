@@ -4,17 +4,25 @@ load(":util.bzl", "util")
 
 def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
-    output = "{}/Packages.xz".format(target_triple)
-    r = rctx.download(
-        url = "{}/dists/{}/{}/binary-{}/Packages.xz".format(url, dist, comp, arch),
-        output = output,
-        integrity = integrity,
-    )
-    rctx.execute([
-        "xz",
-        "--decompress",
-        output,
-    ])
+
+    file_types = {"xz": ["xz", "--decompress"], "gz": ["gzip", "-d"]}
+    r = {"success": False, "integrity": None}
+
+    for file_type, tool in file_types.items():
+        output = "{}/Packages.{}".format(target_triple, file_type)
+        r = rctx.download(
+            url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, file_type),
+            output = output,
+            integrity = integrity,
+            allow_fail = True,
+        )
+        if r.success:
+            rctx.execute(tool + [output])
+            break
+
+    if not r.success:
+        fail("unable to download package index")
+
     return ("{}/Packages".format(target_triple), r.integrity)
 
 def _parse_package_index(state, contents, arch, root):
