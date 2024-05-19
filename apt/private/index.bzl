@@ -1,6 +1,7 @@
 "apt-get"
 
 load(":lockfile.bzl", "lockfile")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 _DEB_IMPORT_TMPL = '''\
     http_archive(
@@ -66,25 +67,28 @@ def _deb_package_index_impl(rctx):
         package_defs.append("   pass")
 
     for (package) in lockf.packages():
-        name = lockfile.make_package_key(
+        package_key = lockfile.make_package_key(
             package["name"],
             package["version"],
             package["arch"],
         )
+
         package_defs.append(
             _DEB_IMPORT_TMPL.format(
-                name = "%s_%s" % (rctx.attr.name, package["key"]),
+                name = "%s_%s" % (rctx.attr.name, package_key),
                 package_name = package["name"],
                 urls = [package["url"]],
                 sha256 = package["sha256"],
             ),
         )
 
+        repo_name = "%s%s_%s" % ("@" if rctx.attr.bzlmod else "", rctx.attr.name, package_key)
+
         rctx.file(
             "%s/%s/BUILD.bazel" % (package["name"], package["arch"]),
             rctx.attr.package_template.format(
                 target_name = package["arch"],
-                src = '"@%s_%s//:data"' % (rctx.attr.name, name),
+                src = '"@%s//:data"' % repo_name,
                 deps = ",\n        ".join([
                     '"//%s/%s"' % (dep["name"], package["arch"])
                     for dep in package["dependencies"]
@@ -93,7 +97,7 @@ def _deb_package_index_impl(rctx):
                 name = package["name"],
                 arch = package["arch"],
                 sha256 = package["sha256"],
-                repo_name = "%s_%s" % (rctx.attr.name, name),
+                repo_name = "%s" % repo_name,
             ),
         )
 
@@ -112,5 +116,64 @@ deb_package_index = repository_rule(
     attrs = {
         "lock": attr.label(),
         "package_template": attr.string(default = _PACKAGE_TMPL),
+        "bzlmod": attr.bool(default = False),
     },
 )
+
+def deb_package_index_bzlmod(
+    module_ctx,
+    name,
+    lock,
+    package_template = _PACKAGE_TMPL,
+):
+    lockf = lockfile.from_json(module_ctx, lock)
+
+    if len(lockf.packages()) < 1:
+        return
+
+    for (package) in lockf.packages():
+        package_key = lockfile.make_package_key(
+            package["name"],
+            package["version"],
+            package["arch"],
+        )
+
+        repo_name = "%s_%s" % (name, package_key)
+
+        http_archive(
+            name = repo_name,
+            urls = [
+                package["url"],
+            ],
+            sha256 = package["sha256"],
+            build_file_content = """\
+filegroup(
+    name = "data",
+    visibility = ["//visibility:public"],
+    srcs = glob(["data.tar.*"]),
+)
+
+filegroup(
+    name = "control",
+    visibility = ["//visibility:public"],
+    srcs = glob(["control.tar.*"]),
+)
+"""
+        )
+
+        module_ctx.file(
+            "%s/%s/BUILD.bazel" % (package["name"], package["arch"]),
+            package_template.format(
+                target_name = package["arch"],
+                src = '"@@%s//:data"' % repo_name,
+                deps = ",\n        ".join([
+                    '"//%s/%s"' % (dep["name"], package["arch"])
+                    for dep in package["dependencies"]
+                ]),
+                urls = [package["url"]],
+                name = package["name"],
+                arch = package["arch"],
+                sha256 = package["sha256"],
+                repo_name = "%s" % repo_name
+            ),
+        )

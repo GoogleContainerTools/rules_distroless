@@ -8,7 +8,8 @@ def deb_index(
         manifest,
         lock = None,
         package_template = None,
-        resolve_transitive = True):
+        resolve_transitive = True,
+        bzlmod = False):
     """A convience repository macro for apt rules.
 
     This documentation provides an overview of the convenience repository macro around `package_index` and `resolve` repository rules.
@@ -34,7 +35,15 @@ def deb_index(
     ### BZLMOD Example
 
     ```starlark
-    # TODO: support BZLMOD
+    bazel_dep(name = "rules_distroless", version = "1.0.0", dev_dependency = True)
+
+    apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+    apt.deb_index(
+        name = "bullseye",
+        lock = "//examples/apt:bullseye.lock.json",
+        manifest = "//examples/apt:bullseye.yaml",
+    )
+    use_repo(apt, "bullseye")
     ```
 
     ### Macro Expansion
@@ -85,4 +94,5 @@ def deb_index(
         name = name,
         lock = lock if lock else "@" + name + "_resolution//:lock.json",
         package_template = package_template,
+        bzlmod = bzlmod
     )
