@@ -121,11 +121,20 @@ deb_package_index = repository_rule(
 )
 
 def deb_package_index_bzlmod(
-    module_ctx,
-    name,
-    lock,
-    package_template = _PACKAGE_TMPL,
-):
+        module_ctx,
+        name,
+        lock,
+        package_template = _PACKAGE_TMPL):
+    """A macro to do everything that `deb_package_index` does, but for bzlmod.
+
+    Args:
+        module_ctx: the module context
+        name: the name of the repository
+        lock: label to a `lock.json`
+        package_template: (EXPERIMENTAL!) a template string for generated BUILD files.
+          Available template replacement keys are: `{target_name}`, `{deps}`, `{urls}`, `{name}`, `{arch}`, `{sha256}`, `{repo_name}`
+    """
+
     lockf = lockfile.from_json(module_ctx, lock)
 
     if len(lockf.packages()) < 1:
@@ -158,7 +167,7 @@ filegroup(
     visibility = ["//visibility:public"],
     srcs = glob(["control.tar.*"]),
 )
-"""
+""",
         )
 
         module_ctx.file(
@@ -174,6 +183,6 @@ filegroup(
                 name = package["name"],
                 arch = package["arch"],
                 sha256 = package["sha256"],
-                repo_name = "%s" % repo_name
+                repo_name = "%s" % repo_name,
             ),
         )

@@ -8,8 +8,7 @@ def deb_index(
         manifest,
         lock = None,
         package_template = None,
-        resolve_transitive = True,
-        bzlmod = False):
+        resolve_transitive = True):
     """A convience repository macro for apt rules.
 
     This documentation provides an overview of the convenience repository macro around `package_index` and `resolve` repository rules.
@@ -94,5 +93,5 @@ def deb_index(
         name = name,
         lock = lock if lock else "@" + name + "_resolution//:lock.json",
         package_template = package_template,
-        bzlmod = bzlmod
+        bzlmod = False,
     )

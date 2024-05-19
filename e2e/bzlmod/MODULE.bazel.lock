@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "985f776db55d1458c1f22b41b2657e65f9bfb497dd6abe8137b9c2fac7edb43b",
+  "moduleFileHash": "c2750a73c9a4794dc68c8f12dbd4bd5f126aac69b87fbac0fc90000542b6b532",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -31,7 +31,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 12,
+            "line": 13,
             "column": 20
           },
           "imports": {
@@ -49,7 +49,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 13,
+                "line": 14,
                 "column": 14
               }
             }
@@ -1996,7 +1996,7 @@
     },
     "@@rules_distroless~//apt:extensions.bzl%apt": {
       "general": {
-        "bzlTransitiveDigest": "aQp8Nw1BZbzn1HCAdDdzLWr/+lY67dsutcAomyOo2Zg=",
+        "bzlTransitiveDigest": "UJSauOdSCsw4/oeegD8DxcG/kiXYkhTIih4NdReXK8w=",
         "recordedFileInputs": {
           "@@//bullseye.lock.json": "00b783443c436107ce3d7b02237516bef13f7c39b5ba6943d905f67920ed6af1"
         },
@@ -2399,17 +2399,6 @@
               "build_file_content": "filegroup(\n    name = \"data\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"data.tar.*\"]),\n)\n\nfilegroup(\n    name = \"control\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"control.tar.*\"]),\n)\n"
             }
           },
-          "bullseye_liblzma5_5.2.5-2.1-t-deb11u1_amd64": {
-            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
-            "ruleClassName": "http_archive",
-            "attributes": {
-              "urls": [
-                "https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z/pool/updates/main/x/xz-utils/liblzma5_5.2.5-2.1~deb11u1_amd64.deb"
-              ],
-              "sha256": "1c79a02415ca5ee7234ac60502fb33ee94fa70b02d1c329a6a14178f8329c435",
-              "build_file_content": "filegroup(\n    name = \"data\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"data.tar.*\"]),\n)\n\nfilegroup(\n    name = \"control\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"control.tar.*\"]),\n)\n"
-            }
-          },
           "bullseye_libaudit1_1-3.0-2_amd64": {
             "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
             "ruleClassName": "http_archive",
@@ -2440,6 +2429,17 @@
                 "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/main/b/bash/bash_5.1-2+deb11u1_amd64.deb"
               ],
               "sha256": "f702ef058e762d7208a9c83f6f6bbf02645533bfd615c54e8cdcce842cd57377",
+              "build_file_content": "filegroup(\n    name = \"data\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"data.tar.*\"]),\n)\n\nfilegroup(\n    name = \"control\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"control.tar.*\"]),\n)\n"
+            }
+          },
+          "bullseye_liblzma5_5.2.5-2.1_deb11u1_arm64": {
+            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
+            "ruleClassName": "http_archive",
+            "attributes": {
+              "urls": [
+                "https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z/pool/updates/main/x/xz-utils/liblzma5_5.2.5-2.1~deb11u1_arm64.deb"
+              ],
+              "sha256": "d865bba41952c707b3fa3ae8cab4d4bd337ee92991d2aead66c925bf7cc48846",
               "build_file_content": "filegroup(\n    name = \"data\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"data.tar.*\"]),\n)\n\nfilegroup(\n    name = \"control\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"control.tar.*\"]),\n)\n"
             }
           },
@@ -2960,6 +2960,17 @@
               "build_file_content": "filegroup(\n    name = \"data\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"data.tar.*\"]),\n)\n\nfilegroup(\n    name = \"control\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"control.tar.*\"]),\n)\n"
             }
           },
+          "bullseye_liblzma5_5.2.5-2.1_deb11u1_amd64": {
+            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
+            "ruleClassName": "http_archive",
+            "attributes": {
+              "urls": [
+                "https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z/pool/updates/main/x/xz-utils/liblzma5_5.2.5-2.1~deb11u1_amd64.deb"
+              ],
+              "sha256": "1c79a02415ca5ee7234ac60502fb33ee94fa70b02d1c329a6a14178f8329c435",
+              "build_file_content": "filegroup(\n    name = \"data\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"data.tar.*\"]),\n)\n\nfilegroup(\n    name = \"control\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"control.tar.*\"]),\n)\n"
+            }
+          },
           "bullseye_libpam-modules_1.4.0-9-p-deb11u1_arm64": {
             "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
             "ruleClassName": "http_archive",
@@ -2976,7 +2987,7 @@
             "ruleClassName": "deb_resolve",
             "attributes": {
               "manifest": "@@//:bullseye.yaml",
-              "resolve_transitive": true
+              "resolve_transitive": false
             }
           },
           "bullseye_base-files_11.1-p-deb11u9_arm64": {
@@ -3182,7 +3193,6 @@
             "ruleClassName": "deb_package_index",
             "attributes": {
               "lock": "@@//:bullseye.lock.json",
-              "package_template": "\nload(\"@rules_distroless//distroless:defs.bzl\", \"flatten\")\n\n# TODO: https://github.com/bazel-contrib/rules_oci/pull/523\nflatten(\n    name = \"data\",\n    tars = [{src}],\n    compress = \"gzip\",\n    visibility = [\"//visibility:public\"],\n)\n\nalias(\n    name = \"control\",\n    actual = \"@{repo_name}//:control\",\n    visibility = [\"//visibility:public\"],\n)\n\nfilegroup(\n    name = \"{target_name}\",\n    visibility = [\"//visibility:public\"],\n    srcs = [\n        {deps}\n    ] + [\":data\"]\n)\n",
               "bzlmod": true
             }
           },
@@ -3348,17 +3358,6 @@
                 "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/main/n/ncurses/libncurses6_6.2+20201114-2+deb11u2_arm64.deb"
               ],
               "sha256": "039b71b8839538a92988003e13c29e7cf1149cdc6a77d3de882f1d386a5f3a5c",
-              "build_file_content": "filegroup(\n    name = \"data\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"data.tar.*\"]),\n)\n\nfilegroup(\n    name = \"control\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"control.tar.*\"]),\n)\n"
-            }
-          },
-          "bullseye_liblzma5_5.2.5-2.1-t-deb11u1_arm64": {
-            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
-            "ruleClassName": "http_archive",
-            "attributes": {
-              "urls": [
-                "https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z/pool/updates/main/x/xz-utils/liblzma5_5.2.5-2.1~deb11u1_arm64.deb"
-              ],
-              "sha256": "d865bba41952c707b3fa3ae8cab4d4bd337ee92991d2aead66c925bf7cc48846",
               "build_file_content": "filegroup(\n    name = \"data\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"data.tar.*\"]),\n)\n\nfilegroup(\n    name = \"control\",\n    visibility = [\"//visibility:public\"],\n    srcs = glob([\"control.tar.*\"]),\n)\n"
             }
           },
