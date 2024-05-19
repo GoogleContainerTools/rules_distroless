@@ -35,8 +35,6 @@ bullseye_packages()
 ### BZLMOD Example
 
 ```starlark
-bazel_dep(name = "rules_distroless", version = "1.0.0", dev_dependency = True)
-
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
 apt.deb_index(
     name = "bullseye",
