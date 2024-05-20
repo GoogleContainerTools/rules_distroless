@@ -50,6 +50,9 @@ With bzlmod, you can use `archive_override` or `git_override`. For `WORKSPACE`, 
 > Note that GitHub source archives don't have a strong guarantee on the sha256 stability, see
 > <https://github.blog/2023-02-21-update-on-the-future-stability-of-source-code-archives-and-hashes>
 
+# Contributing
+
+This ruleset is primarily funded to support [distroless](github.com/GoogleContainerTools/distroless). We may not work on feature requests that do not support this mission. We will however accept fully tested contributions via pull requests if they align with the project goals (ex. a different compression format) and may reject requests that do not (ex. supporting a non `deb` based packaging format).
 
 # Adopters
 
