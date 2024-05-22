@@ -24,7 +24,7 @@ We also we have distroless-specific rules that could be useful
 - [flatten](/examples/flatten): <i>flatten multiple `tar` archives.</s>
 - [os_release](/examples/os_release): <i>create a `/etc/os-release` file</s>
 - [locale](/examples/locale): <i>strip `/usr/lib/locale` to be smaller.</s>
-- [dpkg_statusd](/examples/statusd): <i>creates a package database at /var/lib/dpkg/status for scanners to discover installed packages.</i>
+- [dpkg_statusd](/examples/statusd): <i>creates a package database at /var/lib/dpkg/status.d for scanners to discover installed packages.</i>
 
 
 # Public API Docs
