@@ -79,16 +79,16 @@ def _deb_package_index_impl(rctx):
                 sha256 = package["sha256"],
             ),
         )
-
+        deps = depset([
+            '"//%s/%s"' % (dep["name"], package["arch"])
+            for dep in package["dependencies"]
+        ])
         rctx.file(
             "%s/%s/BUILD.bazel" % (package["name"], package["arch"]),
             rctx.attr.package_template.format(
                 target_name = package["arch"],
                 src = '"@%s_%s//:data"' % (rctx.attr.name, name),
-                deps = ",\n        ".join([
-                    '"//%s/%s"' % (dep["name"], package["arch"])
-                    for dep in package["dependencies"]
-                ]),
+                deps = ",\n        ".join(deps.to_list()),
                 urls = [package["url"]],
                 name = package["name"],
                 arch = package["arch"],

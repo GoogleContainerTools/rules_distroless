@@ -16,11 +16,14 @@ def _add_package(lock, package, arch):
     k = _package_key(package, arch)
     if k in lock.fast_package_lookup:
         return
+    filename = package["Filename"]
+    if filename.startswith("./"):
+        filename = filename[2:]
     lock.packages.append({
         "key": k,
         "name": package["Package"],
         "version": package["Version"],
-        "url": "%s/%s" % (package["Root"], package["Filename"]),
+        "url": "%s/%s" % (package["Root"], filename),
         "sha256": package["SHA256"],
         "arch": arch,
         "dependencies": [],
