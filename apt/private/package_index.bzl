@@ -3,7 +3,13 @@
 load(":util.bzl", "util")
 
 def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
-    target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
+    # Split the URL by the '://' delimiter
+    protocol, rest = url.split("://")
+
+    # Split the rest of the URL by the '/' delimiter and take the first part
+    domain = rest.split("/")[0]
+
+    target_triple = "{domain}/{dist}/{comp}/{arch}".format(domain = domain, dist = dist, comp = comp, arch = arch)
 
     file_types = {"xz": ["xz", "--decompress"], "gz": ["gzip", "-d"]}
     r = {"success": False, "integrity": None}
