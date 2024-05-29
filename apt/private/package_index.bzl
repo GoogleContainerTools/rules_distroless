@@ -29,13 +29,10 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
                 allow_fail = True,
             )
             if r.success:
-                print("Decompressing {} with {}".format(output, tool))
                 re = rctx.execute(tool + [output])
                 if re.return_code == 0:
                     decompression_successful = True
                     return ("{}/Packages".format(target_triple), r.integrity)
-                else:
-                    print("Decompression failed for {} with return code {}".format(output, re.return_code))
 
     if not r.success:
         fail("unable to download package index")
