@@ -9,7 +9,7 @@ deb_index = tag_class(attrs = {
     "manifest": attr.label(doc = """The file used to generate the lock file"""),
     "resolve_transitive": attr.bool(
         doc = """Whether dependencies of dependencies should be resolved and added to the lockfile.""",
-        default = True
+        default = True,
     ),
 })
 
