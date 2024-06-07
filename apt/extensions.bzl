@@ -7,7 +7,10 @@ deb_index = tag_class(attrs = {
     "name": attr.string(doc = "Name of the generated repository"),
     "lock": attr.label(doc = """The lock file to use for the index."""),
     "manifest": attr.label(doc = """The file used to generate the lock file"""),
-    "resolve_transitive": attr.bool(doc = """Whether dependencies of dependencies should be resolved and added to the lockfile."""),
+    "resolve_transitive": attr.bool(
+        doc = """Whether dependencies of dependencies should be resolved and added to the lockfile.""",
+        default = True
+    ),
 })
 
 def _distroless_extension(module_ctx):
