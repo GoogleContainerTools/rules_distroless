@@ -8,6 +8,7 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     file_types = {"xz": ["xz", "--decompress"], "gz": ["gzip", "-d"]}
     r = {"success": False, "integrity": None}
 
+    decompression_successful = False
     for file_type, tool in file_types.items():
         output = "{}/Packages.{}".format(target_triple, file_type)
         r = rctx.download(
@@ -17,11 +18,16 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
             allow_fail = True,
         )
         if r.success:
-            rctx.execute(tool + [output])
-            break
+            re = rctx.execute(tool + [output])
+            if re.return_code == 0:
+                decompression_successful = True
+                break
 
     if not r.success:
         fail("unable to download package index")
+
+    if not decompression_successful:
+        fail("unable to decompress package index")
 
     return ("{}/Packages".format(target_triple), r.integrity)
 
