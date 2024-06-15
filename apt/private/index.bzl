@@ -108,11 +108,11 @@ def _deb_package_index_impl(rctx):
     rctx.file("BUILD.bazel", """
 alias(
     name = "lock",
-    actual = "@{}_resolution//:lock",
+    actual = "@{}{}_resolution//:lock",
     tags = ["manual"],
 )
 exports_files(glob(['packages.bzl']))
-""".format("@" + rctx.attr.name if rctx.attr.bzlmod else rctx.attr.name))
+""".format("@" if rctx.attr.bzlmod else "", rctx.attr.name))
 
 deb_package_index = repository_rule(
     implementation = _deb_package_index_impl,
