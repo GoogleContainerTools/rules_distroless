@@ -34,7 +34,13 @@ def deb_index(
     ### BZLMOD Example
 
     ```starlark
-    # TODO: support BZLMOD
+    apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+    apt.deb_index(
+        name = "bullseye",
+        lock = "//examples/apt:bullseye.lock.json",
+        manifest = "//examples/apt:bullseye.yaml",
+    )
+    use_repo(apt, "bullseye")
     ```
 
     ### Macro Expansion
@@ -85,4 +91,5 @@ def deb_index(
         name = name,
         lock = lock if lock else "@" + name + "_resolution//:lock.json",
         package_template = package_template,
+        bzlmod = False,
     )

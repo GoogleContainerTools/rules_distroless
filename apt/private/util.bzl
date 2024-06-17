@@ -11,7 +11,7 @@ def _set_dict(struct, value = None, keys = []):
     struct[keys[-1]] = value
 
 def _sanitize(str):
-    return str.replace("+", "-p-").replace(":", "-")
+    return str.replace("+", "-p-").replace(":", "-").replace("~", "_")
 
 util = struct(
     sanitize = _sanitize,
