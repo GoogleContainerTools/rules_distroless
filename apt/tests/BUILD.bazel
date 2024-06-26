@@ -1,6 +1,8 @@
-load(":package_resolution_test.bzl", "package_resolution_tests")
+load(":package_resolution_test.bzl", "resolve_optionals_test", "package_resolution_tests")
 load(":version_test.bzl", "version_tests")
 
 package_resolution_tests()
 
 version_tests()
+
+resolve_optionals_test()

@@ -91,31 +91,51 @@ def _resolve_package(state, name, version, arch):
         package = state.index.package(name = name, version = version, arch = arch)
     return package
 
-def _resolve_all(state, name, version, arch, include_transitive):
+_ITERATION_MAX_ = 2147483646
+
+# For future: unfortunately this function uses a few state variables to track
+# certain conditions and package dependency groups.
+# TODO: Try to simplify it in the future.
+def _resolve_all(state, name, version, arch, include_transitive = True):
     root_package = None
-    already_recursed = {}
     unmet_dependencies = []
     dependencies = []
-    iteration_max = 2147483646
 
-    stack = [(name, version)]
+    # state variables
+    already_recursed = {}
+    dependency_group = []
+    stack = [(name, version, -1)]
 
-    for i in range(0, iteration_max + 1):
+    for i in range(0, _ITERATION_MAX_ + 1):
         if not len(stack):
             break
-        if i == iteration_max:
-            fail("resolve_dependencies exhausted the iteration")
-        (name, version) = stack.pop()
+        if i == _ITERATION_MAX_:
+            fail("resolve_all exhausted")
+
+        (name, version, dependency_group_idx) = stack.pop()
+
+        # If this iteration is part of a dependency group, and the dependency group is already met, then skip this iteration.
+        if dependency_group_idx > -1 and dependency_group[dependency_group_idx]:
+            continue
 
         package = _resolve_package(state, name, version, arch)
 
+        # If this package is not found and is part of a dependency group, then just skip it.
+        if not package and dependency_group_idx > -1:
+            continue
+
+        # If this package is not found but is not part of a dependency group, then add it to unmet dependencies.
         if not package:
             key = "%s~~%s" % (name, version[1] if version else "")
             unmet_dependencies.append((name, version))
             continue
 
+        # If this package was requested as part of a dependency group, then mark it's group as `dependency met`
+        if dependency_group_idx > -1:
+            dependency_group[dependency_group_idx] = True
+
+        # set the root package, if this is the first iteration
         if i == 0:
-            # Set the root package
             root_package = package
 
         key = "%s~~%s" % (package["Package"], package["Version"])
@@ -141,14 +161,15 @@ def _resolve_all(state, name, version, arch, include_transitive):
 
         for dep in deps:
             if type(dep) == "list":
-                # buildifier: disable=print
-                print("Warning: optional dependencies are not supported yet. https://github.com/GoogleContainerTools/rules_distroless/issues/27")
-
-                # TODO: optional dependencies
-                continue
-
-            # TODO: arch
-            stack.append((dep["name"], dep["version"]))
+                # create a dependency group
+                new_dependency_group_idx = len(dependency_group)
+                dependency_group.append(False)
+                for gdep in dep:
+                    # TODO: arch
+                    stack.append((gdep["name"], gdep["version"], new_dependency_group_idx))
+            else:
+                # TODO: arch
+                stack.append((dep["name"], dep["version"], -1))
 
     return (root_package, dependencies, unmet_dependencies)
 

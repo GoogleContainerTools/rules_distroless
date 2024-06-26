@@ -1,6 +1,7 @@
 "unit tests for version parsing"
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load("//apt/private:package_index.bzl", package_index = "DO_NOT_DEPEND_ON_THIS_TEST_ONLY")
 load("//apt/private:package_resolution.bzl", "package_resolution")
 
 _TEST_SUITE_PREFIX = "package_resolution/"
@@ -103,7 +104,34 @@ def _parse_depends_test(ctx):
 
     return unittest.end(env)
 
-parse_depends_test = unittest.make(_parse_depends_test)
+version_depends_test = unittest.make(_parse_depends_test)
 
-def package_resolution_tests():
-    parse_depends_test(name = _TEST_SUITE_PREFIX + "parse_depends")
+_test_version = "2.38.1-5"
+_test_arch = "amd64"
+
+def _make_package(index, name, version = _test_version, architecture = _test_arch, depends = None):
+    r = """\
+Package: {}
+Version: {}
+Architecture: {}
+""".format(name, version, architecture)
+    if depends:
+        r += "Depends: {}".format(depends)
+    r += "\n"
+    index.parse_package_index(r, arch = architecture)
+
+def _resolve_optionals_test(ctx):
+    env = unittest.begin(ctx)
+
+    index = package_index.new()
+    _make_package(index, "libc6-dev")
+    _make_package(index, "eject", depends = "libc6-dev | libc-dev")
+    resolution = package_resolution.new(index)
+    resolution.resolve_all(
+        name = "eject",
+        version = ("=", _test_version),
+        arch = _test_arch,
+    )
+    return unittest.end(env)
+
+resolve_optionals_test = unittest.make(_resolve_optionals_test)
