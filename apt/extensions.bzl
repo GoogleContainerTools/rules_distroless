@@ -14,6 +14,8 @@ deb_index = tag_class(attrs = {
 })
 
 def _distroless_extension(module_ctx):
+    root_direct_deps = []
+    root_direct_dev_deps = []
     for mod in module_ctx.modules:
         for deb_index in mod.tags.deb_index:
             _deb_package_index_bzlmod(
@@ -37,6 +39,17 @@ def _distroless_extension(module_ctx):
                 lock = deb_index.lock if deb_index.lock else "@" + deb_index.name + "_resolution//:lock.json",
                 bzlmod = True,
             )
+
+            if mod.is_root:
+                if module_ctx.is_dev_dependency(deb_index):
+                    root_direct_dev_deps.append(deb_index.name)
+                else:
+                    root_direct_deps.append(deb_index.name)
+
+    return module_ctx.extension_metadata(
+        root_module_direct_deps = root_direct_deps,
+        root_module_direct_dev_deps = root_direct_dev_deps,
+    )
 
 apt = module_extension(
     implementation = _distroless_extension,
