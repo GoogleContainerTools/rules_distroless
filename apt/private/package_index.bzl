@@ -9,19 +9,35 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     r = {"success": False, "integrity": None}
 
     decompression_successful = False
+
     for file_type, tool in file_types.items():
         output = "{}/Packages.{}".format(target_triple, file_type)
-        r = rctx.download(
-            url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, file_type),
-            output = output,
-            integrity = integrity,
-            allow_fail = True,
-        )
-        if r.success:
-            re = rctx.execute(tool + [output])
-            if re.return_code == 0:
-                decompression_successful = True
-                break
+
+        # Attempt to pull Packages archive from within the `dists` hierarchy first,
+        # if that fails - assume the repository is of type "flat"
+        try_urls = [
+            "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, file_type),
+            "{}/Packages.{}".format(url, file_type),
+        ]
+
+        for try_url in try_urls:
+            r = rctx.download(
+                url = try_url,
+                output = output,
+                integrity = integrity,
+                allow_fail = True,
+            )
+            if r.success:
+                re = rctx.execute(tool + [output])
+                if re.return_code == 0:
+                    decompression_successful = True
+                    break
+
+        # If we've set `decompression_successful` to true at any point in the iteration loop,
+        # break out of the loop as we have found and extracted the Package archive and have what is
+        # needed to continue.
+        if decompression_successful:
+            break
 
     if not r.success:
         fail("unable to download package index")
