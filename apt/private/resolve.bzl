@@ -19,9 +19,9 @@ cp $lock {workspace_relative_path}
 
 # Detect which file we wish the user to edit
 if [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE ]; then
-    wksp_file=WORKSPACE
+    wksp_file="WORKSPACE"
 elif [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE.bazel ]; then
-    wksp_file=WORKSPACE.bazel
+    wksp_file="WORKSPACE.bazel"
 else
     echo>&2 "Error: neither WORKSPACE nor WORKSPACE.bazel file was found"
     exit 1
@@ -29,10 +29,10 @@ fi
 
 # Detect a vendored buildozer binary in canonical location (tools/buildozer)
 if [ -e $BUILD_WORKSPACE_DIRECTORY/tools/buildozer ]; then
-    buildozer=tools/buildozer
+    buildozer="tools/buildozer"
 else
     # Assume it's on the $PATH
-    buildozer="npx @bazel/buildozer"
+    buildozer="buildozer"
 fi
 
 if [[ "${{2:-}}" == "--autofix" ]]; then
