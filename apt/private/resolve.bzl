@@ -76,7 +76,12 @@ def _deb_resolve_impl(rctx):
     lockf = lockfile.empty(rctx)
 
     for arch in manifest["archs"]:
+        dep_constraint_set = {}
         for dep_constraint in manifest["packages"]:
+            if dep_constraint in dep_constraint_set:
+                fail("Duplicate package, {}. Please remove it from your manifest".format(dep_constraint))
+            dep_constraint_set[dep_constraint] = True
+
             constraint = package_resolution.parse_depends(dep_constraint).pop()
 
             rctx.report_progress("Resolving %s" % dep_constraint)
