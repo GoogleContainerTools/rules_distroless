@@ -55,7 +55,7 @@ def _deb_resolve_impl(rctx):
     if type(manifest["archs"]) != "list":
         fail("`archs` should be an array")
 
-    if type(manifest["packages"]) != "list":
+    if type(manifest.get("packages", [])) != "list":
         fail("`packages` should be an array")
 
     sources = []
@@ -69,6 +69,8 @@ def _deb_resolve_impl(rctx):
             src["url"],
             distr,
             comp,
+            src.get("flat_repository", False),
+            src.get("arch", None),
         ))
 
     pkgindex = package_index.new(rctx, sources = sources, archs = manifest["archs"])
@@ -77,11 +79,15 @@ def _deb_resolve_impl(rctx):
 
     for arch in manifest["archs"]:
         dep_constraint_set = {}
-        for dep_constraint in manifest["packages"]:
+        packages = manifest.get("packages", [])
+        arch_specific_packages = manifest.get("arch_specific_packages", {})
+
+        if arch in arch_specific_packages:
+            packages = packages + arch_specific_packages[arch]
+        for dep_constraint in packages:
             if dep_constraint in dep_constraint_set:
                 fail("Duplicate package, {}. Please remove it from your manifest".format(dep_constraint))
             dep_constraint_set[dep_constraint] = True
-
             constraint = package_resolution.parse_depends(dep_constraint).pop()
 
             rctx.report_progress("Resolving %s" % dep_constraint)
