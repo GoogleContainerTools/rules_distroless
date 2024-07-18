@@ -2,17 +2,21 @@
 
 load(":util.bzl", "util")
 
-def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
+def _fetch_package_index(rctx, url, dist, comp, arch, integrity, flat_repository):
     target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
 
     file_types = {"xz": ["xz", "--decompress"], "gz": ["gzip", "-d"]}
     r = {"success": False, "integrity": None}
 
+    repository_url = "{}/dists/{}/{}/binary-{}".format(url, dist, comp, arch)
+    if flat_repository:
+        repository_url = "{}/{}".format(url, comp)
+
     decompression_successful = False
     for file_type, tool in file_types.items():
         output = "{}/Packages.{}".format(target_triple, file_type)
         r = rctx.download(
-            url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, file_type),
+            url = "{}/Packages.{}".format(repository_url, file_type),
             output = output,
             integrity = integrity,
             allow_fail = True,
@@ -61,6 +65,12 @@ def _parse_package_index(state, contents, arch, root):
 
         if len(pkg.keys()) != 0:
             pkg["Root"] = root
+            if "Filename" in pkg:
+                pkg["Filename"] = pkg["Filename"].strip("./")
+            pkg_arch = pkg.get("Architecture")
+            if pkg_arch and pkg_arch != arch and pkg_arch != "all":
+                pkg = {}
+                continue
             util.set_dict(state.packages, value = pkg, keys = (arch, pkg["Package"], pkg["Version"]))
             last_key = ""
             pkg = {}
@@ -83,16 +93,18 @@ def _create(rctx, sources, archs):
     )
 
     for arch in archs:
-        for (url, dist, comp) in sources:
+        for (url, dist, comp, flat_repository, repository_arch) in sources:
             # We assume that `url` does not contain a trailing forward slash when passing to
             # functions below. If one is present, remove it. Some HTTP servers do not handle
             # redirects properly when a path contains "//"
             # (ie. https://mymirror.com/ubuntu//dists/noble/stable/... may return a 404
             # on misconfigured HTTP servers)
+            if repository_arch and repository_arch != arch:
+                continue
             url = url.rstrip("/")
 
             rctx.report_progress("Fetching package index: {}/{}".format(dist, arch))
-            (output, _) = _fetch_package_index(rctx, url, dist, comp, arch, "")
+            (output, _) = _fetch_package_index(rctx, url, dist, comp, arch, "", flat_repository)
 
             # TODO: this is expensive to perform.
             rctx.report_progress("Parsing package index: {}/{}".format(dist, arch))

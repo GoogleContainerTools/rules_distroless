@@ -58,6 +58,17 @@ load("@shared_dependencies//:packages.bzl", "shared_dependencies_packages")
 
 shared_dependencies_packages()
 
+# bazel run @flat_repository//:lock
+deb_index(
+    name = "flat_repository",
+    lock = "//examples/debian_flat_repository:bullseye.lock.json",
+    manifest = "//examples/debian_flat_repository:bullseye.yaml",
+)
+
+load("@flat_repository//:packages.bzl", "flat_repository_packages")
+
+flat_repository_packages()
+
 # bazel run @noble//:lock
 deb_index(
     name = "noble",
