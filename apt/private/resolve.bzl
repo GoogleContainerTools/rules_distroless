@@ -17,15 +17,33 @@ echo ''
 echo 'Writing lockfile to {workspace_relative_path}' 
 cp $lock {workspace_relative_path}
 
+# Detect which file we wish the user to edit
+if [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE ]; then
+    wksp_file="WORKSPACE"
+elif [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE.bazel ]; then
+    wksp_file="WORKSPACE.bazel"
+else
+    echo>&2 "Error: neither WORKSPACE nor WORKSPACE.bazel file was found"
+    exit 1
+fi
+
+# Detect a vendored buildozer binary in canonical location (tools/buildozer)
+if [ -e $BUILD_WORKSPACE_DIRECTORY/tools/buildozer ]; then
+    buildozer="tools/buildozer"
+else
+    # Assume it's on the $PATH
+    buildozer="buildozer"
+fi
+
 if [[ "${{2:-}}" == "--autofix" ]]; then
     echo ''
-    buildozer 'set lock "{label}"' WORKSPACE.bazel:{name}
+    ${{buildozer}} 'set lock \"{label}\"' ${{wksp_file}}:{name}
 else
-    echo ''
-    echo 'Run the following command to add the lockfile or pass --autofix flag to do it automatically.' 
-    echo ''
-    echo '   buildozer 'set lock "{label}"' WORKSPACE.bazel:{name}'
-    echo ''
+    cat <<EOF
+Run the following command to add the lockfile or pass --autofix flag to do it automatically.
+
+   ${{buildozer}} 'set lock \"{label}\"' ${{wksp_file}}:{name}
+EOF
 fi
 """
 
@@ -112,7 +130,10 @@ def _deb_resolve_impl(rctx):
     rctx.file(
         "copy.sh",
         _COPY_SH.format(
-            name = rctx.name.removesuffix("_resolution"),
+            # TODO: don't assume the canonical -> apparent repo mapping character, as it might change
+            # https://bazelbuild.slack.com/archives/C014RARENH0/p1719237766005439
+            # https://github.com/bazelbuild/bazel/issues/22865
+            name = rctx.name.removesuffix("_resolution").split("~")[-1],
             label = locklabel,
             workspace_relative_path = (("%s/" % locklabel.package) if locklabel.package else "") + locklabel.name,
         ),

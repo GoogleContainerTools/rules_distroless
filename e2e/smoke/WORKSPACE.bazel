@@ -23,7 +23,7 @@ load("@rules_distroless//apt:index.bzl", "deb_index")
 # bazel run @bullseye//:lock
 deb_index(
     name = "bullseye",
-    lock = "//:bullseye.lock.json",
+    lock = "@@//:bullseye.lock.json",
     manifest = "//:bullseye.yaml",
 )
 
