@@ -18,6 +18,7 @@ commandTests:
       - ncurses-base/now 6\.2\+20201114-2\+deb11u2 all \[installed,local\]
       - perl/now 5\.32\.1-4\+deb11u3 amd64 \[installed,local\]
       - tzdata/now 2024a-0\+deb11u1 all \[installed,local\]
+      - r-base-core/now 4.4.0-2~bullseyecran.0 i386 \[installed,local\]
   - name: "whoami"
     command: "whoami"
     expectedOutput: [r00t]

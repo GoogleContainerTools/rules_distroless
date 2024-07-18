@@ -16,7 +16,8 @@ sources:
     url: https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z
   - channel: bullseye-updates main
     url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/
-
+  - channel: bullseye-cran40
+    url: https://cloud.r-project.org/bin/linux/debian/bullseye-cran40/
 archs:
   - "amd64"
   - "arm64"
@@ -33,3 +34,5 @@ packages:
   - "perl"
   # test cacerts() compatibility
   - "ca-certificates"
+  # test flat repository format package references
+  - "r-base-core"
