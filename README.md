@@ -21,9 +21,9 @@ Our [examples](/examples) demonstrate how to accomplish typical tasks such as <b
 
 We also we have distroless-specific rules that could be useful 
 
-- [flatten](/examples/flatten): <i>flatten multiple `tar` archives.</s>
-- [os_release](/examples/os_release): <i>create a `/etc/os-release` file</s>
-- [locale](/examples/locale): <i>strip `/usr/lib/locale` to be smaller.</s>
+- [flatten](/examples/flatten): <i>flatten multiple `tar` archives.</i>
+- [os_release](/examples/os_release): <i>create a `/etc/os-release` file</i>
+- [locale](/examples/locale): <i>strip `/usr/lib/locale` to be smaller.</i>
 - [dpkg_statusd](/examples/statusd): <i>creates a package database at /var/lib/dpkg/status.d for scanners to discover installed packages.</i>
 
 

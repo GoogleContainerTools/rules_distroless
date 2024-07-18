@@ -35,7 +35,13 @@ bullseye_packages()
 ### BZLMOD Example
 
 ```starlark
-# TODO: support BZLMOD
+apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+apt.deb_index(
+    name = "bullseye",
+    lock = "//examples/apt:bullseye.lock.json",
+    manifest = "//examples/apt:bullseye.yaml",
+)
+use_repo(apt, "bullseye")
 ```
 
 ### Macro Expansion

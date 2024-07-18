@@ -17,3 +17,16 @@ local_repository(
 load("@rules_distroless//distroless:dependencies.bzl", "distroless_dependencies")
 
 distroless_dependencies()
+
+load("@rules_distroless//apt:index.bzl", "deb_index")
+
+# bazel run @bullseye//:lock
+deb_index(
+    name = "bullseye",
+    lock = "@@//:bullseye.lock.json",
+    manifest = "//:bullseye.yaml",
+)
+
+load("@bullseye//:packages.bzl", "bullseye_packages")
+
+bullseye_packages()

@@ -1,0 +1,27 @@
+schemaVersion: "2.0.0"
+
+commandTests:
+  - name: "echo hello"
+    command: "/bin/bash"
+    args: ["-c", "echo hello world!"]
+    expectedOutput: ["hello world!"]
+  - name: "apt list --installed"
+    command: "apt"
+    args: ["list", "--installed"]
+    expectedOutput:
+      - Listing\.\.\.
+      - apt/now 2\.2\.4 arm64 \[installed,local\]
+      - bash/now 5\.1-2\+deb11u1 arm64 \[installed,local\]
+      - coreutils/now 8\.32-4 arm64 \[installed,local\]
+      - dpkg/now 1\.20\.13 arm64 \[installed,local\]
+      - libncurses6/now 6\.2\+20201114-2\+deb11u2 arm64 \[installed,local\]
+      - ncurses-base/now 6\.2\+20201114-2\+deb11u2 all \[installed,local\]
+      - perl/now 5\.32\.1-4\+deb11u3 arm64 \[installed,local\]
+      - tzdata/now 2024a-0\+deb11u1 all \[installed,local\]
+  - name: "whoami"
+    command: "whoami"
+    expectedOutput: [r00t]
+  - name: "naive ca-certs check"
+    command: "head"
+    args: ["-1", "/etc/ssl/certs/ca-certificates.crt"]
+    expectedOutput: [-----BEGIN CERTIFICATE-----]
