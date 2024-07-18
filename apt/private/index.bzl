@@ -85,17 +85,19 @@ def _deb_package_index_impl(rctx):
             ),
         )
 
+        deps = depset([
+            '"//%s/%s"' % (dep["name"], package["arch"])
+            for dep in package["dependencies"]
+        ])
         repo_name = "%s%s_%s" % ("@" if rctx.attr.bzlmod else "", rctx.attr.name, package_key)
 
         rctx.file(
             "%s/%s/BUILD.bazel" % (package["name"], package["arch"]),
             rctx.attr.package_template.format(
                 target_name = package["arch"],
+
                 src = '"@%s//:data"' % repo_name,
-                deps = ",\n        ".join([
-                    '"//%s/%s"' % (dep["name"], package["arch"])
-                    for dep in package["dependencies"]
-                ]),
+                deps = ",\n        ".join(deps.to_list()),
                 urls = [package["url"]],
                 name = package["name"],
                 arch = package["arch"],

@@ -3,7 +3,13 @@
 load(":util.bzl", "util")
 
 def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
-    target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
+    # Split the URL by the '://' delimiter
+    protocol, rest = url.split("://")
+
+    # Split the rest of the URL by the '/' delimiter and take the first part
+    domain = rest.split("/")[0]
+
+    target_triple = "{domain}/{dist}/{comp}/{arch}".format(domain = domain, dist = dist, comp = comp, arch = arch)
 
     file_types = {"xz": ["xz", "--decompress"], "gz": ["gzip", "-d"]}
     r = {"success": False, "integrity": None}
@@ -11,17 +17,22 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     decompression_successful = False
     for file_type, tool in file_types.items():
         output = "{}/Packages.{}".format(target_triple, file_type)
-        r = rctx.download(
-            url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, file_type),
-            output = output,
-            integrity = integrity,
-            allow_fail = True,
-        )
-        if r.success:
-            re = rctx.execute(tool + [output])
-            if re.return_code == 0:
-                decompression_successful = True
-                break
+        urls = [
+            "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, file_type),
+            "{}/Packages.{}".format(url, file_type),
+        ]
+        for package_index_url in urls:
+            r = rctx.download(
+                url = package_index_url,
+                output = output,
+                integrity = integrity,
+                allow_fail = True,
+            )
+            if r.success:
+                re = rctx.execute(tool + [output])
+                if re.return_code == 0:
+                    decompression_successful = True
+                    return ("{}/Packages".format(target_triple), r.integrity)
 
     if not r.success:
         fail("unable to download package index")
