@@ -20,29 +20,6 @@ _DEB_IMPORT_TMPL = '''\
     )
 '''
 
-# BUILD.bazel template for a package
-_PACKAGE_BUILD_TMPL = '''\
-alias(
-    name = "data",
-    actual = "@{repo_name}//:data",
-    visibility = ["//visibility:public"],
-)
-
-alias(
-    name = "control",
-    actual = "@{repo_name}//:control",
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "{target_name}",
-    visibility = ["//visibility:public"],
-    srcs = [
-        {deps}
-    ] + [":data"]
-)
-'''
-
 _BUILD_TMPL = """\
 exports_files(glob(['packages.bzl']))
 
@@ -100,7 +77,7 @@ fi
 
 def _deb_package_index_impl(rctx):
     lock_content = rctx.attr.lock_content
-
+    package_template = rctx.read(rctx.attr.package_template)
     lockf = lockfile.from_json(rctx, lock_content if lock_content else rctx.read(rctx.attr.lock))
 
     package_defs = []
@@ -132,7 +109,7 @@ def _deb_package_index_impl(rctx):
 
         rctx.file(
             "%s/%s/BUILD.bazel" % (package["name"], package["arch"]),
-            rctx.attr.package_template.format(
+            package_template.format(
                 target_name = package["arch"],
                 src = '"@%s//:data"' % repo_name,
                 deps = ",\n        ".join([
@@ -170,7 +147,7 @@ deb_package_index = repository_rule(
     attrs = {
         "manifest": attr.label(mandatory = True),
         "lock": attr.label(),
-        "package_template": attr.string(default = _PACKAGE_BUILD_TMPL),
+        "package_template": attr.label(default = "//apt/private:package.BUILD.tmpl"),
         "lock_content": attr.string(doc = "INTERNAL: DO NOT USE"),
     },
 )

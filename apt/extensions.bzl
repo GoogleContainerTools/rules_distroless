@@ -41,6 +41,7 @@ def _distroless_extension(module_ctx):
                 name = install.name,
                 lock = install.lock,
                 manifest = install.manifest,
+                package_template = install.package_template,
                 lock_content = lockf.as_json(),
             )
 
@@ -63,6 +64,7 @@ install = tag_class(attrs = {
         doc = """Whether dependencies of dependencies should be resolved and added to the lockfile.""",
         default = True,
     ),
+    "package_template": attr.label(doc = "(EXPERIMENTAL!) a template file for generated BUILD files."),
 })
 
 apt = module_extension(

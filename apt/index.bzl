@@ -35,7 +35,7 @@ def deb_index(
 
     ```starlark
     apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
-    apt.deb_index(
+    apt.install(
         name = "bullseye",
         lock = "//examples/apt:bullseye.lock.json",
         manifest = "//examples/apt:bullseye.yaml",
@@ -73,7 +73,7 @@ def deb_index(
         name: name of the repository
         manifest: label to a `manifest.yaml`
         lock: label to a `lock.json`
-        package_template: (EXPERIMENTAL!) a template string for generated BUILD files.
+        package_template: (EXPERIMENTAL!) a template file for generated BUILD files.
           Available template replacement keys are: `{target_name}`, `{deps}`, `{urls}`, `{name}`, `{arch}`, `{sha256}`, `{repo_name}`
         resolve_transitive: whether dependencies of dependencies should be resolved and added to the lockfile.
     """
