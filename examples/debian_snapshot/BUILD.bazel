@@ -2,7 +2,7 @@ load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@container_structure_test//:defs.bzl", "container_structure_test")
 load("@rules_distroless//apt:defs.bzl", "dpkg_status")
 load("@rules_distroless//distroless:defs.bzl", "cacerts", "group", "passwd")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_tarball")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 
 passwd(
     name = "passwd",
@@ -105,7 +105,7 @@ oci_image(
     }),
 )
 
-oci_tarball(
+oci_load(
     name = "tarball",
     image = ":apt",
     repo_tags = [

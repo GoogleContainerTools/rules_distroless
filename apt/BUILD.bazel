@@ -23,3 +23,15 @@ bzl_library(
         "//apt/private:resolve",
     ],
 )
+
+bzl_library(
+    name = "extensions",
+    srcs = ["extensions.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//apt/private:deb_import",
+        "//apt/private:index",
+        "//apt/private:lockfile",
+        "//apt/private:resolve",
+    ],
+)

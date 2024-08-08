@@ -71,6 +71,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "deb_import",
+    srcs = ["deb_import.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
+)
+
+bzl_library(
     name = "util",
     srcs = ["util.bzl"],
     visibility = ["//apt:__subpackages__"],

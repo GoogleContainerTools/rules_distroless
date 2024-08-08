@@ -89,7 +89,7 @@ def deb_index(
 
     _deb_package_index(
         name = name,
+        manifest = manifest,
         lock = lock if lock else "@" + name + "_resolution//:lock.json",
         package_template = package_template,
-        bzlmod = False,
     )
