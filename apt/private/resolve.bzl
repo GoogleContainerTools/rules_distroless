@@ -20,7 +20,7 @@ def _parse_manifest(rctx, yq_toolchain_prefix, manifest):
     return json.decode(result.stdout if result.stdout != "null" else "{}")
 
 # This function is shared between BZLMOD and WORKSPACE implementations.
-# INTERNAL: DON NOT DEPEND!
+# INTERNAL: DO NOT DEPEND!
 # buildifier: disable=function-docstring-args
 def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
     manifest = _parse_manifest(rctx, yq_toolchain_prefix, manifest)
