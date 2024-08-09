@@ -15,7 +15,7 @@ DEFAULT_ARGS = [
     "--options=gzip:!timestamp",
 ]
 
-def _mtree_line(dest, type, content = None, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE):
+def _mtree_line(dest, type, content = None, link = None, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE):
     # mtree expects paths to start with ./ so normalize paths that starts with
     # `/` or relative path (without / and ./)
     if not dest.startswith("."):
@@ -33,6 +33,9 @@ def _mtree_line(dest, type, content = None, uid = DEFAULT_UID, gid = DEFAULT_GID
     ]
     if content:
         spec.append("content=" + content)
+    if link:
+        spec.append("link=" + link)
+
     return " ".join(spec)
 
 def _add_parents(path, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE, skip = []):
@@ -94,6 +97,7 @@ def _create_mtree(ctx = None):
     return struct(
         entry = lambda path, type, **kwargs: content.add(_mtree_line(path, type, **kwargs)),
         add_file = lambda path, file, **kwargs: content.add(_mtree_line(path, "file", content = file.path, **kwargs)),
+        add_link = lambda path, src, **kwargs: content.add(_mtree_line(path, "link", link = src, **kwargs)),
         add_dir = lambda path, **kwargs: content.add(_mtree_line(path, "dir", **kwargs)),
         add_parents = lambda path, **kwargs: content.add_all(_add_parents(path, **kwargs), uniquify = True),
         build = lambda **kwargs: _build_tar(ctx, _build_mtree(ctx, content), **kwargs),
