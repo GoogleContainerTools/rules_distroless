@@ -5,54 +5,12 @@ load(":lockfile.bzl", "lockfile")
 load(":package_index.bzl", "package_index")
 load(":package_resolution.bzl", "package_resolution")
 
-_COPY_SH = """\
-#!/usr/bin/env bash
-set -o pipefail -o errexit -o nounset
-
-lock=$(realpath $1)
-
-cd $BUILD_WORKING_DIRECTORY
-
-echo ''
-echo 'Writing lockfile to {workspace_relative_path}' 
-cp $lock {workspace_relative_path}
-
-# Detect which file we wish the user to edit
-if [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE ]; then
-    wksp_file="WORKSPACE"
-elif [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE.bazel ]; then
-    wksp_file="WORKSPACE.bazel"
-else
-    echo>&2 "Error: neither WORKSPACE nor WORKSPACE.bazel file was found"
-    exit 1
-fi
-
-# Detect a vendored buildozer binary in canonical location (tools/buildozer)
-if [ -e $BUILD_WORKSPACE_DIRECTORY/tools/buildozer ]; then
-    buildozer="tools/buildozer"
-else
-    # Assume it's on the $PATH
-    buildozer="buildozer"
-fi
-
-if [[ "${{2:-}}" == "--autofix" ]]; then
-    echo ''
-    ${{buildozer}} 'set lock \"{label}\"' ${{wksp_file}}:{name}
-else
-    cat <<EOF
-Run the following command to add the lockfile or pass --autofix flag to do it automatically.
-
-   ${{buildozer}} 'set lock \"{label}\"' ${{wksp_file}}:{name}
-EOF
-fi
-"""
-
-def _parse_manifest(rctx):
+def _parse_manifest(rctx, yq_toolchain_prefix, manifest):
     is_windows = repo_utils.is_windows(rctx)
-    host_yq = Label("@{}_{}//:yq{}".format(rctx.attr.yq_toolchain_prefix, repo_utils.platform(rctx), ".exe" if is_windows else ""))
+    host_yq = Label("@{}_{}//:yq{}".format(yq_toolchain_prefix, repo_utils.platform(rctx), ".exe" if is_windows else ""))
     yq_args = [
         str(rctx.path(host_yq)),
-        str(rctx.path(rctx.attr.manifest)),
+        str(rctx.path(manifest)),
         "-o=json",
     ]
     result = rctx.execute(yq_args)
@@ -61,8 +19,11 @@ def _parse_manifest(rctx):
 
     return json.decode(result.stdout if result.stdout != "null" else "{}")
 
-def _deb_resolve_impl(rctx):
-    manifest = _parse_manifest(rctx)
+# This function is shared between BZLMOD and WORKSPACE implementations.
+# INTERNAL: DO NOT DEPEND!
+# buildifier: disable=function-docstring-args
+def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
+    manifest = _parse_manifest(rctx, yq_toolchain_prefix, manifest)
 
     if manifest["version"] != 1:
         fail("Unsupported manifest version, {}. Please use `version: 1` manifest.".format(manifest["version"]))
@@ -107,7 +68,7 @@ def _deb_resolve_impl(rctx):
                 name = constraint["name"],
                 version = constraint["version"],
                 arch = arch,
-                include_transitive = rctx.attr.resolve_transitive,
+                include_transitive = include_transitive,
             )
 
             if not package:
@@ -122,23 +83,12 @@ def _deb_resolve_impl(rctx):
             for dep in dependencies:
                 lockf.add_package(dep, arch)
                 lockf.add_package_dependency(package, dep, arch)
+    return lockf
+
+def _deb_resolve_impl(rctx):
+    lockf = internal_resolve(rctx, rctx.attr.yq_toolchain_prefix, rctx.attr.manifest, rctx.attr.resolve_transitive)
 
     lockf.write("lock.json")
-
-    locklabel = rctx.attr.manifest.relative(rctx.attr.manifest.name.replace(".yaml", ".lock.json"))
-
-    rctx.file(
-        "copy.sh",
-        _COPY_SH.format(
-            # TODO: don't assume the canonical -> apparent repo mapping character, as it might change
-            # https://bazelbuild.slack.com/archives/C014RARENH0/p1719237766005439
-            # https://github.com/bazelbuild/bazel/issues/22865
-            name = rctx.name.removesuffix("_resolution").split("~")[-1],
-            label = locklabel,
-            workspace_relative_path = (("%s/" % locklabel.package) if locklabel.package else "") + locklabel.name,
-        ),
-        executable = True,
-    )
 
     rctx.file("BUILD.bazel", """\
 filegroup(
@@ -147,14 +97,6 @@ filegroup(
     tags = ["manual"],
     visibility = ["//visibility:public"]
 )
-sh_binary(
-    name = "lock",
-    srcs = ["copy.sh"],
-    data = ["lock.json"],
-    tags = ["manual"],
-    args = ["$(location :lock.json)"],
-    visibility = ["//visibility:public"]
-) 
 """)
 
 deb_resolve = repository_rule(

@@ -3,6 +3,7 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 exports_files([
     "dpkg_statusd.sh",
     "dpkg_status.sh",
+    "package.BUILD.tmpl",
 ])
 
 bzl_library(
@@ -68,6 +69,13 @@ bzl_library(
     srcs = ["version.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = ["@aspect_bazel_lib//lib:strings"],
+)
+
+bzl_library(
+    name = "deb_import",
+    srcs = ["deb_import.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
 )
 
 bzl_library(

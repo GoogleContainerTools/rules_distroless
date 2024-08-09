@@ -49,6 +49,7 @@ def _create(rctx, lock):
         add_package_dependency = lambda *args, **kwargs: _add_package_dependency(lock, *args, **kwargs),
         packages = lambda: lock.packages,
         write = lambda out: rctx.file(out, json.encode_indent(struct(version = lock.version, packages = lock.packages))),
+        as_json = lambda: json.encode_indent(struct(version = lock.version, packages = lock.packages)),
     )
 
 def _empty(rctx):
@@ -59,8 +60,8 @@ def _empty(rctx):
     )
     return _create(rctx, lock)
 
-def _from_json(rctx, path):
-    lock = json.decode(rctx.read(path))
+def _from_json(rctx, content):
+    lock = json.decode(content)
     if lock["version"] != 1:
         fail("invalid lockfile version")
 

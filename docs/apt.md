@@ -36,7 +36,7 @@ bullseye_packages()
 
 ```starlark
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
-apt.deb_index(
+apt.install(
     name = "bullseye",
     lock = "//examples/apt:bullseye.lock.json",
     manifest = "//examples/apt:bullseye.yaml",
@@ -79,7 +79,7 @@ An example of this can be found at [/examples/ubuntu_snapshot](/examples/ubuntu_
 | <a id="deb_index-name"></a>name |  name of the repository   |  none |
 | <a id="deb_index-manifest"></a>manifest |  label to a <code>manifest.yaml</code>   |  none |
 | <a id="deb_index-lock"></a>lock |  label to a <code>lock.json</code>   |  <code>None</code> |
-| <a id="deb_index-package_template"></a>package_template |  (EXPERIMENTAL!) a template string for generated BUILD files. Available template replacement keys are: <code>{target_name}</code>, <code>{deps}</code>, <code>{urls}</code>, <code>{name}</code>, <code>{arch}</code>, <code>{sha256}</code>, <code>{repo_name}</code>   |  <code>None</code> |
+| <a id="deb_index-package_template"></a>package_template |  (EXPERIMENTAL!) a template file for generated BUILD files. Available template replacement keys are: <code>{target_name}</code>, <code>{deps}</code>, <code>{urls}</code>, <code>{name}</code>, <code>{arch}</code>, <code>{sha256}</code>, <code>{repo_name}</code>   |  <code>None</code> |
 | <a id="deb_index-resolve_transitive"></a>resolve_transitive |  whether dependencies of dependencies should be resolved and added to the lockfile.   |  <code>True</code> |
 
 
