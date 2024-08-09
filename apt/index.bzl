@@ -78,7 +78,7 @@ def deb_index(
         resolve_transitive: whether dependencies of dependencies should be resolved and added to the lockfile.
     """
     _deb_resolve(
-        name = name + "_resolution",
+        name = name + "_resolve",
         manifest = manifest,
         resolve_transitive = resolve_transitive,
     )
@@ -89,7 +89,6 @@ def deb_index(
 
     _deb_package_index(
         name = name,
-        manifest = manifest,
-        lock = lock if lock else "@" + name + "_resolution//:lock.json",
+        lock = lock if lock else "@" + name + "_resolve//:lock.json",
         package_template = package_template,
     )
