@@ -63,6 +63,7 @@ PACKAGES = [
     "@bullseye//dpkg",
     "@bullseye//apt",
     "@bullseye//perl",
+    "@bullseye//openssl",
 ]
 
 # Creates /var/lib/dpkg/status with installed package information.
