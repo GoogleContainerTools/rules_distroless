@@ -11,9 +11,14 @@ DEFAULT_ARGS = [
     # TODO: distroless uses gnu archives
     "--format",
     "gnutar",
-    # Gzip timestamps are source of non-hermeticity. disable them
-    "--options=gzip:!timestamp",
 ]
+
+DEFAULT_COMPRESSION_ARGS = {
+    "gzip": [
+        # Gzip timestamps are source of non-hermeticity. disable them
+        "--options=gzip:!timestamp",
+    ],
+}
 
 def _mtree_line(dest, type, content = None, uid = DEFAULT_UID, gid = DEFAULT_GID, time = DEFAULT_TIME, mode = DEFAULT_MODE):
     # mtree expects paths to start with ./ so normalize paths that starts with
@@ -56,7 +61,8 @@ def _build_tar(ctx, mtree, output, inputs = [], compression = "gzip", mnemonic =
     args = ctx.actions.args()
     args.add_all(DEFAULT_ARGS)
     args.add("--create")
-    args.add(compression, format = "--%s")
+    tar.common.add_compression_args(compression, args)
+    _add_default_compression_args(compression, args)
     args.add("--file", output)
     args.add(mtree, format = "@%s")
 
@@ -100,9 +106,14 @@ def _create_mtree(ctx = None):
         content = lambda: content.to_list() + ["#end"],
     )
 
+def _add_default_compression_args(compression, args):
+    args.add_all(DEFAULT_COMPRESSION_ARGS.get(compression, []))
+
 tar_lib = struct(
     TOOLCHAIN_TYPE = tar.toolchain_type,
     DEFAULT_ARGS = DEFAULT_ARGS,
+    DEFAULT_COMPRESSION_ARGS = DEFAULT_COMPRESSION_ARGS,
+    add_default_compression_args = _add_default_compression_args,
     create_mtree = _create_mtree,
     common = tar.common,
 )

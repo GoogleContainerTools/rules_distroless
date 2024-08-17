@@ -54,7 +54,7 @@ def os_release(
         name = name,
         srcs = [":%s_content" % name],
         mtree = mtree.content(),
-        args = tar_lib.DEFAULT_ARGS,
+        args = tar_lib.DEFAULT_ARGS + tar_lib.DEFAULT_COMPRESSION_ARGS["gzip"],
         compress = "gzip",
         **common_kwargs
     )

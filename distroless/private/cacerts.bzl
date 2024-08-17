@@ -43,7 +43,6 @@ oci_image(
 ```
 """
 
-
 def _cacerts_impl(ctx):
     bsdtar = ctx.toolchains[tar_lib.TOOLCHAIN_TYPE]
 

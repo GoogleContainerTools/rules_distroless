@@ -10,8 +10,8 @@ shift 4
 # TODO: there must be a better way to manipulate tars!
 # "$bsdtar" -cf  $out --posix --no-same-owner --options="" $@ "@$package_path"
 # "$bsdtar" -cf to.mtree $@ --format=mtree --options '!gname,!uname,!sha1,!nlink' "@$package_path"
-# "$bsdtar" --older "0" -Uf $out @to.mtree 
+# "$bsdtar" --older "0" -Uf $out @to.mtree
 
 tmp=$(mktemp -d)
 "$bsdtar" -xf "$package_path" $@ -C "$tmp"
-"$bsdtar" -cf - $@ --format=mtree --options '!gname,!uname,!sha1,!nlink,!time' "@$package_path" |  sed 's/$/ time=0.0/' | "$bsdtar" --gzip -cf "$out" -C "$tmp/" @-
+"$bsdtar" -cf - $@ --format=mtree --options '!gname,!uname,!sha1,!nlink,!time' "@$package_path" |  sed 's/$/ time=0.0/' | "$bsdtar" --gzip --options 'gzip:!timestamp' -cf "$out" -C "$tmp/" @-

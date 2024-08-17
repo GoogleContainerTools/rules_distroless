@@ -11,8 +11,10 @@ def _flatten_impl(ctx):
     output = ctx.actions.declare_file(ctx.attr.name + ext)
 
     args = ctx.actions.args()
+    args.add_all(tar_lib.DEFAULT_ARGS)
     args.add("--create")
     tar_lib.common.add_compression_args(ctx.attr.compress, args)
+    tar_lib.add_default_compression_args(ctx.attr.compress, args)
     args.add("--file", output)
     args.add_all(ctx.files.tars, format_each = "@%s")
 
