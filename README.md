@@ -57,5 +57,6 @@ This ruleset is primarily funded to support [distroless](github.com/GoogleContai
 # Adopters
 
 - distroless: https://github.com/GoogleContainerTools/distroless
+- Arize AI: https://www.arize.com
 
 > An adopter? Add your company here by sending us a Pull Request.
