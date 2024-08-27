@@ -65,6 +65,10 @@ PACKAGES = [
     "@bullseye//perl",
 ]
 
+AMD_PACKAGES = PACKAGES + [
+    "@amd_only//bazel",
+]
+
 # Creates /var/lib/dpkg/status with installed package information.
 dpkg_status(
     name = "dpkg_status",
@@ -75,7 +79,7 @@ dpkg_status(
         ],
         "@platforms//cpu:x86_64": [
             "%s/amd64:control" % package
-            for package in PACKAGES
+            for package in AMD_PACKAGES
         ],
     }),
 )
@@ -100,7 +104,7 @@ oci_image(
         ],
         "@platforms//cpu:x86_64": [
             "%s/amd64" % package
-            for package in PACKAGES
+            for package in AMD_PACKAGES
         ],
     }),
 )

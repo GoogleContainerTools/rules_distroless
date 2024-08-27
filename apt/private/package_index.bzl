@@ -10,29 +10,42 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     #  --force      -> overwrite the output if it exists
     #  --decompress -> decompress
     supported_extensions = {
-        "xz": ["xz", "--decompress", "--keep", "--force"],
-        "gz": ["gzip", "--decompress", "--keep", "--force"],
+        ".xz": ["xz", "--decompress", "--keep", "--force"],
+        ".gz": ["gzip", "--decompress", "--keep", "--force"],
+
+        # the download may be plaintext, e.g. https://storage.googleapis.com/bazel-apt.
+        "": [],
     }
 
     failed_attempts = []
 
     for (ext, cmd) in supported_extensions.items():
-        output = "{}/Packages.{}".format(target_triple, ext)
-        dist_url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, ext)
+        output = "{}/Packages{}".format(target_triple, ext)
+        dist_url = "{}/dists/{}/{}/binary-{}/Packages{}".format(url, dist, comp, arch, ext)
         download = rctx.download(
             url = dist_url,
             output = output,
             integrity = integrity,
             allow_fail = True,
         )
-        decompress_r = None
-        if download.success:
-            decompress_r = rctx.execute(cmd + [output])
-            if decompress_r.return_code == 0:
-                integrity = download.integrity
-                break
 
-        failed_attempts.append((dist_url, download, decompress_r))
+        failure = None
+        if not download.success:
+            failure = (url, download, None)
+        else:
+            # there is a decompression step; we shouldn't consider this a success
+            # until we successfully decompress.
+            if len(cmd) > 0:
+                decompress_r = rctx.execute(cmd + [output])
+                if decompress_r.return_code == 0:
+                    integrity = download.integrity
+                else:
+                    failure = (dist_url, download, decompress_r)
+
+        if failure == None:
+            break
+        else:
+            failed_attempts.append(failure)
 
     if len(failed_attempts) == len(supported_extensions):
         attempt_messages = []

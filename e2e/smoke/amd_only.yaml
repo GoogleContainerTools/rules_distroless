@@ -1,0 +1,12 @@
+# To generate the amd_only.lock.json run: bazel run @amd_only//:lock
+version: 1
+
+sources:
+  - channel: stable jdk1.8
+    url: https://storage.googleapis.com/bazel-apt
+
+archs:
+  - "amd64"
+
+packages:
+  - "bazel"
