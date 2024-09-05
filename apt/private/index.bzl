@@ -23,56 +23,10 @@ _DEB_IMPORT_TMPL = '''\
 _BUILD_TMPL = """\
 exports_files(glob(['packages.bzl']))
 
-sh_binary(
+alias(
     name = "lock",
-    srcs = ["copy.sh"],
-    data = ["lock.json"],
-    tags = ["manual"],
-    args = ["$(location :lock.json)"],
-    visibility = ["//visibility:public"]
-) 
-"""
-
-_COPY_SH_TMPL = """\
-#!/usr/bin/env bash
-set -o pipefail -o errexit -o nounset
-
-lock=$(realpath $1)
-
-cd $BUILD_WORKING_DIRECTORY
-
-echo ''
-echo 'Writing lockfile to {workspace_relative_path}' 
-cp $lock {workspace_relative_path}
-
-# Detect which file we wish the user to edit
-if [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE ]; then
-    wksp_file="WORKSPACE"
-elif [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE.bazel ]; then
-    wksp_file="WORKSPACE.bazel"
-else
-    echo>&2 "Error: neither WORKSPACE nor WORKSPACE.bazel file was found"
-    exit 1
-fi
-
-# Detect a vendored buildozer binary in canonical location (tools/buildozer)
-if [ -e $BUILD_WORKSPACE_DIRECTORY/tools/buildozer ]; then
-    buildozer="tools/buildozer"
-else
-    # Assume it's on the $PATH
-    buildozer="buildozer"
-fi
-
-if [[ "${{2:-}}" == "--autofix" ]]; then
-    echo ''
-    ${{buildozer}} 'set lock \"{label}\"' ${{wksp_file}}:{name}
-else
-    cat <<EOF
-Run the following command to add the lockfile or pass --autofix flag to do it automatically.
-
-   ${{buildozer}} 'set lock \"{label}\"' ${{wksp_file}}:{name}
-EOF
-fi
+    actual = "@{}_resolve//:lock"
+)
 """
 
 def _deb_package_index_impl(rctx):
@@ -124,30 +78,14 @@ def _deb_package_index_impl(rctx):
             ),
         )
 
-    locklabel = rctx.attr.manifest.relative(rctx.attr.manifest.name.replace(".yaml", ".lock.json"))
-    rctx.file(
-        "copy.sh",
-        _COPY_SH_TMPL.format(
-            # TODO: don't assume the canonical -> apparent repo mapping character, as it might change
-            # https://bazelbuild.slack.com/archives/C014RARENH0/p1719237766005439
-            # https://github.com/bazelbuild/bazel/issues/22865
-            name = rctx.name.split("~")[-1],
-            label = locklabel,
-            workspace_relative_path = (("%s/" % locklabel.package) if locklabel.package else "") + locklabel.name,
-        ),
-        executable = True,
-    )
-
-    lockf.write("lock.json")
     rctx.file("packages.bzl", "\n".join(package_defs))
-    rctx.file("BUILD.bazel", _BUILD_TMPL)
+    rctx.file("BUILD.bazel", _BUILD_TMPL.format(rctx.attr.name.split("~")[-1]))
 
 deb_package_index = repository_rule(
     implementation = _deb_package_index_impl,
     attrs = {
-        "manifest": attr.label(mandatory = True),
         "lock": attr.label(),
-        "package_template": attr.label(default = "//apt/private:package.BUILD.tmpl"),
         "lock_content": attr.string(doc = "INTERNAL: DO NOT USE"),
+        "package_template": attr.label(default = "//apt/private:package.BUILD.tmpl"),
     },
 )

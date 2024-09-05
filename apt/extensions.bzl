@@ -1,13 +1,14 @@
 "apt extensions"
 
 load("//apt/private:deb_import.bzl", "deb_import")
-load("//apt/private:index.bzl", _deb_package_index = "deb_package_index")
+load("//apt/private:index.bzl", "deb_package_index")
 load("//apt/private:lockfile.bzl", "lockfile")
-load("//apt/private:resolve.bzl", "internal_resolve")
+load("//apt/private:resolve.bzl", "deb_resolve", "internal_resolve")
 
 def _distroless_extension(module_ctx):
     root_direct_deps = []
     root_direct_dev_deps = []
+
     for mod in module_ctx.modules:
         for install in mod.tags.install:
             lockf = None
@@ -37,12 +38,17 @@ def _distroless_extension(module_ctx):
                     sha256 = package["sha256"],
                 )
 
-            _deb_package_index(
+            deb_resolve(
+                name = install.name + "_resolve",
+                manifest = install.manifest,
+                resolve_transitive = install.resolve_transitive,
+            )
+
+            deb_package_index(
                 name = install.name,
                 lock = install.lock,
-                manifest = install.manifest,
-                package_template = install.package_template,
                 lock_content = lockf.as_json(),
+                package_template = install.package_template,
             )
 
             if mod.is_root:

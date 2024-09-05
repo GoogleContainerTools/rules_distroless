@@ -32,7 +32,7 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
                 integrity = download.integrity
                 break
 
-        failed_attempts.append((url, download, decompress_r))
+        failed_attempts.append((dist_url, download, decompress_r))
 
     if len(failed_attempts) == len(supported_extensions):
         attempt_messages = []
