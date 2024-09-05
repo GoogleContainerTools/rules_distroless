@@ -10,6 +10,6 @@ on:
 
 jobs:
   release:
-    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v4
+    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@c09f979eb364df0c5a4bbf954d964217f2cae3be
     with:
       release_files: rules_distroless-*.tar.gz
