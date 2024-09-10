@@ -12,6 +12,7 @@ commandTests:
       - Listing\.\.\.
       - apt/now 2\.2\.4 amd64 \[installed,local\]
       - bash/now 5\.1-2\+deb11u1 amd64 \[installed,local\]
+      - bazel/now 7\.3\.1 amd64 \[installed,local\]
       - coreutils/now 8\.32-4\+b1 amd64 \[installed,local\]
       - dpkg/now 1\.20\.13 amd64 \[installed,local\]
       - libncurses6/now 6\.2\+20201114-2\+deb11u2 amd64 \[installed,local\]

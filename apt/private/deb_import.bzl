@@ -9,7 +9,10 @@ _RECOMPRESS_CMD = "$(ZSTD_BIN) -f --decompress $< --stdout | $(ZSTD_BIN) - --for
 genrule(
     name = "data",
     srcs = glob(["data.tar.*"]),
-    outs = ["data.tar.gz"],
+    # recompress to a different output name (i.e. not 'data.tar.gz')
+    # because in the case of no extension, we would have data.tar.gz
+    # in both input and output.
+    outs = ["out.tar.gz"], 
     cmd = _RECOMPRESS_CMD,
     toolchains = ["@zstd_toolchains//:resolved_toolchain"],
     visibility = ["//visibility:public"],

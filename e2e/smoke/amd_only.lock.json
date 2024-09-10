@@ -1,0 +1,14 @@
+{
+	"packages": [
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "bazel_7.3.1_amd64",
+			"name": "bazel",
+			"sha256": "4b0480abd08fd30e615666d6d8dfe349f0f6764f7e39c036c8a0036bd4d81ce1",
+			"url": "https://storage.googleapis.com/bazel-apt/pool/jdk1.8/b/bazel/bazel_7.3.1_amd64.deb",
+			"version": "7.3.1"
+		}
+	],
+	"version": 1
+}

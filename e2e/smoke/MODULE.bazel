@@ -22,5 +22,11 @@ apt.install(
     manifest = ":bullseye.yaml",
 )
 
-# bazel run @bullseye//:lock
-use_repo(apt, "bullseye", "bullseye_nolock")
+apt.install(
+    name = "amd_only",
+    lock = ":amd_only.lock.json",
+    manifest = ":amd_only.yaml",
+)
+
+# bazel run @{bullseye, amd_only}//:lock
+use_repo(apt, "bullseye", "bullseye_nolock", "amd_only")

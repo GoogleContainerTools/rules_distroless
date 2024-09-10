@@ -10,15 +10,18 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     #  --force      -> overwrite the output if it exists
     #  --decompress -> decompress
     supported_extensions = {
-        "xz": ["xz", "--decompress", "--keep", "--force"],
-        "gz": ["gzip", "--decompress", "--keep", "--force"],
+        ".xz": ["xz", "--decompress", "--keep", "--force"],
+        ".gz": ["gzip", "--decompress", "--keep", "--force"],
+
+        # the download may be plaintext, e.g. https://storage.googleapis.com/bazel-apt.
+        "": [],
     }
 
     failed_attempts = []
 
     for (ext, cmd) in supported_extensions.items():
-        output = "{}/Packages.{}".format(target_triple, ext)
-        dist_url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, ext)
+        output = "{}/Packages{}".format(target_triple, ext)
+        dist_url = "{}/dists/{}/{}/binary-{}/Packages{}".format(url, dist, comp, arch, ext)
         download = rctx.download(
             url = dist_url,
             output = output,
@@ -27,6 +30,10 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
         )
         decompress_r = None
         if download.success:
+            # do not decompress if there nothing to decompress.
+            if not ext:
+                break
+
             decompress_r = rctx.execute(cmd + [output])
             if decompress_r.return_code == 0:
                 integrity = download.integrity
