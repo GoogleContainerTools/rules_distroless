@@ -22,8 +22,6 @@ apt.install(
     manifest = ":bullseye.yaml",
 )
 
-# This is used for testing no extension # package indexes; one example is bazel,
-# but bazel does not support arm, so we need # an apt repo that is _only_ amd.
 apt.install(
     name = "amd_only",
     lock = ":amd_only.lock.json",
