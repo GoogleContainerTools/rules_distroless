@@ -28,24 +28,18 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
             integrity = integrity,
             allow_fail = True,
         )
+        decompress_r = None
+        if download.success:
+            # do not decompress if there nothing to decompress.
+            if not ext:
+                break
 
-        failure = None
-        if not download.success:
-            failure = (url, download, None)
-        else:
-            # there is a decompression step; we shouldn't consider this a success
-            # until we successfully decompress.
-            if len(cmd) > 0:
-                decompress_r = rctx.execute(cmd + [output])
-                if decompress_r.return_code == 0:
-                    integrity = download.integrity
-                else:
-                    failure = (dist_url, download, decompress_r)
+            decompress_r = rctx.execute(cmd + [output])
+            if decompress_r.return_code == 0:
+                integrity = download.integrity
+                break
 
-        if failure == None:
-            break
-        else:
-            failed_attempts.append(failure)
+        failed_attempts.append((dist_url, download, decompress_r))
 
     if len(failed_attempts) == len(supported_extensions):
         attempt_messages = []
