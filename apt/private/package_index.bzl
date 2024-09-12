@@ -2,8 +2,8 @@
 
 load(":util.bzl", "util")
 
-def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
-    target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
+def _fetch_package_index(rctx, url, arch, dist = None, comp = None, directory = None):
+    # TODO: validate mutually exclusive args (dist, comp) VS directory
 
     # See https://linux.die.net/man/1/xz and https://linux.die.net/man/1/gzip
     #  --keep       -> keep the original file (Bazel might be still committing the output to the cache)
@@ -16,23 +16,53 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
 
     failed_attempts = []
 
-    for (ext, cmd) in supported_extensions.items():
-        output = "{}/Packages.{}".format(target_triple, ext)
-        dist_url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, ext)
+    for ext, cmd in supported_extensions.items():
+        index = "Packages"
+        index_full = "{}.{}".format(index, ext)
+
+        if directory == None:  # canonical repo
+            output = "{dist}/{comp}/{arch}/{index}".format(
+                dist = dist,
+                comp = comp,
+                arch = arch,
+                index = index,
+            )
+
+            index_url = "{url}/dists/{dist}/{comp}/binary-{arch}/{index_full}".format(
+                url = url,
+                dist = dist,
+                comp = comp,
+                arch = arch,
+                index_full = index_full,
+            )
+        else:  # flat repo
+            output = "{directory}/{arch}/{index}".format(
+                directory = directory,
+                arch = arch,
+                index = index,
+            )
+
+            index_url = "{url}/{directory}/{index_full}".format(
+                url = url,
+                directory = directory,
+                index_full = index_full,
+            )
+
+        output_full = "{}.{}".format(output, ext)
+
         download = rctx.download(
-            url = dist_url,
-            output = output,
-            integrity = integrity,
+            url = index_url,
+            output = output_full,
             allow_fail = True,
         )
         decompress_r = None
         if download.success:
-            decompress_r = rctx.execute(cmd + [output])
+            decompress_r = rctx.execute(cmd + [output_full])
             if decompress_r.return_code == 0:
                 integrity = download.integrity
                 break
 
-        failed_attempts.append((dist_url, download, decompress_r))
+        failed_attempts.append((index_url, download, decompress_r))
 
     if len(failed_attempts) == len(supported_extensions):
         attempt_messages = []
@@ -51,11 +81,14 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
 {}
         """.format(len(failed_attempts), "\n".join(attempt_messages)))
 
-    return ("{}/Packages".format(target_triple), integrity)
+    return (output, integrity)
 
-def _parse_package_index(state, contents, arch, root):
+def _parse_package_index(state, contents, arch, root_url, directory = None):
     last_key = ""
     pkg = {}
+    total_pkgs = 0
+    out_of_spec = []
+
     for group in contents.split("\n\n"):
         for line in group.split("\n"):
             if line.strip() == "":
@@ -82,8 +115,12 @@ def _parse_package_index(state, contents, arch, root):
             pkg[key] = value
 
         if len(pkg.keys()) != 0:
-            pkg["Root"] = root
-            util.set_dict(state.packages, value = pkg, keys = (arch, pkg["Package"], pkg["Version"]))
+            pkg["Root"] = root_url
+
+            # NOTE: this fixes the arch for multi-arch flat repos
+            arch_ = arch if pkg["Architecture"] == "all" else pkg["Architecture"]
+
+            util.set_dict(state.packages, value = pkg, keys = (arch_, pkg["Package"], pkg["Version"]))
             last_key = ""
             pkg = {}
 
@@ -105,7 +142,16 @@ def _create(rctx, sources, archs):
     )
 
     for arch in archs:
-        for (url, dist, comp) in sources:
+        for source in sources:
+            if len(source) == 2:  # flat repo
+                url, directory = source
+                index = directory
+                dist, comp = None, None
+            else:
+                url, dist, comp = source
+                index = "%s/%s" % (dist, comp)
+                directory = None
+
             # We assume that `url` does not contain a trailing forward slash when passing to
             # functions below. If one is present, remove it. Some HTTP servers do not handle
             # redirects properly when a path contains "//"
@@ -113,12 +159,20 @@ def _create(rctx, sources, archs):
             # on misconfigured HTTP servers)
             url = url.rstrip("/")
 
-            rctx.report_progress("Fetching package index: {}/{} for {}".format(dist, comp, arch))
-            (output, _) = _fetch_package_index(rctx, url, dist, comp, arch, "")
+            rctx.report_progress("Fetching %s package index: %s" % (arch, index))
+            output, _ = _fetch_package_index(
+                rctx,
+                url,
+                arch,
+                dist = dist,
+                comp = comp,
+                directory = directory,
+            )
+
+            rctx.report_progress("Parsing %s package index: %s" % (arch, index))
 
             # TODO: this is expensive to perform.
-            rctx.report_progress("Parsing package index: {}/{} for {}".format(dist, comp, arch))
-            _parse_package_index(state, rctx.read(output), arch, url)
+            _parse_package_index(state, rctx.read(output), arch, url, directory)
 
     return struct(
         package_versions = lambda **kwargs: _package_versions(state, **kwargs),

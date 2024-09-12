@@ -40,13 +40,27 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
     sources = []
 
     for src in manifest["sources"]:
-        distr, components = src["channel"].split(" ", 1)
-        for comp in components.split(" "):
-            sources.append((
-                src["url"],
-                distr,
-                comp,
-            ))
+        channel_chunks = src["channel"].split(" ")
+
+        if len(channel_chunks) == 1:
+            # it's a flat repo, see:
+            # https://wiki.debian.org/DebianRepository/Format#Flat_Repository_Format
+            # vs the "canonical" repo:
+            # https://wiki.debian.org/DebianRepository/Format#Overview
+            directory = channel_chunks[0]
+
+            if not directory.endswith("/"):
+                fail("Debian flat repo directory must end in '/'")
+
+            sources.append((src["url"], directory.rstrip("/")))
+        else:
+            distr, components = channel_chunks[0], channel_chunks[1:]
+
+            if distr.endswith("/"):
+                fail("Debian distribution ends in '/' but this is not a flat repo")
+
+            for comp in components:
+                sources.append((src["url"], distr, comp))
 
     pkgindex = package_index.new(rctx, sources = sources, archs = manifest["archs"])
     pkgresolution = package_resolution.new(index = pkgindex)

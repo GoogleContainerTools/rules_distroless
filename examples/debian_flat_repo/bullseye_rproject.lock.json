@@ -1,0 +1,14 @@
+{
+	"packages": [
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "r-mathlib_4.4.1-1_bullseyecran.0_amd64",
+			"name": "r-mathlib",
+			"sha256": "cbe3abbcc74261f2ad84159b423b856c1a0b4ebe6fef2de763d8783ff00245d5",
+			"url": "https://cloud.r-project.org/bin/linux/debian/bullseye-cran40/r-mathlib_4.4.1-1~bullseyecran.0_amd64.deb",
+			"version": "4.4.1-1~bullseyecran.0"
+		}
+	],
+	"version": 1
+}

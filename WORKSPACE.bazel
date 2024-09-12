@@ -36,6 +36,17 @@ load("@bullseye//:packages.bzl", "bullseye_packages")
 
 bullseye_packages()
 
+# bazel run @bullseye_rproject//:lock
+deb_index(
+    name = "bullseye_rproject",
+    lock = "//examples/debian_flat_repo:bullseye_rproject.lock.json",
+    manifest = "//examples/debian_flat_repo:bullseye_rproject.yaml",
+)
+
+load("@bullseye_rproject//:packages.bzl", "bullseye_rproject_packages")
+
+bullseye_rproject_packages()
+
 # bazel run @apt_security//:lock
 deb_index(
     name = "apt_security",
