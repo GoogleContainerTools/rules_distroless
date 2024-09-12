@@ -42,7 +42,10 @@ bzl_library(
     name = "package_index",
     srcs = ["package_index.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
+    deps = [
+        ":util",
+        "@bazel_skylib//lib:paths",
+    ],
 )
 
 bzl_library(

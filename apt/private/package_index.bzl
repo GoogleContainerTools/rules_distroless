@@ -1,5 +1,6 @@
 "package index"
 
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":util.bzl", "util")
 
 def _fetch_package_index(rctx, url, arch, dist = None, comp = None, directory = None):
@@ -83,6 +84,59 @@ def _fetch_package_index(rctx, url, arch, dist = None, comp = None, directory = 
 
     return (output, integrity)
 
+def _parse_url(url):
+    scheme = ""
+    host = ""
+    path = "/"
+
+    if "://" not in url:
+        fail("Invalid URL: %s" % url)
+
+    scheme, url_ = url.split("://", 1)
+
+    if "/" in url_:
+        host, path_ = url_.split("/", 1)
+        path += path_
+    else:
+        host = url
+
+    return struct(scheme = scheme, host = host, path = path)
+
+def _make_file_url(pkg, root_url_, directory = None):
+    root_url = _parse_url(root_url_)
+
+    filename = pkg["Filename"]
+
+    invalid_filename = not paths.is_normalized(
+        filename,
+        look_for_same_level_references = True,
+    )
+
+    if invalid_filename:
+        # NOTE:
+        # Although the Debian repo spec for 'Filename' (see
+        # https://wiki.debian.org/DebianRepository/Format#Filename) clearly
+        # says that 'Filename' should be relative to the base directory of the
+        # repo and should be in canonical form (i.e. without '.' or '..') there
+        # are cases where this is not honored.
+        #
+        # In those cases we try to work around this by assuming 'Filename' is
+        # relative to the sources.list directory/ so we combine them and
+        # normalize the new 'Filename' path.
+        #
+        # Note that, so far, only the NVIDIA CUDA repos needed this workaround
+        # so maybe this heuristic will break for other repos that don't conform
+        # to the Debian repo spec.
+        filename = paths.normalize(paths.join(directory, filename))
+
+    file_url = "{}://{}{}".format(
+        root_url.scheme,
+        root_url.host,
+        paths.join(root_url.path, filename),
+    )
+
+    return file_url, invalid_filename
+
 def _parse_package_index(state, contents, arch, root_url, directory = None):
     last_key = ""
     pkg = {}
@@ -115,7 +169,10 @@ def _parse_package_index(state, contents, arch, root_url, directory = None):
             pkg[key] = value
 
         if len(pkg.keys()) != 0:
-            pkg["Root"] = root_url
+            pkg["FileUrl"], invalid_filename = _make_file_url(pkg, root_url, directory)
+
+            if invalid_filename:
+                out_of_spec.append(pkg["Package"])
 
             # NOTE: this fixes the arch for multi-arch flat repos
             arch_ = arch if pkg["Architecture"] == "all" else pkg["Architecture"]
@@ -123,6 +180,9 @@ def _parse_package_index(state, contents, arch, root_url, directory = None):
             util.set_dict(state.packages, value = pkg, keys = (arch_, pkg["Package"], pkg["Version"]))
             last_key = ""
             pkg = {}
+            total_pkgs += 1
+
+    return out_of_spec, total_pkgs
 
 def _package_versions(state, name, arch):
     if name not in state.packages[arch]:
@@ -172,7 +232,19 @@ def _create(rctx, sources, archs):
             rctx.report_progress("Parsing %s package index: %s" % (arch, index))
 
             # TODO: this is expensive to perform.
-            _parse_package_index(state, rctx.read(output), arch, url, directory)
+            out_of_spec, total_pkgs = _parse_package_index(
+                state,
+                rctx.read(output),
+                arch,
+                url,
+                directory,
+            )
+
+            if out_of_spec:
+                count = len(out_of_spec)
+                pct = int(100.0 * count / total_pkgs)
+                msg = "Warning: {} index {} has {} packages ({}%) with invalid 'Filename' fields"
+                print(msg.format(arch, index, count, pct))
 
     return struct(
         package_versions = lambda **kwargs: _package_versions(state, **kwargs),

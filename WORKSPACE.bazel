@@ -47,6 +47,17 @@ load("@bullseye_rproject//:packages.bzl", "bullseye_rproject_packages")
 
 bullseye_rproject_packages()
 
+# bazel run @nvidia_ubuntu2404_cuda//:lock
+deb_index(
+    name = "nvidia_ubuntu2404_cuda",
+    lock = "//examples/debian_flat_repo:nvidia_ubuntu2404_cuda.lock.json",
+    manifest = "//examples/debian_flat_repo:nvidia_ubuntu2404_cuda.yaml",
+)
+
+load("@nvidia_ubuntu2404_cuda//:packages.bzl", "nvidia_ubuntu2404_cuda_packages")
+
+nvidia_ubuntu2404_cuda_packages()
+
 # bazel run @apt_security//:lock
 deb_index(
     name = "apt_security",
