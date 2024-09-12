@@ -39,16 +39,14 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
 
     sources = []
 
-    dist = None
     for src in manifest["sources"]:
-        (distr, _, comp) = src["channel"].partition(" ")
-        if not dist:
-            dist = distr
-        sources.append((
-            src["url"],
-            distr,
-            comp,
-        ))
+        distr, components = src["channel"].split(" ", 1)
+        for comp in components.split(" "):
+            sources.append((
+                src["url"],
+                distr,
+                comp,
+            ))
 
     pkgindex = package_index.new(rctx, sources = sources, archs = manifest["archs"])
     pkgresolution = package_resolution.new(index = pkgindex)
