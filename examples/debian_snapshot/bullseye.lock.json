@@ -1191,6 +1191,15 @@
 			"version": "1.1.1w-0+deb11u1"
 		},
 		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "nvidia-kernel-common_20151021-p-13_amd64",
+			"name": "nvidia-kernel-common",
+			"sha256": "fa4b007bf64cf8cf0e9b3aaae5dd388fcec3a589ce2475f16d64347945691533",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/contrib/n/nvidia-support/nvidia-kernel-common_20151021+13_amd64.deb",
+			"version": "20151021+13"
+		},
+		{
 			"arch": "arm64",
 			"dependencies": [],
 			"key": "ncurses-base_6.2-p-20201114-2-p-deb11u2_arm64",
@@ -2379,6 +2388,15 @@
 			"sha256": "d9159af073e95641e7eda440fa1d7623873b8c0034c9826a353f890bed107f3c",
 			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/main/o/openssl/openssl_1.1.1w-0+deb11u1_arm64.deb",
 			"version": "1.1.1w-0+deb11u1"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "nvidia-kernel-common_20151021-p-13_arm64",
+			"name": "nvidia-kernel-common",
+			"sha256": "5a1f10cffc5407a6b63dcdf3f72af842ad9e39a808bb9418a4805aa0be345c65",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/contrib/n/nvidia-support/nvidia-kernel-common_20151021+13_arm64.deb",
+			"version": "20151021+13"
 		}
 	],
 	"version": 1

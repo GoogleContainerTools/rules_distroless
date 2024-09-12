@@ -63,6 +63,7 @@ PACKAGES = [
     "@bullseye//dpkg",
     "@bullseye//apt",
     "@bullseye//perl",
+    "@bullseye//nvidia-kernel-common",
 ]
 
 # Creates /var/lib/dpkg/status with installed package information.
