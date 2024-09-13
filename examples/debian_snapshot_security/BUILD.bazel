@@ -7,7 +7,7 @@ jq(
         "@apt_security_resolve//:lockfile",
     ],
     args = ["-rj"],
-    filter = '.packages | map(select(.name == "libuuid1")) | .[0].version',
+    filter = ".packages.libuuid1[] | .version",
 )
 
 assert_contains(

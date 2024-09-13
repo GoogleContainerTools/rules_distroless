@@ -105,11 +105,7 @@ def _lock(rctx, manifest, include_transitive):
             if not package:
                 fail("Unable to locate package `%s`" % package_name)
 
-            lockf.add_package(package, arch)
-
-            for dep in dependencies:
-                lockf.add_package(dep, arch)
-                lockf.add_package_dependency(package, dep, arch)
+            lockf.add_package(package, arch, dependencies)
 
     return lockf
 
