@@ -96,6 +96,7 @@ def _resolve_all(index, arch, name, version, include_transitive):
     already_recursed = {}
     unmet_dependencies = []
     dependencies = []
+    has_optional_deps = False
     iteration_max = 2147483646
 
     stack = [(name, version)]
@@ -141,16 +142,23 @@ def _resolve_all(index, arch, name, version, include_transitive):
 
         for dep in deps:
             if type(dep) == "list":
-                # buildifier: disable=print
-                print("Warning: optional dependencies are not supported yet. https://github.com/GoogleContainerTools/rules_distroless/issues/27")
-
                 # TODO: optional dependencies
+                has_optional_deps = True
                 continue
 
             # TODO: arch
             stack.append((dep["name"], dep["version"]))
 
-    return (root_package, dependencies, unmet_dependencies)
+    if has_optional_deps:
+        msg = "Warning: package '{}/{}' (or one of its dependencies) "
+        msg += "has optional dependencies that are not supported yet: #27"
+        print(msg.format(root_package["Package"], arch))
+
+    if unmet_dependencies:
+        msg = "Warning: the following packages have unmet dependencies: {}"
+        print(msg.format(",".join([up[0] for up in unmet_dependencies])))
+
+    return root_package, dependencies
 
 def _new(index):
     return struct(
