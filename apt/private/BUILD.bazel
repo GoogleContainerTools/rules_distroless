@@ -4,7 +4,7 @@ exports_files([
     "dpkg_statusd.sh",
     "dpkg_status.sh",
     "copy.sh.tmpl",
-    "package.BUILD.tmpl",
+    "package_arch.BUILD.tmpl",
 ])
 
 bzl_library(
