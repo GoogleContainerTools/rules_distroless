@@ -3,7 +3,8 @@
 load("//apt/private:deb_import.bzl", "deb_import")
 load("//apt/private:index.bzl", "deb_package_index")
 load("//apt/private:lockfile.bzl", "lockfile")
-load("//apt/private:resolve.bzl", "deb_resolve", "internal_resolve")
+load("//apt/private:manifest.bzl", "manifest")
+load("//apt/private:resolve.bzl", "deb_resolve")
 
 def _distroless_extension(module_ctx):
     root_direct_deps = []
@@ -13,9 +14,8 @@ def _distroless_extension(module_ctx):
         for install in mod.tags.install:
             lockf = None
             if not install.lock:
-                lockf = internal_resolve(
+                lockf = manifest.lock(
                     module_ctx,
-                    "yq",
                     install.manifest,
                     install.resolve_transitive,
                 )

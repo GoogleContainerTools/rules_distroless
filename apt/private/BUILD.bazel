@@ -27,8 +27,6 @@ bzl_library(
     visibility = ["//apt:__subpackages__"],
     deps = [
         ":lockfile",
-        "@bazel_tools//tools/build_defs/repo:http.bzl",
-        "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
 )
 
@@ -37,6 +35,18 @@ bzl_library(
     srcs = ["lockfile.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [":util"],
+)
+
+bzl_library(
+    name = "manifest",
+    srcs = ["manifest.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [
+        ":lockfile",
+        ":package_index",
+        ":util",
+        "@aspect_bazel_lib//lib:repo_utils",
+    ],
 )
 
 bzl_library(
@@ -52,6 +62,7 @@ bzl_library(
     visibility = ["//apt:__subpackages__"],
     deps = [
         ":lockfile",
+        ":manifest",
         ":package_index",
         "@aspect_bazel_lib//lib:repo_utils",
     ],

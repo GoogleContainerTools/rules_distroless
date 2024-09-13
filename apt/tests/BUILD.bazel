@@ -1,5 +1,8 @@
+load(":manifest_test.bzl", "manifest_tests")
 load(":package_index_test.bzl", "package_index_tests")
 load(":version_test.bzl", "version_tests")
+
+manifest_tests()
 
 package_index_tests()
 
