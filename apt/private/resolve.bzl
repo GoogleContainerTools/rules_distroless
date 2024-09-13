@@ -62,7 +62,7 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
             constraint = package_resolution.parse_depends(dep_constraint).pop()
 
             rctx.report_progress("Resolving %s" % dep_constraint)
-            (package, dependencies, unmet_dependencies) = pkgresolution.resolve_all(
+            package, dependencies = pkgresolution.resolve_all(
                 arch = arch,
                 name = constraint["name"],
                 version = constraint["version"],
@@ -71,10 +71,6 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
 
             if not package:
                 fail("Unable to locate package `%s`" % dep_constraint)
-
-            if len(unmet_dependencies):
-                # buildifier: disable=print
-                print("the following packages have unmet dependencies: %s" % ",".join([up[0] for up in unmet_dependencies]))
 
             lockf.add_package(package, arch)
 
