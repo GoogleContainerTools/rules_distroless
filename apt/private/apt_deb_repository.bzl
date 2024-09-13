@@ -3,9 +3,7 @@
 load(":util.bzl", "util")
 load(":version_constraint.bzl", "version_constraint")
 
-def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
-    target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
-
+def _fetch_package_index(rctx, url, dist, comp, arch):
     # See https://linux.die.net/man/1/xz and https://linux.die.net/man/1/gzip
     #  --keep       -> keep the original file (Bazel might be still committing the output to the cache)
     #  --force      -> overwrite the output if it exists
@@ -17,42 +15,63 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
 
     failed_attempts = []
 
-    for (ext, cmd) in supported_extensions.items():
-        output = "{}/Packages.{}".format(target_triple, ext)
-        dist_url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, ext)
+    for ext, cmd in supported_extensions.items():
+        index = "Packages"
+        index_full = "{}.{}".format(index, ext)
+
+        output = "{dist}/{comp}/{arch}/{index}".format(
+            dist = dist,
+            comp = comp,
+            arch = arch,
+            index = index,
+        )
+        output_full = "{}.{}".format(output, ext)
+
+        index_url = "{url}/dists/{dist}/{comp}/binary-{arch}/{index_full}".format(
+            url = url,
+            dist = dist,
+            comp = comp,
+            arch = arch,
+            index_full = index_full,
+        )
+
         download = rctx.download(
-            url = dist_url,
-            output = output,
-            integrity = integrity,
+            url = index_url,
+            output = output_full,
             allow_fail = True,
         )
-        decompress_r = None
-        if download.success:
-            decompress_r = rctx.execute(cmd + [output])
-            if decompress_r.return_code == 0:
-                integrity = download.integrity
-                break
 
-        failed_attempts.append((dist_url, download, decompress_r))
+        if not download.success:
+            reason = "Download failed. See warning above for details."
+            failed_attempts.append((index_url, reason))
+            continue
+
+        decompress_cmd = cmd + [output_full]
+        decompress_res = rctx.execute(decompress_cmd)
+
+        if decompress_res.return_code == 0:
+            break
+
+        reason = "'{cmd}' returned a non-zero exit code: {return_code}"
+        reason += "\n\n{stderr}\n{stdout}"
+        reason = reason.format(
+            cmd = decompress_cmd,
+            return_code = decompress_res.return_code,
+            stderr = decompress_res.stderr,
+            stdout = decompress_res.stdout,
+        )
+
+        failed_attempts.append((index_url, reason))
 
     if len(failed_attempts) == len(supported_extensions):
-        attempt_messages = []
-        for (url, download, decompress) in failed_attempts:
-            reason = "unknown"
-            if not download.success:
-                reason = "Download failed. See warning above for details."
-            elif decompress.return_code != 0:
-                reason = "Decompression failed with non-zero exit code.\n\n{}\n{}".format(decompress.stderr, decompress.stdout)
+        attempt_messages = [
+            "\n  * '{}' FAILED:\n\n  {}".format(url, reason)
+            for url, reason in failed_attempts
+        ]
 
-            attempt_messages.append("""\n*) Failed '{}'\n\n{}""".format(url, reason))
+        fail("Failed to fetch packages index:\n" + "\n".join(attempt_messages))
 
-        fail("""
-** Tried to download {} different package indices and all failed. 
-
-{}
-        """.format(len(failed_attempts), "\n".join(attempt_messages)))
-
-    return ("{}/Packages".format(target_triple), integrity)
+    return rctx.read(output)
 
 def _parse_repository(state, contents, root):
     last_key = ""
@@ -122,12 +141,13 @@ def _create(rctx, sources, archs):
             # on misconfigured HTTP servers)
             url = url.rstrip("/")
 
-            rctx.report_progress("Fetching package index: {}/{} for {}".format(dist, comp, arch))
-            (output, _) = _fetch_package_index(rctx, url, dist, comp, arch, "")
+            index = "{}/{} for {}".format(dist, comp, arch)
 
-            # TODO: this is expensive to perform.
-            rctx.report_progress("Parsing package index: {}/{} for {}".format(dist, comp, arch))
-            _parse_repository(state, rctx.read(output), url)
+            rctx.report_progress("Fetching package index: %s" % index)
+            output = _fetch_package_index(rctx, url, dist, comp, arch)
+
+            rctx.report_progress("Parsing package index: %s" % index)
+            _parse_repository(state, output, url)
 
     return struct(
         package_versions = lambda **kwargs: _package_versions(state, **kwargs),
