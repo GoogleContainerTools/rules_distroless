@@ -1,5 +1,7 @@
 "mocks for unit tests"
 
+load("//apt/private:manifest.bzl", "manifest")
+
 def _report_progress():
     return lambda msg: None
 
@@ -58,6 +60,17 @@ def _packages_index(arch, name, version):
         for k, v in _pkg(arch, name, version).items()
     ]) + "\n"
 
+def _manifest_dict(url, arch, name):
+    return {
+        "version": 1,
+        "sources": [{"channel": "bullseye main", "url": url}],
+        "archs": [arch],
+        "packages": [name],
+    }
+
+def _manifest(url, arch, name, manifest_label = "mock_manifest"):
+    return manifest._from_dict(_manifest_dict(url, arch, name), manifest_label)
+
 mock = struct(
     report_progress = _report_progress,
     read = _read,
@@ -66,4 +79,6 @@ mock = struct(
     rctx = _rctx,
     pkg = _pkg,
     packages_index = _packages_index,
+    manifest_dict = _manifest_dict,
+    manifest = _manifest,
 )

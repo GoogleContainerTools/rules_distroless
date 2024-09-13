@@ -1,6 +1,7 @@
 "unit tests for package index"
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load("//apt/private:manifest.bzl", "manifest")
 load("//apt/private:package_index.bzl", "package_index")
 load(":mocks.bzl", "mock")
 
@@ -16,8 +17,8 @@ def _fetch_package_index_test(ctx):
     output = mock.packages_index(arch, name, version)
 
     url = "http://mirror.com"
-    dist = "bullseye"
-    comp = "main"
+
+    source = mock.manifest(url, arch, name).sources[0]
 
     mock_rctx = mock.rctx(
         read = mock.read(output),
@@ -25,7 +26,7 @@ def _fetch_package_index_test(ctx):
         execute = mock.execute([struct(return_code = 0)]),
     )
 
-    actual = package_index._fetch_package_index(mock_rctx, url, dist, comp, arch)
+    actual = package_index._fetch_package_index(mock_rctx, source)
 
     asserts.equals(env, output, actual)
 
@@ -43,9 +44,10 @@ def _parse_package_index_test(ctx):
     output = mock.packages_index(arch, name, version)
 
     url = "http://snapshot.foo.com/bar/baz"
+    source = mock.manifest(url, arch, name).sources[0]
 
     actual = {}
-    package_index._parse_package_index(actual, output, arch, url)
+    package_index._parse_package_index(actual, output, source)
 
     asserts.equals(env, "foo", actual[arch][name][version]["Package"])
     asserts.equals(env, url, actual[arch][name][version]["Root"])
@@ -104,7 +106,6 @@ def _index_test(ctx):
     output = mock.packages_index(arch, name, version)
 
     url = "http://mirror.com"
-    sources = [(url, "bullseye", "main")]
 
     mock_rctx = mock.rctx(
         read = mock.read(output),
@@ -112,7 +113,7 @@ def _index_test(ctx):
         execute = mock.execute([struct(return_code = 0)]),
     )
 
-    actual = package_index._index(mock_rctx, sources = sources, archs = [arch])
+    actual = package_index._index(mock_rctx, mock.manifest(url, arch, name))
 
     expected_pkg = mock.pkg(arch, name, version)
     expected_pkg["Root"] = url
