@@ -26,6 +26,7 @@ bzl_library(
     srcs = ["index.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
+        ":deb_import",
         ":lockfile",
     ],
 )
@@ -34,7 +35,13 @@ bzl_library(
     name = "lockfile",
     srcs = ["lockfile.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
+    deps = [":pkg"],
+)
+
+bzl_library(
+    name = "pkg",
+    srcs = ["pkg.bzl"],
+    visibility = ["//apt:__subpackages__"],
 )
 
 bzl_library(
@@ -79,7 +86,16 @@ bzl_library(
     name = "deb_import",
     srcs = ["deb_import.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
+    deps = [
+        ":util",
+        # NOTE: I had to add cache.bzl because bazel test //docs:update_1_test was failing with
+        # Stardoc documentation generation failed:
+        # File <SANDBOX>/bin/docs/apt_stardoc.runfiles/bazel_tools/tools/build_defs/repo/http.bzl imported ':cache.bzl',
+        # yet <SANDBOX>/bin/docs/apt_stardoc.runfiles/bazel_tools/tools/build_defs/repo/cache.bzl was not found.
+        "@bazel_tools//tools/build_defs/repo:cache.bzl",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
 )
 
 bzl_library(
