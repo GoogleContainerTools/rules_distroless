@@ -69,9 +69,9 @@ def _version_relop(va, vb, op):
         return version_lib.eq(va, vb)
     fail("unknown op %s" % op)
 
-def _resolve_package(state, name, version, arch):
+def _resolve_package(index, arch, name, version):
     # Get available versions of the package
-    versions = state.index.package_versions(name = name, arch = arch)
+    versions = index.package_get(arch, name)
 
     # Order packages by highest to lowest
     versions = version_lib.sort(versions, reverse = True)
@@ -79,7 +79,7 @@ def _resolve_package(state, name, version, arch):
     if version:
         for av in versions:
             if _version_relop(av, version[1], version[0]):
-                package = state.index.package(name = name, version = av, arch = arch)
+                package = index.package_get(arch, name, av)
 
                 # Since versions are ordered by hight to low, the first satisfied version will be
                 # the highest version and rules_distroless ignores Priority field so it's safe.
@@ -88,10 +88,10 @@ def _resolve_package(state, name, version, arch):
     elif len(versions) > 0:
         # First element in the versions list is the latest version.
         version = versions[0]
-        package = state.index.package(name = name, version = version, arch = arch)
+        package = index.package_get(arch, name, version)
     return package
 
-def _resolve_all(state, name, version, arch, include_transitive):
+def _resolve_all(index, arch, name, version, include_transitive):
     root_package = None
     already_recursed = {}
     unmet_dependencies = []
@@ -107,7 +107,7 @@ def _resolve_all(state, name, version, arch, include_transitive):
             fail("resolve_dependencies exhausted the iteration")
         (name, version) = stack.pop()
 
-        package = _resolve_package(state, name, version, arch)
+        package = _resolve_package(index, arch, name, version)
 
         if not package:
             key = "%s~~%s" % (name, version[1] if version else "")
@@ -152,14 +152,13 @@ def _resolve_all(state, name, version, arch, include_transitive):
 
     return (root_package, dependencies, unmet_dependencies)
 
-def _create_resolution(index):
-    state = struct(index = index)
+def _new(index):
     return struct(
-        resolve_all = lambda **kwargs: _resolve_all(state, **kwargs),
-        resolve_package = lambda **kwargs: _resolve_package(state, **kwargs),
+        resolve_all = lambda **kwargs: _resolve_all(index, **kwargs),
+        resolve_package = lambda **kwargs: _resolve_package(index, **kwargs),
     )
 
 package_resolution = struct(
-    new = _create_resolution,
+    new = _new,
     parse_depends = _parse_depends,
 )
