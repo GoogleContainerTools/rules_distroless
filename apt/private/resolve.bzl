@@ -63,9 +63,9 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
 
             rctx.report_progress("Resolving %s" % dep_constraint)
             (package, dependencies, unmet_dependencies) = pkgresolution.resolve_all(
+                arch = arch,
                 name = constraint["name"],
                 version = constraint["version"],
-                arch = arch,
                 include_transitive = include_transitive,
             )
 

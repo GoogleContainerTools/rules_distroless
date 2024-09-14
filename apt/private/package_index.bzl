@@ -1,7 +1,5 @@
 "package index"
 
-load(":util.bzl", "util")
-
 def _fetch_package_index(rctx, url, dist, comp, arch):
     # See https://linux.die.net/man/1/xz and https://linux.die.net/man/1/gzip
     #  --keep       -> keep the original file (Bazel might be still committing the output to the cache)
@@ -72,8 +70,14 @@ def _fetch_package_index(rctx, url, dist, comp, arch):
 
     return rctx.read(output)
 
-def _parse_package_index(state, contents, arch, root):
-    # TODO: this is expensive to perform.
+def _package_set(packages, keys, package):
+    for key in keys[:-1]:
+        if key not in packages:
+            packages[key] = {}
+        packages = packages[key]
+    packages[keys[-1]] = package
+
+def _parse_package_index(packages, contents, arch, root):
     last_key = ""
     pkg = {}
     for group in contents.split("\n\n"):
@@ -103,25 +107,28 @@ def _parse_package_index(state, contents, arch, root):
 
         if len(pkg.keys()) != 0:
             pkg["Root"] = root
-            util.set_dict(state.packages, value = pkg, keys = (arch, pkg["Package"], pkg["Version"]))
+            _package_set(
+                packages,
+                keys = (arch, pkg["Package"], pkg["Version"]),
+                package = pkg,
+            )
             last_key = ""
             pkg = {}
 
-def _package_versions(state, name, arch):
-    if name not in state.packages[arch]:
-        return []
-    return state.packages[arch][name].keys()
+def _package_get(packages, arch, name, version = None):
+    versions = packages.get(arch, {}).get(name, {})
 
-def _package(state, name, version, arch):
-    if name not in state.packages[arch]:
-        return None
-    if version not in state.packages[arch][name]:
-        return None
-    return state.packages[arch][name][version]
+    if version == None:
+        return versions.keys()
 
-def _create(rctx, sources, archs):
-    state = struct(
-        packages = dict(),
+    return versions.get(version, None)
+
+def _new(rctx, sources, archs):
+    packages = {}
+
+    package_index = struct(
+        packages = packages,
+        package_get = lambda arch, name, version = None: _package_get(packages, arch, name, version),
     )
 
     for arch in archs:
@@ -139,13 +146,10 @@ def _create(rctx, sources, archs):
             output = _fetch_package_index(rctx, url, dist, comp, arch)
 
             rctx.report_progress("Parsing package index: %s" % index)
-            _parse_package_index(state, output, arch, url)
+            _parse_package_index(packages, output, arch, url)
 
-    return struct(
-        package_versions = lambda **kwargs: _package_versions(state, **kwargs),
-        package = lambda **kwargs: _package(state, **kwargs),
-    )
+    return package_index
 
 package_index = struct(
-    new = _create,
+    new = _new,
 )
