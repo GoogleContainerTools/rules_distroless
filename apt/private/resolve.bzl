@@ -100,8 +100,10 @@ if [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE ]; then
     wksp_file="WORKSPACE"
 elif [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE.bazel ]; then
     wksp_file="WORKSPACE.bazel"
+elif [ -e $BUILD_WORKSPACE_DIRECTORY/MODULE.bazel ]; then
+    wksp_file="MODULE.bazel"
 else
-    echo>&2 "Error: neither WORKSPACE nor WORKSPACE.bazel file was found"
+    echo>&2 "Error: no MODULE.bazel or WORKSPACE file was found"
     exit 1
 fi
 
