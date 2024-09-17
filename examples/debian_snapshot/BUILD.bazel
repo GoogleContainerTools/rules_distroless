@@ -58,7 +58,7 @@ PACKAGES = [
     "@bullseye//ncurses-base",
     "@bullseye//libncurses6",
     "@bullseye//tzdata",
-    "@bullseye//bash",
+    "@bullseye_nolock//bash",
     "@bullseye//coreutils",
     "@bullseye//dpkg",
     "@bullseye//apt",
