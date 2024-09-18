@@ -1,3 +1,6 @@
+# ignoring e2e MODULE.bazel.lock for the time being
+# see https://github.com/bazelbuild/bazel/issues/20369
+e2e/smoke/MODULE.bazel.lock
 bazel-*
 .bazelrc.user
 .idea/
