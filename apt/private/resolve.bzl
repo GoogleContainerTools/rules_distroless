@@ -3,7 +3,6 @@
 load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
 load(":lockfile.bzl", "lockfile")
 load(":package_index.bzl", "package_index")
-load(":package_resolution.bzl", "package_resolution")
 
 def _parse_manifest(rctx, yq_toolchain_prefix, manifest):
     is_windows = repo_utils.is_windows(rctx)
@@ -49,7 +48,6 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
             ))
 
     pkgindex = package_index.new(rctx, sources = sources, archs = manifest["archs"])
-    pkgresolution = package_resolution.new(index = pkgindex)
     lockf = lockfile.empty(rctx)
 
     for arch in manifest["archs"]:
@@ -59,10 +57,10 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
                 fail("Duplicate package, {}. Please remove it from your manifest".format(dep_constraint))
             dep_constraint_set[dep_constraint] = True
 
-            constraint = package_resolution.parse_depends(dep_constraint).pop()
+            constraint = package_index.parse_depends(dep_constraint).pop()
 
             rctx.report_progress("Resolving %s" % dep_constraint)
-            package, dependencies = pkgresolution.resolve_all(
+            package, dependencies = pkgindex.resolve_all(
                 arch = arch,
                 name = constraint["name"],
                 version = constraint["version"],
