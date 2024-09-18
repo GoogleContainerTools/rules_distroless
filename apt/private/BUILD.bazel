@@ -43,12 +43,6 @@ bzl_library(
     name = "package_index",
     srcs = ["package_index.bzl"],
     visibility = ["//apt:__subpackages__"],
-)
-
-bzl_library(
-    name = "package_resolution",
-    srcs = ["package_resolution.bzl"],
-    visibility = ["//apt:__subpackages__"],
     deps = [":version"],
 )
 
@@ -59,7 +53,6 @@ bzl_library(
     deps = [
         ":lockfile",
         ":package_index",
-        ":package_resolution",
         "@aspect_bazel_lib//lib:repo_utils",
     ],
 )
