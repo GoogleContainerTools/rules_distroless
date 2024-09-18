@@ -19,7 +19,27 @@ def _parse_version(rv):
 
     upstream = rv
 
+    # TODO: validate version
+
     return (epoch, upstream, revision)
+
+def _parse_version_and_constraint(version_and_constraint):
+    chunks = version_and_constraint.split(" ")
+
+    if len(chunks) != 2:
+        fail("Invalid version constraint %s" % version_and_constraint)
+
+    version_constraint = chunks[0]
+    if version_constraint not in VERSION_OPERATORS:
+        msg = "Invalid version constraint: %s\n" % version_constraint
+        msg += "Valid constraints are: %s" % VERSION_OPERATORS.keys()
+        fail(msg)
+
+    version = chunks[1]
+
+    _parse_version(version)  # parsing version to validate it
+
+    return (version_constraint, version)
 
 def _cmp(a, b):
     if a < b:
@@ -114,6 +134,14 @@ def _version_cmp_part(va, vb):
                 return res
     return 0
 
+VERSION_OPERATORS = {
+    ">>": lambda v: v == 1,
+    ">=": lambda v: v >= 0,
+    "<<": lambda v: v == -1,
+    "<=": lambda v: v <= 0,
+    "=": lambda v: v == 0,
+}
+
 def _compare_version(va, vb):
     vap = _parse_version(va)
     vbp = _parse_version(vb)
@@ -131,6 +159,16 @@ def _compare_version(va, vb):
     # compare debian revision
     return _version_cmp_part(vap[2] or "0", vbp[2] or "0")
 
+def _compare(va, op, vb):
+    if op not in VERSION_OPERATORS:
+        fail("unknown version operator: '%s'" % op)
+
+    res = _compare_version(va, vb)
+
+    operator = VERSION_OPERATORS[op]
+
+    return operator(res)
+
 def _sort(versions, reverse = False):
     vr = versions
     for i in range(len(vr)):
@@ -146,10 +184,7 @@ def _sort(versions, reverse = False):
 
 version = struct(
     parse = _parse_version,
-    gt = lambda va, vb: _compare_version(va, vb) == 1,
-    gte = lambda va, vb: _compare_version(va, vb) >= 0,
-    lt = lambda va, vb: _compare_version(va, vb) == -1,
-    lte = lambda va, vb: _compare_version(va, vb) <= 0,
-    eq = lambda va, vb: _compare_version(va, vb) == 0,
+    parse_version_and_constraint = _parse_version_and_constraint,
+    compare = _compare,
     sort = lambda versions, reverse = False: _sort(versions, reverse = reverse),
 )

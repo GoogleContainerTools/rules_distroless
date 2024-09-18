@@ -38,37 +38,53 @@ def _parse_test(ctx):
 
 parse_test = unittest.make(_parse_test)
 
-def _operators_test(ctx):
-    parameters = [
-        ("0", version.lt, "a"),
-        ("1.0", version.lt, "1.1"),
-        ("1.2", version.lt, "1.11"),
-        ("1.0-0.1", version.lt, "1.1"),
-        ("1.0-0.1", version.lt, "1.0-1"),
-        ("1.0", version.eq, "1.0"),
-        ("1.0-0.1", version.eq, "1.0-0.1"),
-        ("1:1.0-0.1", version.eq, "1:1.0-0.1"),
-        ("1:1.0", version.eq, "1:1.0"),
-        ("1.0-0.1", version.lt, "1.0-1"),
-        ("1.0final-5sarge1", version.gt, "1.0final-5"),
-        ("1.0final-5", version.gt, "1.0a7-2"),
-        ("0.9.2-5", version.lt, "0.9.2+cvs.1.0.dev.2004.07.28-1.5"),
-        ("1:500", version.lt, "1:5000"),
-        ("100:500", version.gt, "11:5000"),
-        ("1.0.4-2", version.gt, "1.0pre7-2"),
-        ("1.5~rc1", version.lt, "1.5"),
-        ("1.5~rc1", version.lt, "1.5+b1"),
-        ("1.5~rc1", version.lt, "1.5~rc2"),
-        ("1.5~rc1", version.gt, "1.5~dev0"),
-    ]
+def _parse_version_and_constraint_test(ctx):
+    parameters = {
+        ">= 1.4.1": (">=", "1.4.1"),
+        "<< 7.1.ds-1": ("<<", "7.1.ds-1"),
+    }
 
     env = unittest.begin(ctx)
-    for va, version_op, vb in parameters:
-        asserts.true(env, version_op(va, vb))
+
+    for vac, expected in parameters.items():
+        actual = version.parse_version_and_constraint(vac)
+        asserts.equals(env, actual, expected)
 
     return unittest.end(env)
 
-operators_test = unittest.make(_operators_test)
+parse_version_and_constraint_test = unittest.make(_parse_version_and_constraint_test)
+
+def _compare_test(ctx):
+    parameters = [
+        ("0", "<<", "a"),
+        ("1.0", "<<", "1.1"),
+        ("1.2", "<<", "1.11"),
+        ("1.0-0.1", "<<", "1.1"),
+        ("1.0-0.1", "<<", "1.0-1"),
+        ("1.0", "=", "1.0"),
+        ("1.0-0.1", "=", "1.0-0.1"),
+        ("1:1.0-0.1", "=", "1:1.0-0.1"),
+        ("1:1.0", "=", "1:1.0"),
+        ("1.0-0.1", "<<", "1.0-1"),
+        ("1.0final-5sarge1", ">>", "1.0final-5"),
+        ("1.0final-5", ">>", "1.0a7-2"),
+        ("0.9.2-5", "<<", "0.9.2+cvs.1.0.dev.2004.07.28-1.5"),
+        ("1:500", "<<", "1:5000"),
+        ("100:500", ">>", "11:5000"),
+        ("1.0.4-2", ">>", "1.0pre7-2"),
+        ("1.5~rc1", "<<", "1.5"),
+        ("1.5~rc1", "<<", "1.5+b1"),
+        ("1.5~rc1", "<<", "1.5~rc2"),
+        ("1.5~rc1", ">>", "1.5~dev0"),
+    ]
+
+    env = unittest.begin(ctx)
+    for va, op, vb in parameters:
+        asserts.true(env, version.compare(va, op, vb))
+
+    return unittest.end(env)
+
+compare_test = unittest.make(_compare_test)
 
 def _sort_test(ctx):
     parameters = [
@@ -95,6 +111,9 @@ def _sort_test(ctx):
 sort_test = unittest.make(_sort_test)
 
 def version_tests():
-    operators_test(name = _TEST_SUITE_PREFIX + "operators")
     parse_test(name = _TEST_SUITE_PREFIX + "parse")
+    parse_version_and_constraint_test(
+        name = _TEST_SUITE_PREFIX + "parse_version_and_constraint_test",
+    )
+    compare_test(name = _TEST_SUITE_PREFIX + "compare")
     sort_test(name = _TEST_SUITE_PREFIX + "sort")
