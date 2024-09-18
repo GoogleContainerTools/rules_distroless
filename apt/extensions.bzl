@@ -20,8 +20,9 @@ def _distroless_extension(module_ctx):
                     install.resolve_transitive,
                 )
 
-                # buildifier: disable=print
-                print("\nNo lockfile was given, please run `bazel run @%s//:lock` to create the lockfile." % install.name)
+                if not install.nolock:
+                    # buildifier: disable=print
+                    print("\nNo lockfile was given, please run `bazel run @%s//:lock` to create the lockfile." % install.name)
             else:
                 lockf = lockfile.from_json(module_ctx, module_ctx.read(install.lock))
 
@@ -65,6 +66,10 @@ def _distroless_extension(module_ctx):
 install = tag_class(attrs = {
     "name": attr.string(doc = "Name of the generated repository"),
     "lock": attr.label(doc = """The lock file to use for the index."""),
+    "nolock": attr.bool(
+        doc = """If you explicitly want to run without a lock, set it to True to avoid the DEBUG messages.""",
+        default = False,
+    ),
     "manifest": attr.label(doc = """The file used to generate the lock file"""),
     "resolve_transitive": attr.bool(
         doc = """Whether dependencies of dependencies should be resolved and added to the lockfile.""",
