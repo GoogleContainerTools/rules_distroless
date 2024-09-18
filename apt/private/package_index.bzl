@@ -126,11 +126,6 @@ def _package_get(packages, arch, name, version = None):
 def _new(rctx, sources, archs):
     packages = {}
 
-    package_index = struct(
-        packages = packages,
-        package_get = lambda arch, name, version = None: _package_get(packages, arch, name, version),
-    )
-
     for arch in archs:
         for (url, dist, comp) in sources:
             # We assume that `url` does not contain a trailing forward slash when passing to
@@ -148,8 +143,16 @@ def _new(rctx, sources, archs):
             rctx.report_progress("Parsing package index: %s" % index)
             _parse_package_index(packages, output, arch, url)
 
-    return package_index
+    return struct(
+        packages = packages,
+        package_get = lambda arch, name, version = None: _package_get(packages, arch, name, version),
+    )
 
 package_index = struct(
     new = _new,
+    # NOTE: these are exposed here for testing purposes, DO NOT USE OTHERWISE
+    _fetch_package_index = _fetch_package_index,
+    _parse_package_index = _parse_package_index,
+    _package_set = _package_set,
+    _package_get = _package_get,
 )
