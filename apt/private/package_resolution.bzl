@@ -22,14 +22,9 @@ def _parse_dep(raw):
         if paren_end_i == -1:
             fail('invalid version string %s expected a closing paren ")"' % raw)
         name = raw[:paren_start_i].strip()
-        version_and_const = raw[paren_start_i + 1:paren_end_i].strip()
+        version_and_constraint = raw[paren_start_i + 1:paren_end_i].strip()
+        version = version_lib.parse_version_and_constraint(version_and_constraint)
         raw = raw[:paren_start_i] + raw[paren_end_i + 1:]
-
-        vconst_i = version_and_const.find(" ")
-        if vconst_i == -1:
-            fail('invalid version string %s expected a version constraint ">=", "=", ">=", "<<", ">>"' % version_and_const)
-
-        version = (version_and_const[:vconst_i], version_and_const[vconst_i + 1:])
 
     # Depends: python3:any
     # is equivalent to
@@ -56,19 +51,6 @@ def _parse_depends(depends_raw):
 
     return depends
 
-def _version_relop(va, vb, op):
-    if op == "<<":
-        return version_lib.lt(va, vb)
-    elif op == ">>":
-        return version_lib.gt(va, vb)
-    elif op == "<=":
-        return version_lib.lte(va, vb)
-    elif op == ">=":
-        return version_lib.gte(va, vb)
-    elif op == "=":
-        return version_lib.eq(va, vb)
-    fail("unknown op %s" % op)
-
 def _resolve_package(index, arch, name, version):
     # Get available versions of the package
     versions = index.package_get(arch, name)
@@ -77,13 +59,15 @@ def _resolve_package(index, arch, name, version):
     versions = version_lib.sort(versions, reverse = True)
     package = None
     if version:
-        for av in versions:
-            if _version_relop(av, version[1], version[0]):
-                package = index.package_get(arch, name, av)
+        for va in versions:
+            op, vb = version
+            if version_lib.compare(va, op, vb):
+                package = index.package_get(arch, name, va)
 
-                # Since versions are ordered by hight to low, the first satisfied version will be
-                # the highest version and rules_distroless ignores Priority field so it's safe.
-                # TODO: rethink this `break` with https://github.com/GoogleContainerTools/rules_distroless/issues/34
+                # Since versions are ordered by hight to low, the first
+                # satisfied version will be the highest version and
+                # rules_distroless ignores Priority field so it's safe.
+                # TODO: rethink this `break` with issue #34
                 break
     elif len(versions) > 0:
         # First element in the versions list is the latest version.
