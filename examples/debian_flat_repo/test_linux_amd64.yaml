@@ -1,0 +1,9 @@
+schemaVersion: "2.0.0"
+
+commandTests:
+  - name: "apt list --installed"
+    command: "apt"
+    args: ["list", "--installed"]
+    expectedOutput:
+      - Listing\.\.\.
+      - r-mathlib/now 4.4.1-1~bullseyecran.0 amd64 \[installed,local\]

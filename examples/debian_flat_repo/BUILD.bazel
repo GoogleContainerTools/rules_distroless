@@ -1,0 +1,48 @@
+load("@container_structure_test//:defs.bzl", "container_structure_test")
+load("@rules_distroless//apt:defs.bzl", "dpkg_status")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+
+PACKAGES = [
+    "@bullseye//dpkg",
+    "@bullseye//apt",
+    "@bullseye_rproject//r-mathlib",
+]
+
+# Creates /var/lib/dpkg/status with installed package information.
+dpkg_status(
+    name = "dpkg_status",
+    controls = [
+        "%s/amd64:control" % package
+        for package in PACKAGES
+    ],
+)
+
+oci_image(
+    name = "apt",
+    architecture = "amd64",
+    os = "linux",
+    tars = [
+        ":dpkg_status",
+    ] + [
+        "%s/amd64" % package
+        for package in PACKAGES
+    ],
+)
+
+oci_load(
+    name = "tarball",
+    image = ":apt",
+    repo_tags = [
+        "distroless/test:latest",
+    ],
+)
+
+container_structure_test(
+    name = "test",
+    configs = ["test_linux_amd64.yaml"],
+    image = ":apt",
+    target_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+    ],
+)
