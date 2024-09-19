@@ -93,9 +93,13 @@ def _parse_package_index(packages, contents, source):
 
         if len(pkg.keys()) != 0:
             pkg["Root"] = source.base_url
+
+            # NOTE: workaround for multi-arch flat repos
+            arch = source.arch if pkg["Architecture"] == "all" else pkg["Architecture"]
+
             _package_set(
                 packages,
-                keys = (source.arch, pkg["Package"], pkg["Version"]),
+                keys = (arch, pkg["Package"], pkg["Version"]),
                 package = pkg,
             )
             last_key = ""
