@@ -1,5 +1,6 @@
 "package index"
 
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":version.bzl", version_lib = "version")
 
 def _fetch_package_index(rctx, source):
@@ -56,6 +57,56 @@ def _fetch_package_index(rctx, source):
 
     return rctx.read(source.output)
 
+def _parse_url(url):
+    if "://" not in url:
+        fail("Invalid URL: %s" % url)
+
+    scheme, url_ = url.split("://", 1)
+
+    path = "/"
+
+    if "/" in url_:
+        host, path_ = url_.split("/", 1)
+        path += path_
+    else:
+        host = url_
+
+    return struct(scheme = scheme, host = host, path = path)
+
+def _make_file_url(pkg, source):
+    filename = pkg["Filename"]
+
+    invalid_filename = not paths.is_normalized(
+        filename,
+        look_for_same_level_references = True,
+    )
+
+    if invalid_filename:
+        # NOTE:
+        # Although the Debian repo spec for 'Filename' (see
+        # https://wiki.debian.org/DebianRepository/Format#Filename) clearly
+        # says that 'Filename' should be relative to the base directory of the
+        # repo and should be in canonical form (i.e. without '.' or '..') there
+        # are cases where this is not honored.
+        #
+        # In those cases we try to work around this by assuming 'Filename' is
+        # relative to the sources.list "index path" (e.g. directory/ for flat
+        # repos) so we combine them and normalize the new 'Filename' path.
+        #
+        # Note that, so far, only the NVIDIA CUDA repos needed this workaround
+        # so maybe this heuristic will break for other repos that don't conform
+        # to the Debian repo spec.
+        filename = paths.normalize(paths.join(source.index_path, filename))
+
+    base_url = _parse_url(source.base_url)
+    file_url = "{}://{}{}".format(
+        base_url.scheme,
+        base_url.host,
+        paths.join(base_url.path, filename),
+    )
+
+    return file_url, invalid_filename
+
 def _package_set(packages, keys, package):
     for key in keys[:-1]:
         if key not in packages:
@@ -66,6 +117,9 @@ def _package_set(packages, keys, package):
 def _parse_package_index(packages, contents, source):
     last_key = ""
     pkg = {}
+    total_pkgs = 0
+    out_of_spec = []
+
     for group in contents.split("\n\n"):
         for line in group.split("\n"):
             if line.strip() == "":
@@ -92,7 +146,10 @@ def _parse_package_index(packages, contents, source):
             pkg[key] = value
 
         if len(pkg.keys()) != 0:
-            pkg["Root"] = source.base_url
+            pkg["FileUrl"], invalid_filename = _make_file_url(pkg, source)
+
+            if invalid_filename:
+                out_of_spec.append(pkg["Package"])
 
             # NOTE: workaround for multi-arch flat repos
             arch = source.arch if pkg["Architecture"] == "all" else pkg["Architecture"]
@@ -104,6 +161,9 @@ def _parse_package_index(packages, contents, source):
             )
             last_key = ""
             pkg = {}
+            total_pkgs += 1
+
+    return out_of_spec, total_pkgs
 
 def _package_get(packages, arch, name, version = None):
     versions = packages.get(arch, {}).get(name, {})
@@ -123,7 +183,13 @@ def _index(rctx, manifest):
         output = _fetch_package_index(rctx, source)
 
         rctx.report_progress("Parsing package index: %s" % index)
-        _parse_package_index(packages, output, source)
+        out_of_spec, total_pkgs = _parse_package_index(packages, output, source)
+
+        if out_of_spec:
+            count = len(out_of_spec)
+            pct = int(100.0 * count / total_pkgs)
+            msg = "Warning: index {} has {} packages ({}%) with invalid 'Filename' fields"
+            print(msg.format(index, count, pct))
 
     return struct(
         packages = packages,
@@ -287,6 +353,8 @@ package_index = struct(
     parse_depends = _parse_depends,
     # NOTE: these are exposed here for testing purposes, DO NOT USE OTHERWISE
     _fetch_package_index = _fetch_package_index,
+    _parse_url = _parse_url,
+    _make_file_url = _make_file_url,
     _parse_package_index = _parse_package_index,
     _package_set = _package_set,
     _package_get = _package_get,

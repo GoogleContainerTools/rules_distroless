@@ -34,6 +34,22 @@ def _fetch_package_index_test(ctx):
 
 fetch_package_index_test = unittest.make(_fetch_package_index_test)
 
+def _parse_url_test(ctx):
+    env = unittest.begin(ctx)
+
+    parameters = {
+        "http://mirror.com": struct(scheme = "http", host = "mirror.com", path = "/"),
+        "http://mirror.com/foo/bar": struct(scheme = "http", host = "mirror.com", path = "/foo/bar"),
+    }
+
+    for url, expected in parameters.items():
+        actual = package_index._parse_url(url)
+        asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+parse_url_test = unittest.make(_parse_url_test)
+
 def _parse_package_index_test(ctx):
     env = unittest.begin(ctx)
 
@@ -50,7 +66,7 @@ def _parse_package_index_test(ctx):
     package_index._parse_package_index(actual, output, source)
 
     asserts.equals(env, "foo", actual[arch][name][version]["Package"])
-    asserts.equals(env, url, actual[arch][name][version]["Root"])
+    asserts.true(env, actual[arch][name][version]["FileUrl"].startswith(url))
 
     return unittest.end(env)
 
@@ -107,6 +123,8 @@ def _index_test(ctx):
 
     url = "http://mirror.com"
 
+    source = mock.manifest(url, arch, name).sources[0]
+
     mock_rctx = mock.rctx(
         read = mock.read(output),
         download = mock.download(success = True),
@@ -116,10 +134,17 @@ def _index_test(ctx):
     actual = package_index._index(mock_rctx, mock.manifest(url, arch, name))
 
     expected_pkg = mock.pkg(arch, name, version)
-    expected_pkg["Root"] = url
+    file_url, _ = package_index._make_file_url(expected_pkg, source)
+    expected_pkg["FileUrl"] = file_url
 
     actual_pkg = actual.package_get(arch, name, version)
-    asserts.equals(env, expected_pkg, actual_pkg)
+
+    # NOTE: we compare key-by-key because the error output of
+    # asserts.equals(env, expected_pkg, actual_pkg) is quite
+    # hard to read
+    asserts.equals(env, expected_pkg.keys(), actual_pkg.keys())
+    for key in expected_pkg.keys():
+        asserts.equals(env, expected_pkg[key], actual_pkg[key])
 
     expected_packages = {arch: {name: {version: expected_pkg}}}
     asserts.equals(env, expected_packages, actual.packages)
@@ -230,6 +255,7 @@ parse_depends_test = unittest.make(_parse_depends_test)
 
 def package_index_tests():
     fetch_package_index_test(name = _TEST_SUITE_PREFIX + "_fetch_package_index")
+    parse_url_test(name = _TEST_SUITE_PREFIX + "_parse_url")
     parse_package_index_test(name = _TEST_SUITE_PREFIX + "_parse_package_index")
     package_set_get_test(name = _TEST_SUITE_PREFIX + "_package_set_get")
     index_test(name = _TEST_SUITE_PREFIX + "_index")
