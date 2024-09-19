@@ -4,7 +4,7 @@ def _pkg_from_index(package, arch):
     return struct(
         name = package["Package"],
         version = package["Version"],
-        url = "%s/%s" % (package["Root"], package["Filename"]),
+        url = package["FileUrl"],
         sha256 = package["SHA256"],
         arch = arch,
         dependencies = [],
