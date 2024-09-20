@@ -21,11 +21,11 @@ dpkg_status(
     name = "dpkg_status",
     controls = select({
         "@platforms//cpu:x86_64": [
-            "%s/amd64:control" % package
+            "%s:control" % package
             for package in PACKAGES_AMD64
         ],
         "@platforms//cpu:arm64": [
-            "%s/arm64:control" % package
+            "%s:control" % package
             for package in PACKAGES_ARM64
         ],
     }),
@@ -41,14 +41,8 @@ oci_image(
     tars = [
         ":dpkg_status",
     ] + select({
-        "@platforms//cpu:x86_64": [
-            "%s/amd64" % package
-            for package in PACKAGES_AMD64
-        ],
-        "@platforms//cpu:arm64": [
-            "%s/arm64" % package
-            for package in PACKAGES_ARM64
-        ],
+        "@platforms//cpu:x86_64": PACKAGES_AMD64,
+        "@platforms//cpu:arm64": PACKAGES_ARM64,
     }),
 )
 

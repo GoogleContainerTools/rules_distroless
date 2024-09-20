@@ -48,10 +48,7 @@ tar(
 
 cacerts(
     name = "cacerts",
-    package = select({
-        "@platforms//cpu:arm64": "@bullseye//ca-certificates/arm64:data",
-        "@platforms//cpu:x86_64": "@bullseye//ca-certificates/amd64:data",
-    }),
+    package = "@bullseye//ca-certificates:data",
 )
 
 PACKAGES = [
@@ -69,16 +66,7 @@ PACKAGES = [
 # Creates /var/lib/dpkg/status with installed package information.
 dpkg_status(
     name = "dpkg_status",
-    controls = select({
-        "@platforms//cpu:arm64": [
-            "%s/arm64:control" % package
-            for package in PACKAGES
-        ],
-        "@platforms//cpu:x86_64": [
-            "%s/amd64:control" % package
-            for package in PACKAGES
-        ],
-    }),
+    controls = ["%s:control" % p for p in PACKAGES],
 )
 
 oci_image(
@@ -94,16 +82,7 @@ oci_image(
         ":group",
         ":dpkg_status",
         ":cacerts",
-    ] + select({
-        "@platforms//cpu:arm64": [
-            "%s/arm64" % package
-            for package in PACKAGES
-        ],
-        "@platforms//cpu:x86_64": [
-            "%s/amd64" % package
-            for package in PACKAGES
-        ],
-    }),
+    ] + PACKAGES,
 )
 
 oci_load(
