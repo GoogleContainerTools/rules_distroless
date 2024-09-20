@@ -68,6 +68,17 @@ load("@nvidia_ubuntu2404_cuda//:packages.bzl", "nvidia_ubuntu2404_cuda_packages"
 
 nvidia_ubuntu2404_cuda_packages()
 
+# bazel run @bullseye_all//:lock
+deb_index(
+    name = "bullseye_all",
+    lock = "//examples/debian_snapshot_all_arch:bullseye_all.lock.json",
+    manifest = "//examples/debian_snapshot_all_arch:bullseye_all.yaml",
+)
+
+load("@bullseye_all//:packages.bzl", "bullseye_all_packages")
+
+bullseye_all_packages()
+
 deb_index(
     name = "apt_security",
     manifest = "//examples/debian_snapshot_security:security.yaml",
