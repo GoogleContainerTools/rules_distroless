@@ -82,7 +82,7 @@ def deb_index(
         lock: label to a `lock.json`
         nolock: bool, set to True if you explicitly want to run without a lock and avoid the DEBUG messages.
         package_arch_build_template: (EXPERIMENTAL!) a template file for the generated package BUILD files per architecture.
-          Available template replacement keys are: `{target_name}`, `{deps}`, `{urls}`, `{name}`, `{arch}`, `{sha256}`, `{repo_name}`
+          Available template replacement keys are: `{target_name}`, `{src}`, `{deps}`, `{urls}`, `{name}`, `{arch}`, `{sha256}`, `{repo_name}`
         resolve_transitive: whether dependencies of dependencies should be resolved and added to the lockfile.
     """
     _deb_resolve(

@@ -1,6 +1,6 @@
 "apt-get"
 
-load(":deb_import.bzl", "deb_packages", "package_arch_build")
+load(":deb_import.bzl", "deb_packages", "package_aliases_build", "package_arch_build")
 load(":lockfile.bzl", "lockfile")
 
 _BUILD_TMPL = """\
@@ -33,6 +33,11 @@ def _deb_package_index_impl(rctx):
                     rctx.read(rctx.attr.package_arch_build_template),
                 ),
             )
+
+        rctx.file(
+            "%s/BUILD.bazel" % package.name,
+            package_aliases_build(package.name, architectures),
+        )
 
     if rctx.attr.lock_content:
         packages_bzl = ""
