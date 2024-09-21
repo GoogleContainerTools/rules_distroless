@@ -16,7 +16,6 @@ assert_tar_listing(
 ./etc/ssl/certs time=0.0 mode=755 gid=0 uid=0 type=dir
 ./etc/ssl/certs/ca-certificates.crt time=0.0 mode=555 gid=0 uid=0 type=file size=200313
 ./usr time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/ssl/cert.pem time=0.0 mode=555 gid=0 uid=0 type=link link=/etc/ssl/certs/ca-certificates.crt
 ./usr/share time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share/doc time=0.0 mode=755 gid=0 uid=0 type=dir
 ./usr/share/doc/ca-certificates time=0.0 mode=755 gid=0 uid=0 type=dir
