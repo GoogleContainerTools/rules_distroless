@@ -63,7 +63,6 @@ PACKAGES = [
     "@bullseye//dpkg",
     "@bullseye//apt",
     "@bullseye//perl",
-    "@bullseye//openssl",
     "@bullseye//nvidia-kernel-common",
 ]
 
