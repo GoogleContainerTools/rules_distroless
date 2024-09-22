@@ -151,10 +151,10 @@ def _deb_resolve_impl(rctx):
     rctx.file(
         "copy.sh",
         _COPY_SH_TMPL.format(
-            # TODO: don't assume the canonical -> apparent repo mapping character, as it might change
-            # https://bazelbuild.slack.com/archives/C014RARENH0/p1719237766005439
-            # https://github.com/bazelbuild/bazel/issues/22865
-            name = rctx.name.split("~")[-1],
+            # NOTE: the split("~") is needed when we run bazel from another
+            # directory, e.g. when running e2e tests we change dir to e2e/smoke
+            # and then rctx.name is 'rules_distroless~~apt~bullseye'
+            name = rctx.name.split("~")[-1].replace("_resolve", ""),
             label = locklabel,
             workspace_relative_path = (("%s/" % locklabel.package) if locklabel.package else "") + locklabel.name,
         ),
