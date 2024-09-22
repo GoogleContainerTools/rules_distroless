@@ -25,7 +25,6 @@ packages:
   - "ncurses-base"
   - "libncurses6"
   - "tzdata"
-  - "bash"
   - "coreutils" # for commands like `ls`
   # for apt list --installed
   - "dpkg"
