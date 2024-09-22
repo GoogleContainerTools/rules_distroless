@@ -1,10 +1,9 @@
-load(":package_resolution_test.bzl", "version_depends_test")
-load(":version_test.bzl", "version_compare_test", "version_parse_test", "version_sort_test")
+load(":manifest_test.bzl", "manifest_tests")
+load(":package_index_test.bzl", "package_index_tests")
+load(":version_test.bzl", "version_tests")
 
-version_compare_test(name = "version_compare_test")
+manifest_tests()
 
-version_parse_test(name = "version_parse_test")
+package_index_tests()
 
-version_depends_test(name = "version_depends")
-
-version_sort_test(name = "version_sort_test")
+version_tests()
