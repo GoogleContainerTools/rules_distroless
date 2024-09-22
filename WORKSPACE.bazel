@@ -36,11 +36,53 @@ load("@bullseye//:packages.bzl", "bullseye_packages")
 
 bullseye_packages()
 
-# bazel run @apt_security//:lock
+deb_index(
+    name = "bullseye_nolock",
+    manifest = "//examples/debian_snapshot:bullseye_nolock.yaml",
+    nolock = True,
+)
+
+load("@bullseye_nolock//:packages.bzl", "bullseye_nolock_packages")
+
+bullseye_nolock_packages()
+
+# bazel run @bullseye_rproject//:lock
+deb_index(
+    name = "bullseye_rproject",
+    lock = "//examples/debian_flat_repo:bullseye_rproject.lock.json",
+    manifest = "//examples/debian_flat_repo:bullseye_rproject.yaml",
+)
+
+load("@bullseye_rproject//:packages.bzl", "bullseye_rproject_packages")
+
+bullseye_rproject_packages()
+
+# bazel run @nvidia_ubuntu2404_cuda//:lock
+deb_index(
+    name = "nvidia_ubuntu2404_cuda",
+    lock = "//examples/debian_flat_repo:nvidia_ubuntu2404_cuda.lock.json",
+    manifest = "//examples/debian_flat_repo:nvidia_ubuntu2404_cuda.yaml",
+)
+
+load("@nvidia_ubuntu2404_cuda//:packages.bzl", "nvidia_ubuntu2404_cuda_packages")
+
+nvidia_ubuntu2404_cuda_packages()
+
+# bazel run @bullseye_all//:lock
+deb_index(
+    name = "bullseye_all",
+    lock = "//examples/debian_snapshot_all_arch:bullseye_all.lock.json",
+    manifest = "//examples/debian_snapshot_all_arch:bullseye_all.yaml",
+)
+
+load("@bullseye_all//:packages.bzl", "bullseye_all_packages")
+
+bullseye_all_packages()
+
 deb_index(
     name = "apt_security",
-    # lock = "//examples/debian_snapshot_security:security.lock.json",
     manifest = "//examples/debian_snapshot_security:security.yaml",
+    nolock = True,
 )
 
 load("@apt_security//:packages.bzl", "apt_security_packages")

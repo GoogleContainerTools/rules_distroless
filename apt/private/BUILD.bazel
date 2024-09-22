@@ -3,7 +3,8 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 exports_files([
     "dpkg_statusd.sh",
     "dpkg_status.sh",
-    "package.BUILD.tmpl",
+    "copy.sh.tmpl",
+    "package_arch.BUILD.tmpl",
 ])
 
 bzl_library(
@@ -25,9 +26,8 @@ bzl_library(
     srcs = ["index.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
+        ":deb_import",
         ":lockfile",
-        "@bazel_tools//tools/build_defs/repo:http.bzl",
-        "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
 )
 
@@ -35,21 +35,35 @@ bzl_library(
     name = "lockfile",
     srcs = ["lockfile.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
+    deps = [":pkg"],
+)
+
+bzl_library(
+    name = "pkg",
+    srcs = ["pkg.bzl"],
+    visibility = ["//apt:__subpackages__"],
+)
+
+bzl_library(
+    name = "manifest",
+    srcs = ["manifest.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [
+        ":lockfile",
+        ":package_index",
+        ":util",
+        "@aspect_bazel_lib//lib:repo_utils",
+    ],
 )
 
 bzl_library(
     name = "package_index",
     srcs = ["package_index.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
-)
-
-bzl_library(
-    name = "package_resolution",
-    srcs = ["package_resolution.bzl"],
-    visibility = ["//apt:__subpackages__"],
-    deps = [":version"],
+    deps = [
+        ":version",
+        "@bazel_skylib//lib:paths",
+    ],
 )
 
 bzl_library(
@@ -58,8 +72,8 @@ bzl_library(
     visibility = ["//apt:__subpackages__"],
     deps = [
         ":lockfile",
+        ":manifest",
         ":package_index",
-        ":package_resolution",
         "@aspect_bazel_lib//lib:repo_utils",
     ],
 )
@@ -75,7 +89,16 @@ bzl_library(
     name = "deb_import",
     srcs = ["deb_import.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
+    deps = [
+        ":util",
+        # NOTE: I had to add cache.bzl because bazel test //docs:update_1_test was failing with
+        # Stardoc documentation generation failed:
+        # File <SANDBOX>/bin/docs/apt_stardoc.runfiles/bazel_tools/tools/build_defs/repo/http.bzl imported ':cache.bzl',
+        # yet <SANDBOX>/bin/docs/apt_stardoc.runfiles/bazel_tools/tools/build_defs/repo/cache.bzl was not found.
+        "@bazel_tools//tools/build_defs/repo:cache.bzl",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
 )
 
 bzl_library(

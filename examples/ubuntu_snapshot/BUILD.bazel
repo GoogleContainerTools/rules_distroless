@@ -60,16 +60,7 @@ PACKAGES = [
 # Creates /var/lib/dpkg/status with installed package information.
 dpkg_status(
     name = "dpkg_status",
-    controls = select({
-        "@platforms//cpu:arm64": [
-            "%s/arm64:control" % package
-            for package in PACKAGES
-        ],
-        "@platforms//cpu:x86_64": [
-            "%s/amd64:control" % package
-            for package in PACKAGES
-        ],
-    }),
+    controls = ["%s:control" % p for p in PACKAGES],
 )
 
 oci_image(
@@ -84,16 +75,7 @@ oci_image(
         ":passwd",
         ":group",
         ":dpkg_status",
-    ] + select({
-        "@platforms//cpu:arm64": [
-            "%s/arm64" % package
-            for package in PACKAGES
-        ],
-        "@platforms//cpu:x86_64": [
-            "%s/amd64" % package
-            for package in PACKAGES
-        ],
-    }),
+    ] + PACKAGES,
 )
 
 oci_load(
