@@ -3,7 +3,8 @@
 load("//apt/private:deb_import.bzl", "deb_import")
 load("//apt/private:index.bzl", "deb_package_index")
 load("//apt/private:lockfile.bzl", "lockfile")
-load("//apt/private:resolve.bzl", "deb_resolve", "internal_resolve")
+load("//apt/private:manifest.bzl", "manifest")
+load("//apt/private:resolve.bzl", "deb_resolve")
 
 def _distroless_extension(module_ctx):
     root_direct_deps = []
@@ -13,15 +14,15 @@ def _distroless_extension(module_ctx):
         for install in mod.tags.install:
             lockf = None
             if not install.lock:
-                lockf = internal_resolve(
+                lockf = manifest.lock(
                     module_ctx,
-                    "yq",
                     install.manifest,
                     install.resolve_transitive,
                 )
 
-                # buildifier: disable=print
-                print("\nNo lockfile was given, please run `bazel run @%s//:lock` to create the lockfile." % install.name)
+                if not install.nolock:
+                    # buildifier: disable=print
+                    print("\nNo lockfile was given, please run `bazel run @%s//:lock` to create the lockfile." % install.name)
             else:
                 lockf = lockfile.from_json(module_ctx, module_ctx.read(install.lock))
 
@@ -65,6 +66,10 @@ def _distroless_extension(module_ctx):
 install = tag_class(attrs = {
     "name": attr.string(doc = "Name of the generated repository"),
     "lock": attr.label(doc = """The lock file to use for the index."""),
+    "nolock": attr.bool(
+        doc = """If you explicitly want to run without a lock, set it to True to avoid the DEBUG messages.""",
+        default = False,
+    ),
     "manifest": attr.label(doc = """The file used to generate the lock file"""),
     "resolve_transitive": attr.bool(
         doc = """Whether dependencies of dependencies should be resolved and added to the lockfile.""",

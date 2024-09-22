@@ -62,3 +62,13 @@ deb_index(
 load("@bullseye//:packages.bzl", "bullseye_packages")
 
 bullseye_packages()
+
+deb_index(
+    name = "bullseye_nolock",
+    manifest = "//:bullseye.yaml",
+    nolock = True,
+)
+
+load("@bullseye_nolock//:packages.bzl", "bullseye_nolock_packages")
+
+bullseye_nolock_packages()
