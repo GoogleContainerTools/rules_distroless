@@ -128,3 +128,20 @@ def _create(rctx, sources, archs):
 package_index = struct(
     new = _create,
 )
+
+# Testonly functions:
+def _create_test_only():
+    state = struct(
+        packages = dict(),
+    )
+
+    return struct(
+        package_versions = lambda **kwargs: _package_versions(state, **kwargs),
+        package = lambda **kwargs: _package(state, **kwargs),
+        parse_package_index = lambda contents, arch: _parse_package_index(state, contents, arch, "http://nowhere"),
+        packages = state.packages,
+    )
+
+DO_NOT_DEPEND_ON_THIS_TEST_ONLY = struct(
+    new = _create_test_only,
+)
