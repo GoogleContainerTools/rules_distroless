@@ -12,13 +12,14 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     supported_extensions = {
         "xz": ["xz", "--decompress", "--keep", "--force"],
         "gz": ["gzip", "--decompress", "--keep", "--force"],
+        "": None,
     }
 
     failed_attempts = []
 
     for (ext, cmd) in supported_extensions.items():
-        output = "{}/Packages.{}".format(target_triple, ext)
-        dist_url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, ext)
+        output = "{}/Packages{}".format(target_triple, "." + ext if ext else "")
+        dist_url = "{}/dists/{}/{}/binary-{}/Packages{}".format(url, dist, comp, arch, "." + ext if ext else "")
         download = rctx.download(
             url = dist_url,
             output = output,
@@ -27,8 +28,12 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
         )
         decompress_r = None
         if download.success:
-            decompress_r = rctx.execute(cmd + [output])
-            if decompress_r.return_code == 0:
+            if cmd:
+                decompress_r = rctx.execute(cmd + [output])
+                if decompress_r.return_code == 0:
+                    integrity = download.integrity
+                    break
+            else:
                 integrity = download.integrity
                 break
 
@@ -40,7 +45,7 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
             reason = "unknown"
             if not download.success:
                 reason = "Download failed. See warning above for details."
-            elif decompress.return_code != 0:
+            elif decompress and decompress.return_code != 0:
                 reason = "Decompression failed with non-zero exit code.\n\n{}\n{}".format(decompress.stderr, decompress.stdout)
 
             attempt_messages.append("""\n*) Failed '{}'\n\n{}""".format(url, reason))
