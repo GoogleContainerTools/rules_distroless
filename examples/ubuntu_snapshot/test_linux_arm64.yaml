@@ -18,6 +18,25 @@ commandTests:
       - ncurses-base/now 6\.4\+20240113\-1ubuntu1 all \[installed,local\]
       - perl/now 5\.38\.2\-3 arm64 \[installed,local\]
       - tzdata/now 2024a\-1ubuntu1 all \[installed,local\]
+  - name: "stat dpkg status"
+    command: "stat"
+    args: [ "-c", "%Y", "/var/lib/dpkg/status" ]
+    expectedOutput: [ "1672560000" ]
   - name: "whoami"
     command: "whoami"
     expectedOutput: [r00t]
+
+fileExistenceTests:
+  - name: 'dpkg status exists'
+    path: '/var/lib/dpkg/status'
+    shouldExist: true
+    permissions: '-rw-r--r--'
+    uid: 0
+    gid: 0
+fileExistenceTests:
+  - name: 'dpkg status exists'
+    path: '/var/lib/dpkg/status'
+    shouldExist: true
+    permissions: '-rw-r--r--'
+    uid: 0
+    gid: 0

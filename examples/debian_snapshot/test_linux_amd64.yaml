@@ -19,6 +19,10 @@ commandTests:
       - perl/now 5\.32\.1-4\+deb11u3 amd64 \[installed,local\]
       - tzdata/now 2024a-0\+deb11u1 all \[installed,local\]
       - nvidia-kernel-common/now 20151021\+13 amd64 \[installed,local\]
+  - name: "stat dpkg status"
+    command: "stat"
+    args: [ "-c", "%Y", "/var/lib/dpkg/status" ]
+    expectedOutput: ["1672560000"]
   - name: "whoami"
     command: "whoami"
     expectedOutput: [r00t]
@@ -26,3 +30,11 @@ commandTests:
     command: "head"
     args: ["-1", "/etc/ssl/certs/ca-certificates.crt"]
     expectedOutput: [-----BEGIN CERTIFICATE-----]
+
+fileExistenceTests:
+  - name: 'dpkg status exists'
+    path: '/var/lib/dpkg/status'
+    shouldExist: true
+    permissions: '-rw-r--r--'
+    uid: 0
+    gid: 0
