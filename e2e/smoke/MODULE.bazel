@@ -18,8 +18,8 @@ apt.install(
 )
 apt.install(
     name = "bullseye_nolock",
-    # lock = ":bullseye.lock.json",
     manifest = ":bullseye.yaml",
+    nolock = True,
 )
 
 # bazel run @bullseye//:lock
