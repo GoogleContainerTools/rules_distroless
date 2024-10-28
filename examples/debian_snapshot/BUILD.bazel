@@ -88,6 +88,10 @@ oci_image(
         "@platforms//cpu:arm64": "arm64",
         "@platforms//cpu:x86_64": "amd64",
     }),
+    env = {
+        # Required to use the SSL certs from `cacerts()`
+        "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
+    },
     os = "linux",
     tars = [
         ":sh",
@@ -105,10 +109,6 @@ oci_image(
             for package in PACKAGES
         ],
     }),
-    env = {
-        # Required to use the SSL certs from `cacerts()`
-        "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
-    }
 )
 
 oci_load(
