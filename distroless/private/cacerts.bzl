@@ -30,7 +30,19 @@ cacerts(
     package = "@ca-certificates//:data.tar.xz",
 )
 ```
+
+To use the generated certificate bundle for SSL, **you must set SSL_CERT_FILE in the
+environment**. You can set it on the oci image like so:
+```starlark
+oci_image(
+    name = "my-image",
+    env = {
+        "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
+    }
+)
+```
 """
+
 
 def _cacerts_impl(ctx):
     bsdtar = ctx.toolchains[tar_lib.TOOLCHAIN_TYPE]

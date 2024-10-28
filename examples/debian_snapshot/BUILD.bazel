@@ -63,6 +63,7 @@ PACKAGES = [
     "@bullseye//dpkg",
     "@bullseye//apt",
     "@bullseye//perl",
+    "@bullseye//openssl",
     "@bullseye//nvidia-kernel-common",
 ]
 
@@ -104,6 +105,10 @@ oci_image(
             for package in PACKAGES
         ],
     }),
+    env = {
+        # Required to use the SSL certs from `cacerts()`
+        "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
+    }
 )
 
 oci_load(
