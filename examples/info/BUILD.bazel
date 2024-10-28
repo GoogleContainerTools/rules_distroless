@@ -1,0 +1,30 @@
+# buildifier: disable=bzl-visibility
+load("//apt:defs.bzl", "dpkg_info")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+
+dpkg_info(
+    name = "info",
+    package_name = "bash",
+    control = select({
+        "@platforms//cpu:x86_64": "@noble//bash/amd64:control",
+        "@platforms//cpu:arm64": "@noble//bash/arm64:control",
+    }),
+    data = select({
+        "@platforms//cpu:x86_64": "@noble//bash/amd64:data",
+        "@platforms//cpu:arm64": "@noble//bash/arm64:data",
+    }),
+)
+
+assert_tar_listing(
+    name = "test_info",
+    actual = "info",
+    expected = """\
+#mtree
+./var/lib/dpkg/info/bash.conffiles time=1708597860.0 mode=644 gid=0 uid=0 type=file size=77
+./var/lib/dpkg/info/bash.list time=1723312842.0 mode=644 gid=0 uid=0 type=file size=758
+./var/lib/dpkg/info/bash.md5sums time=1708597860.0 mode=644 gid=0 uid=0 type=file size=1467
+./var/lib/dpkg/info/bash.postinst time=1708597860.0 mode=755 gid=0 uid=0 type=file size=491
+./var/lib/dpkg/info/bash.postrm time=1708597860.0 mode=755 gid=0 uid=0 type=file size=214
+./var/lib/dpkg/info/bash.prerm time=1708597860.0 mode=755 gid=0 uid=0 type=file size=289
+""",
+)
