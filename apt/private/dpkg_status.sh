@@ -18,7 +18,7 @@ while  (( $# > 0 )); do
 done
 
 echo "#mtree
-./var/lib/dpkg/status type=file uid=0 gid=0 mode=0644 contents=$tmp_out
+./var/lib/dpkg/status type=file uid=0 gid=0 mode=0644 time=1672560000 contents=$tmp_out
 " | "$bsdtar" $@ -cf "$out" "@-"
 
 rm $tmp_out
