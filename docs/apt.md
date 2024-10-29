@@ -83,10 +83,10 @@ An example of this can be found at [/examples/ubuntu_snapshot](/examples/ubuntu_
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="deb_index-name"></a>name |  name of the repository   |  none |
-| <a id="deb_index-manifest"></a>manifest |  label to a <code>manifest.yaml</code>   |  none |
-| <a id="deb_index-lock"></a>lock |  label to a <code>lock.json</code>   |  <code>None</code> |
-| <a id="deb_index-nolock"></a>nolock |  bool, set to True if you explicitly want to run without a lock and avoid the DEBUG messages.   |  <code>False</code> |
-| <a id="deb_index-package_template"></a>package_template |  (EXPERIMENTAL!) a template file for generated BUILD files. Available template replacement keys are: <code>{target_name}</code>, <code>{deps}</code>, <code>{urls}</code>, <code>{name}</code>, <code>{arch}</code>, <code>{sha256}</code>, <code>{repo_name}</code>   |  <code>None</code> |
-| <a id="deb_index-resolve_transitive"></a>resolve_transitive |  whether dependencies of dependencies should be resolved and added to the lockfile.   |  <code>True</code> |
+| <a id="deb_index-manifest"></a>manifest |  label to a `manifest.yaml`   |  none |
+| <a id="deb_index-lock"></a>lock |  label to a `lock.json`   |  `None` |
+| <a id="deb_index-nolock"></a>nolock |  bool, set to True if you explicitly want to run without a lock and avoid the DEBUG messages.   |  `False` |
+| <a id="deb_index-package_template"></a>package_template |  (EXPERIMENTAL!) a template file for generated BUILD files. Available template replacement keys are: `{target_name}`, `{deps}`, `{urls}`, `{name}`, `{arch}`, `{sha256}`, `{repo_name}`   |  `None` |
+| <a id="deb_index-resolve_transitive"></a>resolve_transitive |  whether dependencies of dependencies should be resolved and added to the lockfile.   |  `True` |
 
 

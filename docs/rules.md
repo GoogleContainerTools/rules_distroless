@@ -50,16 +50,15 @@ oci_image(
 )
 ```
 
-
 **ATTRIBUTES**
 
 
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="cacerts-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="cacerts-mode"></a>mode |  mode for the entries   | String | optional | <code>"0555"</code> |
+| <a id="cacerts-mode"></a>mode |  mode for the entries   | String | optional |  `"0555"`  |
 | <a id="cacerts-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
-| <a id="cacerts-time"></a>time |  time for the entries   | String | optional | <code>"0.0"</code> |
+| <a id="cacerts-time"></a>time |  time for the entries   | String | optional |  `"0.0"`  |
 
 
 <a id="flatten"></a>
@@ -78,7 +77,7 @@ Flatten multiple archives into single archive.
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="flatten-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="flatten-compress"></a>compress |  Compress the archive file with a supported algorithm.   | String | optional | <code>""</code> |
+| <a id="flatten-compress"></a>compress |  Compress the archive file with a supported algorithm.   | String | optional |  `""`  |
 | <a id="flatten-tars"></a>tars |  List of tars to flatten   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
 
 
@@ -94,7 +93,6 @@ Create a java keystore (database) of cryptographic keys, X.509 certificate chain
 
 Currently only public  X.509 are supported as part of the PUBLIC API contract.
 
-
 **ATTRIBUTES**
 
 
@@ -102,8 +100,8 @@ Currently only public  X.509 are supported as part of the PUBLIC API contract.
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="java_keystore-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="java_keystore-certificates"></a>certificates |  -   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
-| <a id="java_keystore-mode"></a>mode |  mode for the entries   | String | optional | <code>"0755"</code> |
-| <a id="java_keystore-time"></a>time |  time for the entries   | String | optional | <code>"0.0"</code> |
+| <a id="java_keystore-mode"></a>mode |  mode for the entries   | String | optional |  `"0755"`  |
+| <a id="java_keystore-time"></a>time |  time for the entries   | String | optional |  `"0.0"`  |
 
 
 <a id="locale"></a>
@@ -138,16 +136,15 @@ locale(
 )
 ```
 
-
 **ATTRIBUTES**
 
 
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="locale-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="locale-charset"></a>charset |  -   | String | optional | <code>"C.utf8"</code> |
+| <a id="locale-charset"></a>charset |  -   | String | optional |  `"C.utf8"`  |
 | <a id="locale-package"></a>package |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
-| <a id="locale-time"></a>time |  time for the entries   | String | optional | <code>"0.0"</code> |
+| <a id="locale-time"></a>time |  time for the entries   | String | optional |  `"0.0"`  |
 
 
 <a id="group"></a>
@@ -158,7 +155,7 @@ locale(
 group(<a href="#group-name">name</a>, <a href="#group-entries">entries</a>, <a href="#group-time">time</a>, <a href="#group-mode">mode</a>, <a href="#group-kwargs">kwargs</a>)
 </pre>
 
-    Create a group file from array of dicts.
+Create a group file from array of dicts.
 
 https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a21597b8__title__1
 
@@ -170,8 +167,8 @@ https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a2
 | :------------- | :------------- | :------------- |
 | <a id="group-name"></a>name |  name of the target   |  none |
 | <a id="group-entries"></a>entries |  an array of dicts which will be serialized into single group file.   |  none |
-| <a id="group-time"></a>time |  time for the entry   |  <code>"0.0"</code> |
-| <a id="group-mode"></a>mode |  mode for the entry   |  <code>"0644"</code> |
+| <a id="group-time"></a>time |  time for the entry   |  `"0.0"` |
+| <a id="group-mode"></a>mode |  mode for the entry   |  `"0644"` |
 | <a id="group-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 
@@ -183,7 +180,7 @@ https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a2
 home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#home-kwargs">kwargs</a>)
 </pre>
 
-    Create home directories with specific uid and gids.
+Create home directories with specific uid and gids.
 
 **PARAMETERS**
 
@@ -203,7 +200,7 @@ home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#hom
 os_release(<a href="#os_release-name">name</a>, <a href="#os_release-content">content</a>, <a href="#os_release-path">path</a>, <a href="#os_release-mode">mode</a>, <a href="#os_release-time">time</a>, <a href="#os_release-kwargs">kwargs</a>)
 </pre>
 
-    Create an Operating System Identification file from a key, value dictionary.
+Create an Operating System Identification file from a key, value dictionary.
 
 https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 
@@ -214,10 +211,10 @@ https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="os_release-name"></a>name |  name of the target   |  none |
-| <a id="os_release-content"></a>content |  a key, value dictionary that will be serialized into <code>=</code> seperated lines.<br><br>See https://www.freedesktop.org/software/systemd/man/latest/os-release.html#Options for well known keys.   |  none |
-| <a id="os_release-path"></a>path |  where to put the file in the result archive. default: <code>/usr/lib/os-release</code>   |  <code>"/usr/lib/os-release"</code> |
-| <a id="os_release-mode"></a>mode |  mode for the entry   |  <code>"0555"</code> |
-| <a id="os_release-time"></a>time |  time for the entry   |  <code>"0"</code> |
+| <a id="os_release-content"></a>content |  a key, value dictionary that will be serialized into `=` seperated lines.<br><br>See https://www.freedesktop.org/software/systemd/man/latest/os-release.html#Options for well known keys.   |  none |
+| <a id="os_release-path"></a>path |  where to put the file in the result archive. default: `/usr/lib/os-release`   |  `"/usr/lib/os-release"` |
+| <a id="os_release-mode"></a>mode |  mode for the entry   |  `"0555"` |
+| <a id="os_release-time"></a>time |  time for the entry   |  `"0"` |
 | <a id="os_release-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 
@@ -229,7 +226,7 @@ https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 passwd(<a href="#passwd-name">name</a>, <a href="#passwd-entries">entries</a>, <a href="#passwd-mode">mode</a>, <a href="#passwd-time">time</a>, <a href="#passwd-kwargs">kwargs</a>)
 </pre>
 
-    Create a passwd file from array of dicts.
+Create a passwd file from array of dicts.
 
 https://www.ibm.com/docs/en/aix/7.3?topic=passwords-using-etcpasswd-file
 
@@ -240,9 +237,9 @@ https://www.ibm.com/docs/en/aix/7.3?topic=passwords-using-etcpasswd-file
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="passwd-name"></a>name |  name of the target   |  none |
-| <a id="passwd-entries"></a>entries |  an array of dicts which will be serialized into single passwd file.<br><br>An example;<br><br><pre><code> dict(gid = 0, uid = 0, home = "/root", shell = "/bin/bash", username = "root") </code></pre>   |  none |
-| <a id="passwd-mode"></a>mode |  mode for the entry   |  <code>"0644"</code> |
-| <a id="passwd-time"></a>time |  time for the entry   |  <code>"0.0"</code> |
+| <a id="passwd-entries"></a>entries |  an array of dicts which will be serialized into single passwd file.<br><br>An example;<br><br><pre><code>dict(gid = 0, uid = 0, home = "/root", shell = "/bin/bash", username = "root")</code></pre>   |  none |
+| <a id="passwd-mode"></a>mode |  mode for the entry   |  `"0644"` |
+| <a id="passwd-time"></a>time |  time for the entry   |  `"0.0"` |
 | <a id="passwd-kwargs"></a>kwargs |  other named arguments to expanded targets. see [common rule attributes](https://bazel.build/reference/be/common-definitions#common-attributes).   |  none |
 
 
