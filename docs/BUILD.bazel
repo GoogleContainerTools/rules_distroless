@@ -9,6 +9,11 @@ stardoc_with_diff_test(
 
 stardoc_with_diff_test(
     name = "apt",
+    bzl_library_target = "//apt:extensions",
+)
+
+stardoc_with_diff_test(
+    name = "deb_index",
     bzl_library_target = "//apt:index",
 )
 
