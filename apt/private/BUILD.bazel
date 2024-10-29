@@ -3,6 +3,7 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 exports_files([
     "dpkg_statusd.sh",
     "dpkg_status.sh",
+    "copy.sh.tmpl",
     "package.BUILD.tmpl",
 ])
 
@@ -26,8 +27,6 @@ bzl_library(
     visibility = ["//apt:__subpackages__"],
     deps = [
         ":lockfile",
-        "@bazel_tools//tools/build_defs/repo:http.bzl",
-        "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
 )
 
@@ -39,15 +38,20 @@ bzl_library(
 )
 
 bzl_library(
-    name = "package_index",
-    srcs = ["package_index.bzl"],
+    name = "manifest",
+    srcs = ["manifest.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
+    deps = [
+        ":lockfile",
+        ":package_index",
+        ":util",
+        "@aspect_bazel_lib//lib:repo_utils",
+    ],
 )
 
 bzl_library(
-    name = "package_resolution",
-    srcs = ["package_resolution.bzl"],
+    name = "package_index",
+    srcs = ["package_index.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [":version"],
 )
@@ -58,8 +62,8 @@ bzl_library(
     visibility = ["//apt:__subpackages__"],
     deps = [
         ":lockfile",
+        ":manifest",
         ":package_index",
-        ":package_resolution",
         "@aspect_bazel_lib//lib:repo_utils",
     ],
 )
