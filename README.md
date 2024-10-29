@@ -18,7 +18,7 @@ Debian installation. These rules are designed to replace commands such as
 > [!NOTE]
 > If you are using Bazel 6 you need to enable Bzlmod by adding `common
 > --enable_bzlmod` to `.bazelrc`
-> I you are using Bazel 7+ [it's enabled by default].
+> If you are using Bazel 7+ [it's enabled by default].
 
 Add the following to your `MODULE.bazel` file:
 
