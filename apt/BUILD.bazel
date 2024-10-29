@@ -32,6 +32,7 @@ bzl_library(
         "//apt/private:deb_import",
         "//apt/private:index",
         "//apt/private:lockfile",
+        "//apt/private:manifest",
         "//apt/private:resolve",
     ],
 )
