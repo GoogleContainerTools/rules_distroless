@@ -7,7 +7,7 @@ apt-get
 ## deb_index
 
 <pre>
-deb_index(<a href="#deb_index-name">name</a>, <a href="#deb_index-manifest">manifest</a>, <a href="#deb_index-lock">lock</a>, <a href="#deb_index-nolock">nolock</a>, <a href="#deb_index-package_template">package_template</a>, <a href="#deb_index-resolve_transitive">resolve_transitive</a>)
+deb_index(<a href="#deb_index-name">name</a>, <a href="#deb_index-manifest">manifest</a>, <a href="#deb_index-lock">lock</a>, <a href="#deb_index-nolock">nolock</a>, <a href="#deb_index-package_arch_build_template">package_arch_build_template</a>, <a href="#deb_index-resolve_transitive">resolve_transitive</a>)
 </pre>
 
 A convience repository macro for apt rules.
@@ -86,7 +86,7 @@ An example of this can be found at [/examples/ubuntu_snapshot](/examples/ubuntu_
 | <a id="deb_index-manifest"></a>manifest |  label to a <code>manifest.yaml</code>   |  none |
 | <a id="deb_index-lock"></a>lock |  label to a <code>lock.json</code>   |  <code>None</code> |
 | <a id="deb_index-nolock"></a>nolock |  bool, set to True if you explicitly want to run without a lock and avoid the DEBUG messages.   |  <code>False</code> |
-| <a id="deb_index-package_template"></a>package_template |  (EXPERIMENTAL!) a template file for generated BUILD files. Available template replacement keys are: <code>{target_name}</code>, <code>{deps}</code>, <code>{urls}</code>, <code>{name}</code>, <code>{arch}</code>, <code>{sha256}</code>, <code>{repo_name}</code>   |  <code>None</code> |
+| <a id="deb_index-package_arch_build_template"></a>package_arch_build_template |  (EXPERIMENTAL!) a template file for the generated package BUILD files per architecture. Available template replacement keys are: <code>{target_name}</code>, <code>{deps}</code>, <code>{urls}</code>, <code>{name}</code>, <code>{arch}</code>, <code>{sha256}</code>, <code>{repo_name}</code>   |  <code>None</code> |
 | <a id="deb_index-resolve_transitive"></a>resolve_transitive |  whether dependencies of dependencies should be resolved and added to the lockfile.   |  <code>True</code> |
 
 
