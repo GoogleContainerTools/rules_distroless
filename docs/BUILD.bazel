@@ -9,7 +9,7 @@ stardoc_with_diff_test(
 
 stardoc_with_diff_test(
     name = "apt",
-    bzl_library_target = "//apt:index",
+    bzl_library_target = "//apt:apt",
 )
 
 update_docs(name = "update")

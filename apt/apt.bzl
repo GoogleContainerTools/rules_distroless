@@ -3,7 +3,7 @@
 load("//apt/private:index.bzl", _deb_package_index = "deb_package_index")
 load("//apt/private:resolve.bzl", _deb_resolve = "deb_resolve")
 
-def deb_index(
+def _apt_install(
         name,
         manifest,
         lock = None,
@@ -100,3 +100,7 @@ def deb_index(
         lock = lock if lock else "@" + name + "_resolve//:lock.json",
         package_template = package_template,
     )
+
+apt = struct(
+    install = _apt_install,
+)
