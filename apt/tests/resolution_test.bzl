@@ -1,10 +1,8 @@
-"unit tests for version parsing"
+"unit tests for resolution of package dependencies"
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//apt/private:package_index.bzl", package_index = "DO_NOT_DEPEND_ON_THIS_TEST_ONLY")
 load("//apt/private:package_resolution.bzl", "package_resolution")
-
-_TEST_SUITE_PREFIX = "package_resolution/"
 
 def _parse_depends_test(ctx):
     env = unittest.begin(ctx)
@@ -104,7 +102,7 @@ def _parse_depends_test(ctx):
 
     return unittest.end(env)
 
-version_depends_test = unittest.make(_parse_depends_test)
+parse_depends_test = unittest.make(_parse_depends_test)
 
 _test_version = "2.38.1-5"
 _test_arch = "amd64"
@@ -132,6 +130,14 @@ def _resolve_optionals_test(ctx):
         version = ("=", _test_version),
         arch = _test_arch,
     )
+
+    # print(r)
     return unittest.end(env)
 
 resolve_optionals_test = unittest.make(_resolve_optionals_test)
+
+_TEST_SUITE_PREFIX = "package_resolution/"
+
+def resolution_tests():
+    parse_depends_test(name = _TEST_SUITE_PREFIX + "parse_depends")
+    resolve_optionals_test(name = _TEST_SUITE_PREFIX + "resolve_optionals")
