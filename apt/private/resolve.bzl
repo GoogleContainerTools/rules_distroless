@@ -83,50 +83,6 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
                 lockf.add_package_dependency(package, dep, arch)
     return lockf
 
-_COPY_SH_TMPL = """\
-#!/usr/bin/env bash
-set -o pipefail -o errexit -o nounset
-
-lock=$(realpath $1)
-
-cd $BUILD_WORKING_DIRECTORY
-
-echo ''
-echo 'Writing lockfile to {workspace_relative_path}' 
-cp $lock {workspace_relative_path}
-
-# Detect which file we wish the user to edit
-if [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE ]; then
-    wksp_file="WORKSPACE"
-elif [ -e $BUILD_WORKSPACE_DIRECTORY/WORKSPACE.bazel ]; then
-    wksp_file="WORKSPACE.bazel"
-elif [ -e $BUILD_WORKSPACE_DIRECTORY/MODULE.bazel ]; then
-    wksp_file="MODULE.bazel"
-else
-    echo>&2 "Error: no MODULE.bazel or WORKSPACE file was found"
-    exit 1
-fi
-
-# Detect a vendored buildozer binary in canonical location (tools/buildozer)
-if [ -e $BUILD_WORKSPACE_DIRECTORY/tools/buildozer ]; then
-    buildozer="tools/buildozer"
-else
-    # Assume it's on the $PATH
-    buildozer="buildozer"
-fi
-
-if [[ "${{2:-}}" == "--autofix" ]]; then
-    echo ''
-    ${{buildozer}} 'set lock \"{label}\"' ${{wksp_file}}:{name}
-else
-    cat <<EOF
-Run the following command to add the lockfile or pass --autofix flag to do it automatically.
-
-   ${{buildozer}} 'set lock \"{label}\"' ${{wksp_file}}:{name}
-EOF
-fi
-"""
-
 _BUILD_TMPL = """
 filegroup(
     name = "lockfile",
@@ -149,16 +105,22 @@ def _deb_resolve_impl(rctx):
     lockf = internal_resolve(rctx, rctx.attr.yq_toolchain_prefix, rctx.attr.manifest, rctx.attr.resolve_transitive)
     lockf.write("lock.json")
 
-    locklabel = rctx.attr.manifest.relative(rctx.attr.manifest.name.replace(".yaml", ".lock.json"))
+    lock_filename = rctx.attr.manifest.name.replace(".yaml", ".lock.json")
+    lock_label = rctx.attr.manifest.relative(lock_filename)
+    workspace_relative_path = "{}{}".format(
+        ("%s/" % lock_label.package) if lock_label.package else "",
+        lock_label.name,
+    )
+
     rctx.file(
         "copy.sh",
-        _COPY_SH_TMPL.format(
+        rctx.read(rctx.attr._copy_sh_tmpl).format(
             # NOTE: the split("~") is needed when we run bazel from another
             # directory, e.g. when running e2e tests we change dir to e2e/smoke
             # and then rctx.name is 'rules_distroless~~apt~bullseye'
-            name = rctx.name.split("~")[-1].replace("_resolve", ""),
-            label = locklabel,
-            workspace_relative_path = (("%s/" % locklabel.package) if locklabel.package else "") + locklabel.name,
+            repo_name = rctx.name.split("~")[-1].replace("_resolve", ""),
+            lock_label = lock_label,
+            workspace_relative_path = workspace_relative_path,
         ),
         executable = True,
     )
@@ -171,5 +133,10 @@ deb_resolve = repository_rule(
         "manifest": attr.label(),
         "resolve_transitive": attr.bool(default = True),
         "yq_toolchain_prefix": attr.string(default = "yq"),
+        "_copy_sh_tmpl": attr.label(
+            default = "//apt/private:copy.sh.tmpl",
+            doc = "INTERNAL, DO NOT USE - " +
+                  "private attribute label to prevent repo restart",
+        ),
     },
 )
