@@ -1,15 +1,23 @@
 # This load statement must be in the docs/ package rather than anything users depend on
 # so that the dependency on stardoc doesn't leak to them.
 load("@aspect_bazel_lib//lib:docs.bzl", "stardoc_with_diff_test", "update_docs")
+load("@bazel_features//private:util.bzl", "ge")
+
+COMPATIBLE = ["@platforms//:incompatible"] if ge("8.0.0rc1") else []
 
 stardoc_with_diff_test(
     name = "rules",
     bzl_library_target = "//distroless:defs",
+    target_compatible_with = COMPATIBLE,
 )
 
 stardoc_with_diff_test(
     name = "apt",
     bzl_library_target = "//apt:apt",
+    target_compatible_with = COMPATIBLE,
 )
 
-update_docs(name = "update")
+update_docs(
+    name = "update",
+    target_compatible_with = COMPATIBLE,
+)

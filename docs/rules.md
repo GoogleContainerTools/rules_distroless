@@ -162,7 +162,7 @@ locale(
 <pre>
 load("@rules_distroless//distroless:defs.bzl", "group")
 
-group(<a href="#group-name">name</a>, <a href="#group-entries">entries</a>, <a href="#group-time">time</a>, <a href="#group-mode">mode</a>, <a href="#group-kwargs">**kwargs</a>)
+group(<a href="#group-name">name</a>, <a href="#group-entries">entries</a>, <a href="#group-time">time</a>, <a href="#group-mode">mode</a>, <a href="#group-kwargs">kwargs</a>)
 </pre>
 
 Create a group file from array of dicts.
@@ -189,7 +189,7 @@ https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a2
 <pre>
 load("@rules_distroless//distroless:defs.bzl", "home")
 
-home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#home-kwargs">**kwargs</a>)
+home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#home-kwargs">kwargs</a>)
 </pre>
 
 Create home directories with specific uid and gids.
@@ -211,7 +211,7 @@ Create home directories with specific uid and gids.
 <pre>
 load("@rules_distroless//distroless:defs.bzl", "os_release")
 
-os_release(<a href="#os_release-name">name</a>, <a href="#os_release-content">content</a>, <a href="#os_release-path">path</a>, <a href="#os_release-mode">mode</a>, <a href="#os_release-time">time</a>, <a href="#os_release-kwargs">**kwargs</a>)
+os_release(<a href="#os_release-name">name</a>, <a href="#os_release-content">content</a>, <a href="#os_release-path">path</a>, <a href="#os_release-mode">mode</a>, <a href="#os_release-time">time</a>, <a href="#os_release-kwargs">kwargs</a>)
 </pre>
 
 Create an Operating System Identification file from a key, value dictionary.
@@ -239,7 +239,7 @@ https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 <pre>
 load("@rules_distroless//distroless:defs.bzl", "passwd")
 
-passwd(<a href="#passwd-name">name</a>, <a href="#passwd-entries">entries</a>, <a href="#passwd-mode">mode</a>, <a href="#passwd-time">time</a>, <a href="#passwd-kwargs">**kwargs</a>)
+passwd(<a href="#passwd-name">name</a>, <a href="#passwd-entries">entries</a>, <a href="#passwd-mode">mode</a>, <a href="#passwd-time">time</a>, <a href="#passwd-kwargs">kwargs</a>)
 </pre>
 
 Create a passwd file from array of dicts.
