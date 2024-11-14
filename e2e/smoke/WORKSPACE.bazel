@@ -50,10 +50,10 @@ load("@rules_distroless//distroless:toolchains.bzl", "distroless_register_toolch
 
 distroless_register_toolchains()
 
-load("@rules_distroless//apt:index.bzl", "deb_index")
+load("@rules_distroless//apt:apt.bzl", "apt")
 
 # bazel run @bullseye//:lock
-deb_index(
+apt.install(
     name = "bullseye",
     lock = "@@//:bullseye.lock.json",
     manifest = "//:bullseye.yaml",
@@ -63,7 +63,7 @@ load("@bullseye//:packages.bzl", "bullseye_packages")
 
 bullseye_packages()
 
-deb_index(
+apt.install(
     name = "bullseye_nolock",
     manifest = "//:bullseye.yaml",
     nolock = True,
