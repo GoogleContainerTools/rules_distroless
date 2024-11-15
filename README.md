@@ -131,6 +131,8 @@ To read more specific documentation for each of the rules in the repo please
 check the following docs:
 
 - [apt](/docs/apt.md): repository rule for installing Debian/Ubuntu packages.
+- [apt macro](/docs/apt_macro.md): legacy macro for installing Debian/Ubuntu
+  packages.
 - [rules](/docs/rules.md): various helper rules to aid with creating a Linux /
   Debian installation from scratch.
 
