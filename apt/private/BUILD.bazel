@@ -50,7 +50,10 @@ bzl_library(
     name = "package_resolution",
     srcs = ["package_resolution.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":version"],
+    deps = [
+        ":version",
+        ":version_constraint",
+    ],
 )
 
 bzl_library(
@@ -83,4 +86,11 @@ bzl_library(
     name = "util",
     srcs = ["util.bzl"],
     visibility = ["//apt:__subpackages__"],
+)
+
+bzl_library(
+    name = "version_constraint",
+    srcs = ["version_constraint.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [":version"],
 )

@@ -1,6 +1,6 @@
-load(":resolution_test.bzl", "resolve_optionals_test")
+load(":resolution_test.bzl", "resolution_tests")
 load(":version_test.bzl", "version_tests")
 
 version_tests()
 
-resolve_optionals_test(name = "test")
+resolution_tests()
