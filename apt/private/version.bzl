@@ -146,6 +146,7 @@ def _sort(versions, reverse = False):
 
 version = struct(
     parse = _parse_version,
+    cmp = lambda va, vb: _compare_version(va, vb),
     gt = lambda va, vb: _compare_version(va, vb) == 1,
     gte = lambda va, vb: _compare_version(va, vb) >= 0,
     lt = lambda va, vb: _compare_version(va, vb) == -1,

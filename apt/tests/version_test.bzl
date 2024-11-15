@@ -2,6 +2,7 @@
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//apt/private:version.bzl", "version")
+load("//apt/private:version_constraint.bzl", "version_constraint")
 
 _TEST_SUITE_PREFIX = "version/"
 
@@ -94,7 +95,30 @@ def _sort_test(ctx):
 
 sort_test = unittest.make(_sort_test)
 
+def _is_satisfied_by_test(ctx):
+    parameters = [
+        (">= 1.1", "= 1.1", True),
+        ("<= 1.1", "= 1.1", True),
+        (">> 1.1", "= 1.1", False),
+    ]
+
+    env = unittest.begin(ctx)
+    for va, vb, expected in parameters:
+        asserts.equals(
+            env,
+            expected,
+            version_constraint.is_satisfied_by(
+                version_constraint.parse_version_constraint(va),
+                version_constraint.parse_version_constraint(vb),
+            ),
+        )
+
+    return unittest.end(env)
+
+is_satisfied_by_test = unittest.make(_is_satisfied_by_test)
+
 def version_tests():
     operators_test(name = _TEST_SUITE_PREFIX + "operators")
     parse_test(name = _TEST_SUITE_PREFIX + "parse")
     sort_test(name = _TEST_SUITE_PREFIX + "sort")
+    is_satisfied_by_test(name = _TEST_SUITE_PREFIX + "is_satisfied_by")

@@ -4,6 +4,8 @@ load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
 load(":lockfile.bzl", "lockfile")
 load(":package_index.bzl", "package_index")
 load(":package_resolution.bzl", "package_resolution")
+load(":util.bzl", "util")
+load(":version_constraint.bzl", "version_constraint")
 
 def _parse_manifest(rctx, yq_toolchain_prefix, manifest):
     is_windows = repo_utils.is_windows(rctx)
@@ -59,7 +61,7 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
                 fail("Duplicate package, {}. Please remove it from your manifest".format(dep_constraint))
             dep_constraint_set[dep_constraint] = True
 
-            constraint = package_resolution.parse_depends(dep_constraint).pop()
+            constraint = version_constraint.parse_depends(dep_constraint).pop()
 
             rctx.report_progress("Resolving %s" % dep_constraint)
             (package, dependencies, unmet_dependencies) = pkgresolution.resolve_all(
@@ -74,7 +76,7 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
 
             if len(unmet_dependencies):
                 # buildifier: disable=print
-                print("the following packages have unmet dependencies: %s" % ",".join([up[0] for up in unmet_dependencies]))
+                util.warning(rctx, "Following dependencies could not be resolved for %s: %s" % (constraint["name"], ",".join([up[0] for up in unmet_dependencies])))
 
             lockf.add_package(package, arch)
 

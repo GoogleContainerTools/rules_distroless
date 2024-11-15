@@ -1,6 +1,7 @@
 "package index"
 
 load(":util.bzl", "util")
+load(":version_constraint.bzl", "version_constraint")
 
 def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
@@ -53,7 +54,7 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
 
     return ("{}/Packages".format(target_triple), integrity)
 
-def _parse_package_index(state, contents, arch, root):
+def _parse_package_index(state, contents, root):
     last_key = ""
     pkg = {}
     for group in contents.split("\n\n"):
@@ -76,32 +77,40 @@ def _parse_package_index(state, contents, arch, root):
                 value = split[1]
 
             if not last_key and len(pkg) == 0 and key != "Package":
-                fail("do not expect this. fix it.")
+                fail("Invalid debian package index format. Expected 'Package' as first key, got '{}'".format(key))
 
             last_key = key
             pkg[key] = value
 
         if len(pkg.keys()) != 0:
             pkg["Root"] = root
-            util.set_dict(state.packages, value = pkg, keys = (arch, pkg["Package"], pkg["Version"]))
+            _add_package(state, pkg)
             last_key = ""
             pkg = {}
 
+def _add_package(state, package):
+    util.set_dict(state.packages, value = package, keys = (package["Architecture"], package["Package"], package["Version"]))
+
+    # https://www.debian.org/doc/debian-policy/ch-relationships.html#virtual-packages-provides
+    if "Provides" in package:
+        provides = version_constraint.parse_dep(package["Provides"])
+        vp = util.get_dict(state.virtual_packages, (package["Architecture"], provides["name"]), [])
+        vp.append((provides, package))
+        util.set_dict(state.virtual_packages, vp, (package["Architecture"], provides["name"]))
+
+def _virtual_packages(state, name, arch):
+    return util.get_dict(state.virtual_packages, [arch, name], [])
+
 def _package_versions(state, name, arch):
-    if name not in state.packages[arch]:
-        return []
-    return state.packages[arch][name].keys()
+    return util.get_dict(state.packages, [arch, name], {}).keys()
 
 def _package(state, name, version, arch):
-    if name not in state.packages[arch]:
-        return None
-    if version not in state.packages[arch][name]:
-        return None
-    return state.packages[arch][name][version]
+    return util.get_dict(state.packages, keys = (arch, name, version))
 
 def _create(rctx, sources, archs):
     state = struct(
         packages = dict(),
+        virtual_packages = dict(),
     )
 
     for arch in archs:
@@ -118,13 +127,34 @@ def _create(rctx, sources, archs):
 
             # TODO: this is expensive to perform.
             rctx.report_progress("Parsing package index: {}/{} for {}".format(dist, comp, arch))
-            _parse_package_index(state, rctx.read(output), arch, url)
+            _parse_package_index(state, rctx.read(output), url)
 
     return struct(
         package_versions = lambda **kwargs: _package_versions(state, **kwargs),
+        virtual_packages = lambda **kwargs: _virtual_packages(state, **kwargs),
         package = lambda **kwargs: _package(state, **kwargs),
     )
 
 package_index = struct(
     new = _create,
+)
+
+# Testonly functions:
+def _create_test_only():
+    state = struct(
+        packages = dict(),
+        virtual_packages = dict(),
+    )
+
+    return struct(
+        package_versions = lambda **kwargs: _package_versions(state, **kwargs),
+        virtual_packages = lambda **kwargs: _virtual_packages(state, **kwargs),
+        package = lambda **kwargs: _package(state, **kwargs),
+        parse_package_index = lambda contents: _parse_package_index(state, contents, "http://nowhere"),
+        packages = state.packages,
+        reset = lambda: state.packages.clear(),
+    )
+
+DO_NOT_DEPEND_ON_THIS_TEST_ONLY = struct(
+    new = _create_test_only,
 )
