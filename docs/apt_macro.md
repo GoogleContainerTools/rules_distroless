@@ -1,39 +1,42 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-apt extensions
+`apt.install` macro
 
-<a id="apt"></a>
-
-## apt
-
-<pre>
-apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
-apt.install(<a href="#apt.install-name">name</a>, <a href="#apt.install-lock">lock</a>, <a href="#apt.install-manifest">manifest</a>, <a href="#apt.install-nolock">nolock</a>, <a href="#apt.install-package_template">package_template</a>, <a href="#apt.install-resolve_transitive">resolve_transitive</a>)
-</pre>
-
-
-**TAG CLASSES**
+This documentation provides an overview of the convenience `apt.install`
+repository macro to create Debian repositories with packages "installed" in
+them and available to use in Bazel.
 
 <a id="apt.install"></a>
 
-### install
+## apt.install
 
-Module extension to create Debian repositories.
+<pre>
+load("@rules_distroless//apt:apt.bzl", "apt")
 
-Create Debian repositories with packages "installed" in them and available
-to use in Bazel.
+apt.install(<a href="#apt.install-name">name</a>, <a href="#apt.install-manifest">manifest</a>, <a href="#apt.install-lock">lock</a>, <a href="#apt.install-nolock">nolock</a>, <a href="#apt.install-package_template">package_template</a>, <a href="#apt.install-resolve_transitive">resolve_transitive</a>)
+</pre>
 
+Repository macro to create Debian repositories.
 
-Here's an example how to create a Debian repo:
+> [!WARNING]
+> THIS IS A LEGACY MACRO. Use it only if you are still using `WORKSPACE`.
+> Otherwise please use the [`apt` module extension](apt.md).
+
+Here's an example to create a Debian repo with `apt.install`:
 
 ```starlark
-apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+# WORKSPACE
+
+load("@rules_distroless//apt:apt.bzl", "apt")
+
 apt.install(
     name = "bullseye",
-    lock = "//examples/apt:bullseye.lock.json",
+    # lock = "//examples/apt:bullseye.lock.json",
     manifest = "//examples/apt:bullseye.yaml",
 )
-use_repo(apt, "bullseye")
+
+load("@bullseye//:packages.bzl", "bullseye_packages")
+bullseye_packages()
 ```
 
 Note that, for the initial setup (or if we want to run without a lock) the
@@ -53,8 +56,8 @@ packages:
   - perl
 ```
 
-`apt.install` will parse the manifest and will fetch and install the packages
-for the given architectures in the Bazel repo `@<NAME>`.
+`apt.install` will parse the manifest and will fetch and install the
+packages for the given architectures in the Bazel repo `@<NAME>`.
 
 Each `<PACKAGE>/<ARCH>` has two targets that match the usual structure of a
 Debian package: `data` and `control`.
@@ -103,15 +106,17 @@ examples showing how to do this for Debian and Ubuntu:
 For more infomation, please check https://snapshot.debian.org and/or
 https://snapshot.ubuntu.com.
 
-**Attributes**
 
-| Name  | Description | Type | Mandatory | Default |
-| :------------- | :------------- | :------------- | :------------- | :------------- |
-| <a id="apt.install-name"></a>name |  Name of the generated repository   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="apt.install-lock"></a>lock |  The lock file to use for the index.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
-| <a id="apt.install-manifest"></a>manifest |  The file used to generate the lock file   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
-| <a id="apt.install-nolock"></a>nolock |  If you explicitly want to run without a lock, set it to `True` to avoid the DEBUG messages.   | Boolean | optional |  `False`  |
-| <a id="apt.install-package_template"></a>package_template |  (EXPERIMENTAL!) a template file for generated BUILD files.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
-| <a id="apt.install-resolve_transitive"></a>resolve_transitive |  Whether dependencies of dependencies should be resolved and added to the lockfile.   | Boolean | optional |  `True`  |
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="apt.install-name"></a>name |  name of the repository   |  none |
+| <a id="apt.install-manifest"></a>manifest |  label to a `manifest.yaml`   |  none |
+| <a id="apt.install-lock"></a>lock |  label to a `lock.json`   |  `None` |
+| <a id="apt.install-nolock"></a>nolock |  bool, set to True if you explicitly want to run without a lock and avoid the DEBUG messages.   |  `False` |
+| <a id="apt.install-package_template"></a>package_template |  (EXPERIMENTAL!) a template file for generated BUILD files. Available template replacement keys are: `{target_name}`, `{deps}`, `{urls}`, `{name}`, `{arch}`, `{sha256}`, `{repo_name}`   |  `None` |
+| <a id="apt.install-resolve_transitive"></a>resolve_transitive |  whether dependencies of dependencies should be resolved and added to the lockfile.   |  `True` |
 
 

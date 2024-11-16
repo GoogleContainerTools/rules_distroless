@@ -13,6 +13,12 @@ stardoc_with_diff_test(
 
 stardoc_with_diff_test(
     name = "apt",
+    bzl_library_target = "//apt:extensions",
+    target_compatible_with = COMPATIBLE,
+)
+
+stardoc_with_diff_test(
+    name = "apt_macro",
     bzl_library_target = "//apt:apt",
     target_compatible_with = COMPATIBLE,
 )
