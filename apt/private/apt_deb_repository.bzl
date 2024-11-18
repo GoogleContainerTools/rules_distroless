@@ -124,16 +124,16 @@ def _add_package(state, package):
         vp.append((provides, package))
         util.set_dict(state.virtual_packages, vp, (package["Architecture"], provides["name"]))
 
-def _virtual_packages(state, name, arch):
+def _virtual_packages(state, arch, name):
     return util.get_dict(state.virtual_packages, [arch, name], [])
 
-def _package_versions(state, name, arch):
+def _package_versions(state, arch, name):
     return util.get_dict(state.packages, [arch, name], {}).keys()
 
-def _package(state, name, version, arch):
+def _package(state, arch, name, version):
     return util.get_dict(state.packages, keys = (arch, name, version))
 
-def _create(rctx, sources, archs):
+def _new(rctx, sources, archs):
     state = struct(
         packages = dict(),
         virtual_packages = dict(),
@@ -157,13 +157,13 @@ def _create(rctx, sources, archs):
             _parse_repository(state, output, url)
 
     return struct(
-        package_versions = lambda **kwargs: _package_versions(state, **kwargs),
-        virtual_packages = lambda **kwargs: _virtual_packages(state, **kwargs),
-        package = lambda **kwargs: _package(state, **kwargs),
+        package_versions = lambda arch, name: _package_versions(state, arch, name),
+        virtual_packages = lambda arch, name: _virtual_packages(state, arch, name),
+        package = lambda arch, name, version: _package(state, arch, name, version),
     )
 
 deb_repository = struct(
-    new = _create,
+    new = _new,
 )
 
 # TESTONLY: DO NOT DEPEND ON THIS
@@ -174,9 +174,9 @@ def _create_test_only():
     )
 
     return struct(
-        package_versions = lambda **kwargs: _package_versions(state, **kwargs),
-        virtual_packages = lambda **kwargs: _virtual_packages(state, **kwargs),
-        package = lambda **kwargs: _package(state, **kwargs),
+        package_versions = lambda arch, name: _package_versions(state, arch, name),
+        virtual_packages = lambda arch, name: _virtual_packages(state, arch, name),
+        package = lambda arch, name, version: _package(state, arch, name, version),
         parse_repository = lambda contents: _parse_repository(state, contents, "http://nowhere"),
         packages = state.packages,
         reset = lambda: state.packages.clear(),

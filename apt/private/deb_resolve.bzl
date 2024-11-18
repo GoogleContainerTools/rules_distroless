@@ -64,10 +64,10 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
             constraint = version_constraint.parse_depends(dep_constraint).pop()
 
             rctx.report_progress("Resolving %s" % dep_constraint)
-            (package, dependencies, unmet_dependencies) = resolver.resolve_all(
-                name = constraint["name"],
-                version = constraint["version"],
-                arch = arch,
+            package, dependencies, unmet_dependencies = resolver.resolve(
+                arch,
+                constraint["name"],
+                constraint["version"],
                 include_transitive = include_transitive,
             )
 
