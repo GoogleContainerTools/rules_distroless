@@ -2,11 +2,22 @@
 
 load(":version.bzl", version_lib = "version")
 
-def _parse_version_constraint(rawv):
-    vconst_i = rawv.find(" ")
-    if vconst_i == -1:
-        fail('invalid version string %s expected a version constraint ">=", "=", ">=", "<<", ">>"' % rawv)
-    return (rawv[:vconst_i], rawv[vconst_i + 1:])
+def _parse_version_constraint(version_and_constraint):
+    chunks = version_and_constraint.split(" ")
+
+    if len(chunks) != 2:
+        fail("Invalid version constraint %s" % version_and_constraint)
+
+    version_constraint = chunks[0]
+    if version_constraint not in version_lib.VERSION_OPERATORS:
+        msg = "Invalid version constraint: %s\nValid constraints are: %s"
+        fail(msg % (version_constraint, version_lib.VERSION_OPERATORS))
+
+    version = chunks[1]
+
+    version_lib.parse(version)  # parsing version to validate it
+
+    return version_constraint, version
 
 def _parse_dep(raw):
     raw = raw.strip()  # remove leading & trailing whitespace
