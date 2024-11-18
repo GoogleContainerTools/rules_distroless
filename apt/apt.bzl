@@ -6,8 +6,8 @@ repository macro to create Debian repositories with packages "installed" in
 them and available to use in Bazel.
 """
 
-load("//apt/private:index.bzl", _deb_package_index = "deb_package_index")
-load("//apt/private:resolve.bzl", _deb_resolve = "deb_resolve")
+load("//apt/private:deb_resolve.bzl", _deb_resolve = "deb_resolve")
+load("//apt/private:deb_translate_lock.bzl", _deb_translate_lock = "deb_translate_lock")
 
 def _apt_install(
         name,
@@ -129,7 +129,7 @@ def _apt_install(
         # buildifier: disable=print
         print("\nNo lockfile was given, please run `bazel run @%s//:lock` to create the lockfile." % name)
 
-    _deb_package_index(
+    _deb_translate_lock(
         name = name,
         lock = lock if lock else "@" + name + "_resolve//:lock.json",
         package_template = package_template,

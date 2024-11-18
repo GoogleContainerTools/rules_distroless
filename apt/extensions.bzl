@@ -1,9 +1,9 @@
 "apt extensions"
 
 load("//apt/private:deb_import.bzl", "deb_import")
-load("//apt/private:index.bzl", "deb_package_index")
+load("//apt/private:deb_resolve.bzl", "deb_resolve", "internal_resolve")
+load("//apt/private:deb_translate_lock.bzl", "deb_translate_lock")
 load("//apt/private:lockfile.bzl", "lockfile")
-load("//apt/private:resolve.bzl", "deb_resolve", "internal_resolve")
 
 def _distroless_extension(module_ctx):
     root_direct_deps = []
@@ -45,7 +45,7 @@ def _distroless_extension(module_ctx):
                 resolve_transitive = install.resolve_transitive,
             )
 
-            deb_package_index(
+            deb_translate_lock(
                 name = install.name,
                 lock = install.lock,
                 lock_content = lockf.as_json(),

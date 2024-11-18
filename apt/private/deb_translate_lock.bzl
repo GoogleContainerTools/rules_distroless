@@ -1,4 +1,4 @@
-"apt-get"
+"repository rule for generating a dependency graph from a lockfile."
 
 load(":lockfile.bzl", "lockfile")
 
@@ -29,7 +29,7 @@ alias(
 )
 """
 
-def _deb_package_index_impl(rctx):
+def _deb_translate_lock_impl(rctx):
     lock_content = rctx.attr.lock_content
     package_template = rctx.read(rctx.attr.package_template)
     lockf = lockfile.from_json(rctx, lock_content if lock_content else rctx.read(rctx.attr.lock))
@@ -81,8 +81,8 @@ def _deb_package_index_impl(rctx):
     rctx.file("packages.bzl", "\n".join(package_defs))
     rctx.file("BUILD.bazel", _BUILD_TMPL.format(rctx.attr.name.split("~")[-1]))
 
-deb_package_index = repository_rule(
-    implementation = _deb_package_index_impl,
+deb_translate_lock = repository_rule(
+    implementation = _deb_translate_lock_impl,
     attrs = {
         "lock": attr.label(),
         "lock_content": attr.string(doc = "INTERNAL: DO NOT USE"),

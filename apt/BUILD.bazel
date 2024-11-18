@@ -20,8 +20,8 @@ bzl_library(
     srcs = ["apt.bzl"],
     visibility = ["//visibility:public"],
     deps = [
-        "//apt/private:index",
-        "//apt/private:resolve",
+        "//apt/private:deb_resolve",
+        "//apt/private:deb_translate_lock",
     ],
 )
 
@@ -31,8 +31,8 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = [
         "//apt/private:deb_import",
-        "//apt/private:index",
+        "//apt/private:deb_resolve",
+        "//apt/private:deb_translate_lock",
         "//apt/private:lockfile",
-        "//apt/private:resolve",
     ],
 )

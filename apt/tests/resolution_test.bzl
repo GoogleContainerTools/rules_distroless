@@ -1,8 +1,8 @@
 "unit tests for resolution of package dependencies"
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//apt/private:package_index.bzl", package_index = "DO_NOT_DEPEND_ON_THIS_TEST_ONLY")
-load("//apt/private:package_resolution.bzl", "package_resolution")
+load("//apt/private:apt_deb_repository.bzl", deb_repository = "DO_NOT_DEPEND_ON_THIS_TEST_ONLY")
+load("//apt/private:apt_dep_resolver.bzl", "dependency_resolver")
 load("//apt/private:version_constraint.bzl", "version_constraint")
 
 def _parse_depends_test(ctx):
@@ -109,14 +109,14 @@ _test_version = "2.38.1-5"
 _test_arch = "amd64"
 
 def _make_index():
-    idx = package_index.new()
-    resolution = package_resolution.new(idx)
+    idx = deb_repository.new()
+    resolution = dependency_resolver.new(idx)
 
     def _add_package(idx, **kwargs):
         kwargs["architecture"] = kwargs.get("architecture", _test_arch)
         kwargs["version"] = kwargs.get("version", _test_version)
         r = "\n".join(["{}: {}".format(item[0].title(), item[1]) for item in kwargs.items()])
-        idx.parse_package_index(r)
+        idx.parse_repository(r)
 
     return struct(
         add_package = lambda **kwargs: _add_package(idx, **kwargs),

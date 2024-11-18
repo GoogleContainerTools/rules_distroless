@@ -5,7 +5,7 @@ load(":version_constraint.bzl", "version_constraint")
 
 def _resolve_package(state, name, version, arch):
     # First check if the constraint is satisfied by a virtual package
-    virtual_packages = state.index.virtual_packages(name = name, arch = arch)
+    virtual_packages = state.repository.virtual_packages(name = name, arch = arch)
     for (provides, package) in virtual_packages:
         provided_version = provides["version"]
         if not provided_version and version:
@@ -15,8 +15,8 @@ def _resolve_package(state, name, version, arch):
                 return package
 
     # Get available versions of the package
-    versions_by_arch = state.index.package_versions(name = name, arch = arch)
-    versions_by_any_arch = state.index.package_versions(name = name, arch = "all")
+    versions_by_arch = state.repository.package_versions(name = name, arch = arch)
+    versions_by_any_arch = state.repository.package_versions(name = name, arch = "all")
 
     # Order packages by highest to lowest
     versions = version_lib.sort(versions_by_arch + versions_by_any_arch, reverse = True)
@@ -36,9 +36,9 @@ def _resolve_package(state, name, version, arch):
         # First element in the versions list is the latest version.
         selected_version = versions[0]
 
-    package = state.index.package(name = name, version = selected_version, arch = arch)
+    package = state.repository.package(name = name, version = selected_version, arch = arch)
     if not package:
-        package = state.index.package(name = name, version = selected_version, arch = "all")
+        package = state.repository.package(name = name, version = selected_version, arch = "all")
 
     return package
 
@@ -124,13 +124,13 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
 
     return (root_package, dependencies, unmet_dependencies)
 
-def _create_resolution(index):
-    state = struct(index = index)
+def _create_resolution(repository):
+    state = struct(repository = repository)
     return struct(
         resolve_all = lambda **kwargs: _resolve_all(state, **kwargs),
         resolve_package = lambda **kwargs: _resolve_package(state, **kwargs),
     )
 
-package_resolution = struct(
+dependency_resolver = struct(
     new = _create_resolution,
 )

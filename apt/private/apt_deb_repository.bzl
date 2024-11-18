@@ -1,4 +1,4 @@
-"package index"
+"https://wiki.debian.org/DebianRepository"
 
 load(":util.bzl", "util")
 load(":version_constraint.bzl", "version_constraint")
@@ -54,7 +54,7 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
 
     return ("{}/Packages".format(target_triple), integrity)
 
-def _parse_package_index(state, contents, root):
+def _parse_repository(state, contents, root):
     last_key = ""
     pkg = {}
     for group in contents.split("\n\n"):
@@ -127,7 +127,7 @@ def _create(rctx, sources, archs):
 
             # TODO: this is expensive to perform.
             rctx.report_progress("Parsing package index: {}/{} for {}".format(dist, comp, arch))
-            _parse_package_index(state, rctx.read(output), url)
+            _parse_repository(state, rctx.read(output), url)
 
     return struct(
         package_versions = lambda **kwargs: _package_versions(state, **kwargs),
@@ -135,11 +135,11 @@ def _create(rctx, sources, archs):
         package = lambda **kwargs: _package(state, **kwargs),
     )
 
-package_index = struct(
+deb_repository = struct(
     new = _create,
 )
 
-# Testonly functions:
+# TESTONLY: DO NOT DEPEND ON THIS
 def _create_test_only():
     state = struct(
         packages = dict(),
@@ -150,7 +150,7 @@ def _create_test_only():
         package_versions = lambda **kwargs: _package_versions(state, **kwargs),
         virtual_packages = lambda **kwargs: _virtual_packages(state, **kwargs),
         package = lambda **kwargs: _package(state, **kwargs),
-        parse_package_index = lambda contents: _parse_package_index(state, contents, "http://nowhere"),
+        parse_repository = lambda contents: _parse_repository(state, contents, "http://nowhere"),
         packages = state.packages,
         reset = lambda: state.packages.clear(),
     )

@@ -22,8 +22,8 @@ bzl_library(
 )
 
 bzl_library(
-    name = "index",
-    srcs = ["index.bzl"],
+    name = "deb_translate_lock",
+    srcs = ["deb_translate_lock.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
         ":lockfile",
@@ -41,15 +41,15 @@ bzl_library(
 )
 
 bzl_library(
-    name = "package_index",
-    srcs = ["package_index.bzl"],
+    name = "apt_deb_repository",
+    srcs = ["apt_deb_repository.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [":util"],
 )
 
 bzl_library(
-    name = "package_resolution",
-    srcs = ["package_resolution.bzl"],
+    name = "apt_dep_resolver",
+    srcs = ["apt_dep_resolver.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
         ":version",
@@ -58,13 +58,13 @@ bzl_library(
 )
 
 bzl_library(
-    name = "resolve",
-    srcs = ["resolve.bzl"],
+    name = "deb_resolve",
+    srcs = ["deb_resolve.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
+        ":apt_deb_repository",
+        ":apt_dep_resolver",
         ":lockfile",
-        ":package_index",
-        ":package_resolution",
         "@aspect_bazel_lib//lib:repo_utils",
     ],
 )

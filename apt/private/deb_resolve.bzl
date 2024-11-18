@@ -1,9 +1,9 @@
 "repository rule for resolving and generating lockfile"
 
 load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
+load(":apt_deb_repository.bzl", "deb_repository")
+load(":apt_dep_resolver.bzl", "dependency_resolver")
 load(":lockfile.bzl", "lockfile")
-load(":package_index.bzl", "package_index")
-load(":package_resolution.bzl", "package_resolution")
 load(":util.bzl", "util")
 load(":version_constraint.bzl", "version_constraint")
 
@@ -50,8 +50,8 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
                 comp,
             ))
 
-    pkgindex = package_index.new(rctx, sources = sources, archs = manifest["archs"])
-    pkgresolution = package_resolution.new(index = pkgindex)
+    repository = deb_repository.new(rctx, sources = sources, archs = manifest["archs"])
+    resolver = dependency_resolver.new(repository)
     lockf = lockfile.empty(rctx)
 
     for arch in manifest["archs"]:
@@ -64,7 +64,7 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
             constraint = version_constraint.parse_depends(dep_constraint).pop()
 
             rctx.report_progress("Resolving %s" % dep_constraint)
-            (package, dependencies, unmet_dependencies) = pkgresolution.resolve_all(
+            (package, dependencies, unmet_dependencies) = resolver.resolve_all(
                 name = constraint["name"],
                 version = constraint["version"],
                 arch = arch,
