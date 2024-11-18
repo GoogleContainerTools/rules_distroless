@@ -24,13 +24,17 @@ def _resolve_package(repository, name, version, arch):
     selected_version = None
 
     if version:
-        for av in versions:
-            if version_constraint.relop(av, version[1], version[0]):
-                selected_version = av
+        op, vb = version
+        for va in versions:
+            if version_lib.compare(va, op, vb):
+                selected_version = va
 
-                # Since versions are ordered by hight to low, the first satisfied version will be
-                # the highest version and rules_distroless ignores Priority field so it's safe.
-                # TODO: rethink this `break` with https://github.com/GoogleContainerTools/rules_distroless/issues/34
+                # Since versions are ordered from high to low and
+                # rules_distroless ignores Priority, the first satisfied
+                # version will be the highest version.
+
+                # TODO: FR: support package priorities
+                # https://github.com/GoogleContainerTools/rules_distroless/issues/34
                 break
     elif len(versions) > 0:
         # First element in the versions list is the latest version.
