@@ -78,7 +78,7 @@ def _fetch_package_index(rctx, url, dist, comp, arch):
 
     return rctx.read(output)
 
-def _parse_repository(state, contents, root):
+def _parse_package_index(state, contents, root):
     last_key = ""
     pkg = {}
     for group in contents.split("\n\n"):
@@ -148,7 +148,7 @@ def _new(rctx, sources, archs):
             output = _fetch_package_index(rctx, url, dist, comp, arch)
 
             rctx.report_progress("Parsing package index: %s" % index)
-            _parse_repository(state, output, url)
+            _parse_package_index(state, output, url)
 
     return struct(
         package_versions = lambda arch, name: state.packages.get((arch, name), {}).keys(),
@@ -158,6 +158,10 @@ def _new(rctx, sources, archs):
 
 deb_repository = struct(
     new = _new,
+    __test__ = struct(
+        _fetch_package_index = _fetch_package_index,
+        _parse_package_index = _parse_package_index,
+    ),
 )
 
 # TESTONLY: DO NOT DEPEND ON THIS
@@ -171,7 +175,7 @@ def _create_test_only():
         package_versions = lambda arch, name: state.packages.get((arch, name), {}).keys(),
         virtual_packages = lambda arch, name: state.virtual_packages.get((arch, name), []),
         package = lambda arch, name, version: state.packages.get((arch, name, version)),
-        parse_repository = lambda contents: _parse_repository(state, contents, "http://nowhere"),
+        parse_package_index = lambda contents: _parse_package_index(state, contents, "http://nowhere"),
         packages = state.packages,
         reset = lambda: state.packages.clear(),
     )
