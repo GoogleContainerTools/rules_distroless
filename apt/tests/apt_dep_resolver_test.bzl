@@ -32,20 +32,21 @@ def _resolve_optionals_test(ctx):
     idx.add_package(package = "libc6-dev")
     idx.add_package(package = "eject", depends = "libc6-dev | libc-dev")
 
-    (root_package, dependencies, _) = idx.resolution.resolve_all(
+    root_package, dependencies, unresolved_deps = idx.resolution.resolve(
+        arch = _test_arch,
         name = "eject",
         version = ("=", _test_version),
-        arch = _test_arch,
     )
     asserts.equals(env, "eject", root_package["Package"])
     asserts.equals(env, "libc6-dev", dependencies[0]["Package"])
     asserts.equals(env, 1, len(dependencies))
+    asserts.equals(env, 0, len(unresolved_deps))
 
     return unittest.end(env)
 
 resolve_optionals_test = unittest.make(_resolve_optionals_test)
 
-def _resolve_architecture_specific_packages_test(ctx):
+def _resolve_arch_specific_packages_test(ctx):
     env = unittest.begin(ctx)
 
     idx = _make_index()
@@ -56,30 +57,32 @@ def _resolve_architecture_specific_packages_test(ctx):
     idx.add_package(package = "glibc", architecture = "all", depends = "foo [i386], bar [amd64]")
 
     # bar for amd64
-    (root_package, dependencies, _) = idx.resolution.resolve_all(
+    root_package, dependencies, unresolved_deps = idx.resolution.resolve(
+        arch = "amd64",
         name = "glibc",
         version = ("=", _test_version),
-        arch = "amd64",
     )
     asserts.equals(env, "glibc", root_package["Package"])
     asserts.equals(env, "all", root_package["Architecture"])
     asserts.equals(env, "bar", dependencies[0]["Package"])
     asserts.equals(env, 1, len(dependencies))
+    asserts.equals(env, 1, len(unresolved_deps))
 
     # foo for i386
-    (root_package, dependencies, _) = idx.resolution.resolve_all(
+    root_package, dependencies, unresolved_deps = idx.resolution.resolve(
+        arch = "i386",
         name = "glibc",
         version = ("=", _test_version),
-        arch = "i386",
     )
     asserts.equals(env, "glibc", root_package["Package"])
     asserts.equals(env, "all", root_package["Architecture"])
     asserts.equals(env, "foo", dependencies[0]["Package"])
     asserts.equals(env, 1, len(dependencies))
+    asserts.equals(env, 1, len(unresolved_deps))
 
     return unittest.end(env)
 
-resolve_architecture_specific_packages_test = unittest.make(_resolve_architecture_specific_packages_test)
+resolve_arch_specific_packages_test = unittest.make(_resolve_arch_specific_packages_test)
 
 def _resolve_aliases(ctx):
     env = unittest.begin(ctx)
@@ -90,15 +93,17 @@ def _resolve_aliases(ctx):
     idx.add_package(package = "bar", version = "0.9")
     idx.add_package(package = "bar-plus", provides = "bar (= 1.0)")
 
-    (root_package, dependencies, _) = idx.resolution.resolve_all(
+    root_package, dependencies, unresolved_deps = idx.resolution.resolve(
+        arch = "amd64",
         name = "foo",
         version = ("=", _test_version),
-        arch = "amd64",
     )
     asserts.equals(env, "foo", root_package["Package"])
     asserts.equals(env, "amd64", root_package["Architecture"])
     asserts.equals(env, "bar-plus", dependencies[0]["Package"])
     asserts.equals(env, 1, len(dependencies))
+    asserts.equals(env, 0, len(unresolved_deps))
+
     idx.reset()
 
     idx.add_package(package = "foo", depends = "bar (>= 1.0)")
@@ -106,15 +111,16 @@ def _resolve_aliases(ctx):
     idx.add_package(package = "bar-plus", provides = "bar (= 1.0)")
     idx.add_package(package = "bar-clone", provides = "bar")
 
-    (root_package, dependencies, _) = idx.resolution.resolve_all(
+    root_package, dependencies, unresolved_deps = idx.resolution.resolve(
+        arch = "amd64",
         name = "foo",
         version = ("=", _test_version),
-        arch = "amd64",
     )
     asserts.equals(env, "foo", root_package["Package"])
     asserts.equals(env, "amd64", root_package["Architecture"])
     asserts.equals(env, "bar-plus", dependencies[0]["Package"])
     asserts.equals(env, 1, len(dependencies))
+    asserts.equals(env, 0, len(unresolved_deps))
 
     return unittest.end(env)
 
@@ -124,5 +130,5 @@ _TEST_SUITE_PREFIX = "apt_dep_resolver/"
 
 def apt_dep_resolver_tests():
     resolve_optionals_test(name = _TEST_SUITE_PREFIX + "resolve_optionals")
-    resolve_architecture_specific_packages_test(name = _TEST_SUITE_PREFIX + "resolve_architectures_specific")
+    resolve_arch_specific_packages_test(name = _TEST_SUITE_PREFIX + "resolve_arch_specific")
     resolve_aliases_test(name = _TEST_SUITE_PREFIX + "resolve_aliases")

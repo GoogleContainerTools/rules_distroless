@@ -70,6 +70,7 @@ bzl_library(
         ":apt_deb_repository",
         ":apt_dep_resolver",
         ":lockfile",
+        ":util",
         "@aspect_bazel_lib//lib:repo_utils",
     ],
 )
