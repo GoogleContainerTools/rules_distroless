@@ -55,6 +55,7 @@ bzl_library(
     srcs = ["apt_dep_resolver.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
+        ":util",
         ":version",
         ":version_constraint",
     ],
