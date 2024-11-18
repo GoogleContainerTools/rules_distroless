@@ -15,7 +15,7 @@ def _make_index():
         kwargs["architecture"] = kwargs.get("architecture", _test_arch)
         kwargs["version"] = kwargs.get("version", _test_version)
         r = "\n".join(["{}: {}".format(item[0].title(), item[1]) for item in kwargs.items()])
-        idx.parse_repository(r)
+        idx.parse_package_index(r)
 
     return struct(
         add_package = lambda **kwargs: _add_package(idx, **kwargs),
