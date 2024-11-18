@@ -57,27 +57,13 @@ def _parse_depends(depends_raw):
 
     return depends
 
-def _version_relop(va, vb, op):
-    if op == "<<":
-        return version_lib.lt(va, vb)
-    elif op == ">>":
-        return version_lib.gt(va, vb)
-    elif op == "<=":
-        return version_lib.lte(va, vb)
-    elif op == ">=":
-        return version_lib.gte(va, vb)
-    elif op == "=":
-        return version_lib.eq(va, vb)
-    fail("unknown op %s" % op)
-
 def _is_satisfied_by(va, vb):
     if vb[0] != "=":
         fail("Per https://www.debian.org/doc/debian-policy/ch-relationships.html only = is allowed for Provides field.")
 
-    return _version_relop(va[1], vb[1], va[0])
+    return version_lib.compare(va[1], va[0], vb[1])
 
 version_constraint = struct(
-    relop = _version_relop,
     is_satisfied_by = _is_satisfied_by,
     parse_version_constraint = _parse_version_constraint,
     parse_depends = _parse_depends,
