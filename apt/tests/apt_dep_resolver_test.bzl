@@ -120,9 +120,9 @@ def _resolve_aliases(ctx):
 
 resolve_aliases_test = unittest.make(_resolve_aliases)
 
-_TEST_SUITE_PREFIX = "package_resolution/"
+_TEST_SUITE_PREFIX = "apt_dep_resolver/"
 
-def resolution_tests():
+def apt_dep_resolver_tests():
     resolve_optionals_test(name = _TEST_SUITE_PREFIX + "resolve_optionals")
     resolve_architecture_specific_packages_test(name = _TEST_SUITE_PREFIX + "resolve_architectures_specific")
     resolve_aliases_test(name = _TEST_SUITE_PREFIX + "resolve_aliases")
