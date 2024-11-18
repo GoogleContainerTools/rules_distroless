@@ -1,11 +1,12 @@
 "package resolution"
 
+load(":util.bzl", "util")
 load(":version.bzl", version_lib = "version")
 load(":version_constraint.bzl", "version_constraint")
 
-def _resolve_package(repository, name, version, arch):
+def _resolve_package(repository, arch, name, version):
     # First check if the constraint is satisfied by a virtual package
-    virtual_packages = repository.virtual_packages(name = name, arch = arch)
+    virtual_packages = repository.virtual_packages(arch, name)
     for (provides, package) in virtual_packages:
         provided_version = provides["version"]
         if not provided_version and version:
@@ -15,8 +16,8 @@ def _resolve_package(repository, name, version, arch):
                 return package
 
     # Get available versions of the package
-    versions_by_arch = repository.package_versions(name = name, arch = arch)
-    versions_by_any_arch = repository.package_versions(name = name, arch = "all")
+    versions_by_arch = repository.package_versions(arch, name)
+    versions_by_any_arch = repository.package_versions("all", name)
 
     # Order packages by highest to lowest
     versions = version_lib.sort(versions_by_arch + versions_by_any_arch, reverse = True)
@@ -40,9 +41,9 @@ def _resolve_package(repository, name, version, arch):
         # First element in the versions list is the latest version.
         selected_version = versions[0]
 
-    package = repository.package(name = name, version = selected_version, arch = arch)
+    package = repository.package(arch, name, selected_version)
     if not package:
-        package = repository.package(name = name, version = selected_version, arch = "all")
+        package = repository.package("all", name, selected_version)
 
     return package
 
@@ -51,9 +52,10 @@ _ITERATION_MAX_ = 2147483646
 # For future: unfortunately this function uses a few state variables to track
 # certain conditions and package dependency groups.
 # TODO: Try to simplify it in the future.
-def _resolve_all(repository, name, version, arch, include_transitive = True):
+def _resolve(repository, rctx, arch, name, version, include_transitive):
+    root_package_name = name
     root_package = None
-    unmet_dependencies = []
+    unresolved_dependencies = []
     dependencies = []
 
     # state variables
@@ -65,27 +67,32 @@ def _resolve_all(repository, name, version, arch, include_transitive = True):
         if not len(stack):
             break
         if i == _ITERATION_MAX_:
-            fail("resolve_all exhausted")
+            msg = "Reached _ITERATION_MAX_ trying to resolve %s"
+            fail(msg % root_package_name)
 
         (name, version, dependency_group_idx) = stack.pop()
 
-        # If this iteration is part of a dependency group, and the dependency group is already met, then skip this iteration.
+        # If this iteration is part of a dependency group, and the dependency
+        # group is already met, then skip this iteration.
         if dependency_group_idx > -1 and dependency_group[dependency_group_idx]:
             continue
 
-        package = _resolve_package(repository, name, version, arch)
+        package = _resolve_package(repository, arch, name, version)
 
-        # If this package is not found and is part of a dependency group, then just skip it.
+        # If this package is not found and is part of a dependency group, then
+        # just skip it.
         if not package and dependency_group_idx > -1:
             continue
 
-        # If this package is not found but is not part of a dependency group, then add it to unmet dependencies.
+        # If this package is not found but is not part of a dependency group,
+        # then add it to unresolved_dependencies.
         if not package:
             key = "%s~~%s" % (name, version[1] if version else "")
-            unmet_dependencies.append((name, version))
+            unresolved_dependencies.append((name, version))
             continue
 
-        # If this package was requested as part of a dependency group, then mark it's group as `dependency met`
+        # If this package was requested as part of a dependency group, then
+        # mark it's group as resolved.
         if dependency_group_idx > -1:
             dependency_group[dependency_group_idx] = True
 
@@ -126,11 +133,23 @@ def _resolve_all(repository, name, version, arch, include_transitive = True):
                 # TODO: arch
                 stack.append((dep["name"], dep["version"], -1))
 
-    return (root_package, dependencies, unmet_dependencies)
+    if unresolved_dependencies:
+        unresolved_dependencies_csv = ", ".join([ud[0] for ud in unresolved_dependencies])
+        msg = "package %s has dependencies that couldn't be resolved: %s"
+        util.warning(rctx, msg % (root_package_name, unresolved_dependencies_csv))
+
+    return root_package, dependencies
 
 def _new(repository):
     return struct(
-        resolve_all = lambda **kwargs: _resolve_all(repository, **kwargs),
+        resolve = lambda rctx, arch, name, version, include_transitive = True: _resolve(
+            repository,
+            rctx,
+            arch,
+            name,
+            version,
+            include_transitive,
+        ),
     )
 
 dependency_resolver = struct(

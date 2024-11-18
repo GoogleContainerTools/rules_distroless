@@ -4,7 +4,6 @@ load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
 load(":apt_deb_repository.bzl", "deb_repository")
 load(":apt_dep_resolver.bzl", "dependency_resolver")
 load(":lockfile.bzl", "lockfile")
-load(":util.bzl", "util")
 load(":version_constraint.bzl", "version_constraint")
 
 def _parse_manifest(rctx, yq_toolchain_prefix, manifest):
@@ -64,19 +63,16 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
             constraint = version_constraint.parse_depends(dep_constraint).pop()
 
             rctx.report_progress("Resolving %s" % dep_constraint)
-            (package, dependencies, unmet_dependencies) = resolver.resolve_all(
-                name = constraint["name"],
-                version = constraint["version"],
-                arch = arch,
+            package, dependencies = resolver.resolve(
+                rctx,
+                arch,
+                constraint["name"],
+                constraint["version"],
                 include_transitive = include_transitive,
             )
 
             if not package:
                 fail("Unable to locate package `%s`" % dep_constraint)
-
-            if len(unmet_dependencies):
-                # buildifier: disable=print
-                util.warning(rctx, "Following dependencies could not be resolved for %s: %s" % (constraint["name"], ",".join([up[0] for up in unmet_dependencies])))
 
             lockf.add_package(package, arch)
 
