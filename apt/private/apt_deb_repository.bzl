@@ -11,13 +11,14 @@ def _fetch_package_index(rctx, url, dist, comp, arch):
     supported_extensions = {
         "xz": ["xz", "--decompress", "--keep", "--force"],
         "gz": ["gzip", "--decompress", "--keep", "--force"],
+        "": None,
     }
 
     failed_attempts = []
 
     for ext, cmd in supported_extensions.items():
         index = "Packages"
-        index_full = "{}.{}".format(index, ext)
+        index_full = "{}.{}".format(index, ext) if ext else index
 
         output = "{dist}/{comp}/{arch}/{index}".format(
             dist = dist,
@@ -25,7 +26,7 @@ def _fetch_package_index(rctx, url, dist, comp, arch):
             arch = arch,
             index = index,
         )
-        output_full = "{}.{}".format(output, ext)
+        output_full = "{}.{}".format(output, ext) if ext else output
 
         index_url = "{url}/dists/{dist}/{comp}/binary-{arch}/{index_full}".format(
             url = url,
@@ -45,6 +46,10 @@ def _fetch_package_index(rctx, url, dist, comp, arch):
             reason = "Download failed. See warning above for details."
             failed_attempts.append((index_url, reason))
             continue
+
+        if cmd == None:
+            # index is already decompressed
+            break
 
         decompress_cmd = cmd + [output_full]
         decompress_res = rctx.execute(decompress_cmd)
