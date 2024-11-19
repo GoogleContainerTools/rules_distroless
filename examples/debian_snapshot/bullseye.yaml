@@ -34,3 +34,4 @@ packages:
   - "ca-certificates"
   # test multiple components: contrib
   - "nvidia-kernel-common"
+  - "bash"
