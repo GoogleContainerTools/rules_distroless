@@ -68,15 +68,33 @@ def _parse_depends(depends_raw):
 
     return depends
 
-def _is_satisfied_by(va, vb):
-    if vb[0] != "=":
-        fail("Per https://www.debian.org/doc/debian-policy/ch-relationships.html only = is allowed for Provides field.")
+def _parse_provides(provides_raw):
+    provides = _parse_dep(provides_raw)
 
-    return version_lib.compare(va[1], va[0], vb[1])
+    if not provides["version"]:
+        return provides
+
+    op, version = provides["version"]
+
+    if op != "=":
+        msg = "Invalid constraint: {}. Only '=' is allowed in 'Provides', see "
+        msg += "https://www.debian.org/doc/debian-policy/ch-relationships.html"
+        fail(msg.format(op))
+
+    # we just want the version
+    provides["version"] = version
+
+    return provides
+
+def _is_satisfied_by(version, provided_version):
+    vb = provided_version
+
+    op, va = version
+    return version_lib.compare(va, op, vb)
 
 version_constraint = struct(
     is_satisfied_by = _is_satisfied_by,
     parse_version_constraint = _parse_version_constraint,
     parse_depends = _parse_depends,
-    parse_dep = _parse_dep,
+    parse_provides = _parse_provides,
 )

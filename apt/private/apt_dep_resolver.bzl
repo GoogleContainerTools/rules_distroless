@@ -7,8 +7,7 @@ load(":version_constraint.bzl", "version_constraint")
 def _resolve_package(repository, arch, name, version):
     # First check if the constraint is satisfied by a virtual package
     virtual_packages = repository.virtual_packages(arch, name)
-    for (provides, package) in virtual_packages:
-        provided_version = provides["version"]
+    for (provided_version, package) in virtual_packages:
         if not provided_version and version:
             continue
         if provided_version and version:
