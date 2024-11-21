@@ -1,6 +1,6 @@
 "https://wiki.debian.org/DebianRepository"
 
-load(":util.bzl", "util")
+load(":nested_dict.bzl", "nested_dict")
 load(":version_constraint.bzl", "version_constraint")
 
 def _fetch_package_index(rctx, url, dist, comp, arch):
@@ -113,28 +113,24 @@ def _parse_repository(state, contents, root):
             pkg = {}
 
 def _add_package(state, package):
-    util.set_dict(state.packages, value = package, keys = (package["Architecture"], package["Package"], package["Version"]))
+    state.packages.set(
+        keys = (package["Architecture"], package["Package"], package["Version"]),
+        value = package,
+    )
 
     # https://www.debian.org/doc/debian-policy/ch-relationships.html#virtual-packages-provides
     if "Provides" in package:
         provides = version_constraint.parse_dep(package["Provides"])
-        vp = util.get_dict(state.virtual_packages, (package["Architecture"], provides["name"]), [])
-        vp.append((provides, package))
-        util.set_dict(state.virtual_packages, vp, (package["Architecture"], provides["name"]))
 
-def _virtual_packages(state, arch, name):
-    return util.get_dict(state.virtual_packages, [arch, name], [])
-
-def _package_versions(state, arch, name):
-    return util.get_dict(state.packages, [arch, name], {}).keys()
-
-def _package(state, arch, name, version):
-    return util.get_dict(state.packages, keys = (arch, name, version))
+        state.virtual_packages.add(
+            keys = (package["Architecture"], provides["name"]),
+            value = (provides, package),
+        )
 
 def _new(rctx, sources, archs):
     state = struct(
-        packages = dict(),
-        virtual_packages = dict(),
+        packages = nested_dict.new(),
+        virtual_packages = nested_dict.new(),
     )
 
     for arch in archs:
@@ -155,9 +151,9 @@ def _new(rctx, sources, archs):
             _parse_repository(state, output, url)
 
     return struct(
-        package_versions = lambda arch, name: _package_versions(state, arch, name),
-        virtual_packages = lambda arch, name: _virtual_packages(state, arch, name),
-        package = lambda arch, name, version: _package(state, arch, name, version),
+        package_versions = lambda arch, name: state.packages.get((arch, name), {}).keys(),
+        virtual_packages = lambda arch, name: state.virtual_packages.get((arch, name), []),
+        package = lambda arch, name, version: state.packages.get((arch, name, version)),
     )
 
 deb_repository = struct(
@@ -167,14 +163,14 @@ deb_repository = struct(
 # TESTONLY: DO NOT DEPEND ON THIS
 def _create_test_only():
     state = struct(
-        packages = dict(),
-        virtual_packages = dict(),
+        packages = nested_dict.new(),
+        virtual_packages = nested_dict.new(),
     )
 
     return struct(
-        package_versions = lambda arch, name: _package_versions(state, arch, name),
-        virtual_packages = lambda arch, name: _virtual_packages(state, arch, name),
-        package = lambda arch, name, version: _package(state, arch, name, version),
+        package_versions = lambda arch, name: state.packages.get((arch, name), {}).keys(),
+        virtual_packages = lambda arch, name: state.virtual_packages.get((arch, name), []),
+        package = lambda arch, name, version: state.packages.get((arch, name, version)),
         parse_repository = lambda contents: _parse_repository(state, contents, "http://nowhere"),
         packages = state.packages,
         reset = lambda: state.packages.clear(),
