@@ -11,7 +11,9 @@ def _resolve_package(repository, arch, name, version):
         if not provided_version and version:
             continue
         if provided_version and version:
-            if version_constraint.is_satisfied_by(version, provided_version):
+            va = provided_version
+            op, vb = version
+            if version_lib.compare(va, op, vb):
                 return package
 
     # Get available versions of the package

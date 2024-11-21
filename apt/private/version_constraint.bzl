@@ -86,14 +86,7 @@ def _parse_provides(provides_raw):
 
     return provides
 
-def _is_satisfied_by(version, provided_version):
-    vb = provided_version
-
-    op, va = version
-    return version_lib.compare(va, op, vb)
-
 version_constraint = struct(
-    is_satisfied_by = _is_satisfied_by,
     parse_version_constraint = _parse_version_constraint,
     parse_depends = _parse_depends,
     parse_provides = _parse_provides,
