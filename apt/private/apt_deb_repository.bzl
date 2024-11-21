@@ -120,11 +120,11 @@ def _add_package(state, package):
 
     # https://www.debian.org/doc/debian-policy/ch-relationships.html#virtual-packages-provides
     if "Provides" in package:
-        provides = version_constraint.parse_dep(package["Provides"])
+        provides = version_constraint.parse_provides(package["Provides"])
 
         state.virtual_packages.add(
             keys = (package["Architecture"], provides["name"]),
-            value = (provides, package),
+            value = (provides["version"], package),
         )
 
 def _new(rctx, sources, archs):

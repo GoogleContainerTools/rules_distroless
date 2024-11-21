@@ -135,7 +135,7 @@ def _is_satisfied_by_test(ctx):
             expected,
             version_constraint.is_satisfied_by(
                 version_constraint.parse_version_constraint(va),
-                version_constraint.parse_version_constraint(vb),
+                version_constraint.parse_version_constraint(vb)[1],
             ),
         )
 
