@@ -45,7 +45,7 @@ bzl_library(
     srcs = ["apt_deb_repository.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
-        ":util",
+        ":nested_dict",
         ":version_constraint",
     ],
 )
@@ -98,4 +98,10 @@ bzl_library(
     srcs = ["version_constraint.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [":version"],
+)
+
+bzl_library(
+    name = "nested_dict",
+    srcs = ["nested_dict.bzl"],
+    visibility = ["//apt:__subpackages__"],
 )
