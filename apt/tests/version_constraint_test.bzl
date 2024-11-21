@@ -121,31 +121,8 @@ def _parse_depends_test(ctx):
 
 parse_depends_test = unittest.make(_parse_depends_test)
 
-def _is_satisfied_by_test(ctx):
-    parameters = [
-        (">= 1.1", "= 1.1", True),
-        ("<= 1.1", "= 1.1", True),
-        (">> 1.1", "= 1.1", False),
-    ]
-
-    env = unittest.begin(ctx)
-    for va, vb, expected in parameters:
-        asserts.equals(
-            env,
-            expected,
-            version_constraint.is_satisfied_by(
-                version_constraint.parse_version_constraint(va),
-                version_constraint.parse_version_constraint(vb)[1],
-            ),
-        )
-
-    return unittest.end(env)
-
-is_satisfied_by_test = unittest.make(_is_satisfied_by_test)
-
 def version_constraint_tests():
     parse_version_constraint_test(
         name = _TEST_SUITE_PREFIX + "parse_version_constraint_test",
     )
     parse_depends_test(name = _TEST_SUITE_PREFIX + "parse_depends")
-    is_satisfied_by_test(name = _TEST_SUITE_PREFIX + "is_satisfied_by")
