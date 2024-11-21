@@ -4,13 +4,16 @@ load(":version.bzl", version_lib = "version")
 load(":version_constraint.bzl", "version_constraint")
 
 def _resolve_package(repository, arch, name, version):
-    # First check if the constraint is satisfied by a virtual package
-    virtual_packages = repository.virtual_packages(arch, name)
-    for (provides, package) in virtual_packages:
-        provided_version = provides["version"]
-        if not provided_version and version:
-            continue
-        if provided_version and version:
+    if version:
+        # First check if the constraint is satisfied by a virtual package
+        virtual_packages = repository.virtual_packages(arch, name)
+
+        for provides, package in virtual_packages:
+            provided_version = provides["version"]
+
+            if not provided_version:
+                continue
+
             if version_constraint.is_satisfied_by(version, provided_version):
                 return package
 
