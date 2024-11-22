@@ -14,7 +14,7 @@ def _apt_install(
         manifest,
         lock = None,
         nolock = False,
-        package_template = None,
+        package_arch_build_template = None,
         resolve_transitive = True):
     """Repository macro to create Debian repositories.
 
@@ -112,10 +112,11 @@ def _apt_install(
         lock: label to a `lock.json`
         nolock: bool, set to True if you explicitly want to run without a lock
                 and avoid the DEBUG messages.
-        package_template: (EXPERIMENTAL!) a template file for generated BUILD
-                          files. Available template replacement keys are:
-                          `{target_name}`, `{deps}`, `{urls}`, `{name}`,
-                          `{arch}`, `{sha256}`, `{repo_name}`
+        package_arch_build_template: (EXPERIMENTAL!) a template file for
+                                     generated BUILD files. Available template
+                                     replacement keys are: `{target_name}`,
+                                     `{deps}`, `{urls}`, `{name}`, `{arch}`,
+                                     `{sha256}`, `{repo_name}`
         resolve_transitive: whether dependencies of dependencies should be
                             resolved and added to the lockfile.
     """
@@ -134,7 +135,7 @@ def _apt_install(
     _deb_translate_lock(
         name = name,
         lock = lock if lock else "@" + name + "_resolve//:lock.json",
-        package_template = package_template,
+        package_arch_build_template = package_arch_build_template,
     )
 
 apt = struct(
