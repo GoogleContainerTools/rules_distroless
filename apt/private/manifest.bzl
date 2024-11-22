@@ -41,8 +41,13 @@ def _source(src):
 
     index = "Packages"
 
-    index_path = "dists/{dist}/{comp}/binary-{arch}".format(**src)
-    output = "{dist}/{comp}/{arch}/{index}".format(index = index, **src)
+    if "directory" in src:  # flat repo:
+        src["directory"] = src["directory"].rstrip("/")
+        index_path = src["directory"]
+        output = "{directory}/{arch}/{index}".format(index = index, **src)
+    else:  # canonical
+        index_path = "dists/{dist}/{comp}/binary-{arch}".format(**src)
+        output = "{dist}/{comp}/{arch}/{index}".format(index = index, **src)
 
     return struct(
         arch = src["arch"],
@@ -101,14 +106,42 @@ def _from_dict(manifest, manifest_label):
 
     for arch in manifest["archs"]:
         for src in manifest["sources"]:
-            dist, components = src["channel"].split(" ", 1)
+            src["arch"] = arch
 
-            for comp in components.split(" "):
-                src["dist"] = dist
-                src["comp"] = comp
-                src["arch"] = arch
+            channel_chunks = src["channel"].split(" ")
+
+            # support both canonical and flat repos, see:
+            # canonical: https://wiki.debian.org/DebianRepository/Format#Overview
+            # flat repo: https://wiki.debian.org/DebianRepository/Format#Flat_Repository_Format
+            if len(channel_chunks) > 1:  # canonical
+                dist, components = channel_chunks[0], channel_chunks[1:]
+
+                if dist.endswith("/"):
+                    msg = "Debian dist ends in '/' but this is not a flat repo: {}"
+                    failures.append(msg.format(dist))
+
+                for comp in components:
+                    src["dist"] = dist
+                    src["comp"] = comp
+
+                    sources.append(_source(src))
+            else:  # flat
+                directory = channel_chunks[0]
+
+                if not directory.endswith("/"):
+                    msg = "Debian flat repo directory must end in '/': {}"
+                    failures.append(msg.format(directory))
+
+                src["directory"] = directory
 
                 sources.append(_source(src))
+
+    if failures:
+        for failure in failures:
+            msg = "{}: {}".format(manifest_label, failure)
+            print(msg)
+
+        fail("{}: Invalid manifest".format(manifest_label))
 
     manifest["sources"] = sources
 
