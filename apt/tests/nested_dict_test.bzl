@@ -80,8 +80,58 @@ def _clear_test(ctx):
 
 clear_test = unittest.make(_clear_test)
 
+def _values_test(ctx):
+    env = unittest.begin(ctx)
+
+    nd = nested_dict.new()
+
+    keys = ["foo", "bar", 42]
+    value = 31415927
+
+    nd.set(keys = keys, value = value)
+
+    nd_dict = {
+        keys[0]: {
+            keys[1]: {
+                keys[2]: value,
+            },
+        },
+    }
+
+    asserts.equals(env, nd_dict.values(), nd.values())
+
+    return unittest.end(env)
+
+values_test = unittest.make(_values_test)
+
+def _as_dict_test(ctx):
+    env = unittest.begin(ctx)
+
+    nd = nested_dict.new()
+
+    keys = ["foo", "bar", 42]
+    value = 31415927
+
+    nd.set(keys = keys, value = value)
+
+    nd_dict = {
+        keys[0]: {
+            keys[1]: {
+                keys[2]: value,
+            },
+        },
+    }
+
+    asserts.equals(env, nd_dict, nd.as_dict())
+
+    return unittest.end(env)
+
+as_dict_test = unittest.make(_as_dict_test)
+
 def nested_dict_tests():
     get_empty_test(name = _TEST_SUITE_PREFIX + "get_empty")
     set_get_test(name = _TEST_SUITE_PREFIX + "set_get")
     add_get_test(name = _TEST_SUITE_PREFIX + "add_get")
     clear_test(name = _TEST_SUITE_PREFIX + "clear")
+    values_test(name = _TEST_SUITE_PREFIX + "values")
+    as_dict_test(name = _TEST_SUITE_PREFIX + "as_dict")
