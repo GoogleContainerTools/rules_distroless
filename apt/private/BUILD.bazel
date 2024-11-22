@@ -68,6 +68,7 @@ bzl_library(
     deps = [
         ":nested_dict",
         ":version_constraint",
+        "@bazel_skylib//lib:paths",
     ],
 )
 

@@ -6,5 +6,4 @@ commandTests:
     args: ["list", "--installed"]
     expectedOutput:
       - Listing\.\.\.
-      - r-mathlib/now 4.4.2-1~bullseyecran.0 amd64 \[installed,local\]
-      - nvidia-container-toolkit-base/now 1.17.2-1 amd64 \[installed,local\]
+      - nvidia-container-toolkit-base/now 1.17.2-1 arm64 \[installed,local\]

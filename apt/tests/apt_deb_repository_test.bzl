@@ -27,6 +27,11 @@ def new_setup(pkgs = None):
     manifest = mock.manifest(pkgs_names.keys(), arch = arch)
     source = manifest.sources[0]
 
+    for idx in range(len(pkgs)):
+        pkg = pkgs[idx]
+        file_url, _ = deb_repository.__test__._make_file_url(pkg, source)
+        pkg["File-Url"] = file_url
+
     packages_index_content = mock.packages_index_content(*pkgs)
 
     mock_rctx = mock.rctx(

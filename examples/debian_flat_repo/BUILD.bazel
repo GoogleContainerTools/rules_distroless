@@ -5,28 +5,51 @@ load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 PACKAGES = [
     "@bullseye//dpkg",
     "@bullseye//apt",
+]
+
+PACKAGES_AMD64 = PACKAGES + [
     "@bullseye_rproject//r-mathlib",
+    "@nvidia_ubuntu2404_cuda//nvidia-container-toolkit-base",
+]
+
+PACKAGES_ARM64 = PACKAGES + [
+    "@nvidia_ubuntu2404_cuda//nvidia-container-toolkit-base",
 ]
 
 # Creates /var/lib/dpkg/status with installed package information.
 dpkg_status(
     name = "dpkg_status",
-    controls = [
-        "%s/amd64:control" % package
-        for package in PACKAGES
-    ],
+    controls = select({
+        "@platforms//cpu:x86_64": [
+            "%s/amd64:control" % package
+            for package in PACKAGES_AMD64
+        ],
+        "@platforms//cpu:arm64": [
+            "%s/arm64:control" % package
+            for package in PACKAGES_ARM64
+        ],
+    }),
 )
 
 oci_image(
     name = "apt",
-    architecture = "amd64",
+    architecture = select({
+        "@platforms//cpu:x86_64": "amd64",
+        "@platforms//cpu:arm64": "arm64",
+    }),
     os = "linux",
     tars = [
         ":dpkg_status",
-    ] + [
-        "%s/amd64" % package
-        for package in PACKAGES
-    ],
+    ] + select({
+        "@platforms//cpu:x86_64": [
+            "%s/amd64" % package
+            for package in PACKAGES_AMD64
+        ],
+        "@platforms//cpu:arm64": [
+            "%s/arm64" % package
+            for package in PACKAGES_ARM64
+        ],
+    }),
 )
 
 oci_load(
@@ -39,10 +62,15 @@ oci_load(
 
 container_structure_test(
     name = "test",
-    configs = ["test_linux_amd64.yaml"],
+    configs = select({
+        "@platforms//cpu:x86_64": ["test_linux_amd64.yaml"],
+        "@platforms//cpu:arm64": ["test_linux_arm64.yaml"],
+    }),
     image = ":apt",
-    target_compatible_with = [
-        "@platforms//cpu:x86_64",
+    target_compatible_with = select({
+        "@platforms//cpu:x86_64": ["@platforms//cpu:x86_64"],
+        "@platforms//cpu:arm64": ["@platforms//cpu:arm64"],
+    }) + [
         "@platforms//os:linux",
     ],
 )
