@@ -1,44 +1,58 @@
 "unit tests for resolution of package dependencies"
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//apt/private:apt_deb_repository.bzl", deb_repository = "DO_NOT_DEPEND_ON_THIS_TEST_ONLY")
+load("//apt/private:apt_deb_repository.bzl", "deb_repository")
 load("//apt/private:apt_dep_resolver.bzl", "dependency_resolver")
+load("//apt/tests:apt_deb_repository_test.bzl", idx_mock_setup = "new_setup")
 load("//apt/tests:mocks.bzl", "mock")
 
-_test_version = "2.38.1-5"
-_test_arch = "amd64"
+_TEST_SUITE_PREFIX = "apt_dep_resolver/"
 
-def _make_index():
-    idx = deb_repository.new()
-    resolution = dependency_resolver.new(idx)
+def _pkg(name, **kwargs):
+    pkg_ = {
+        "package": name,
+        "architecture": "amd64",
+        "version": "2.38.1-5",
+    }
 
-    def _add_package(idx, **kwargs):
-        kwargs["architecture"] = kwargs.get("architecture", _test_arch)
-        kwargs["version"] = kwargs.get("version", _test_version)
-        r = "\n".join(["{}: {}".format(item[0].title(), item[1]) for item in kwargs.items()])
-        idx.parse_package_index(r)
+    pkg_ |= kwargs
+
+    return mock.pkg(**pkg_)
+
+def _setup(pkgs):
+    setup = idx_mock_setup(pkgs)
+
+    idx_mock = deb_repository.new(
+        setup.mock_rctx,
+        sources = [(setup.url, setup.dist, setup.comp)],
+        archs = [setup.arch],
+    )
+
+    resolution = dependency_resolver.new(idx_mock)
 
     return struct(
-        add_package = lambda **kwargs: _add_package(idx, **kwargs),
-        mock_rctx = mock.rctx(),
+        idx_mock = idx_mock,
         resolution = resolution,
-        reset = lambda: idx.reset(),
+        arch = setup.arch,
+        version = setup.version,
     )
 
 def _resolve_optionals_test(ctx):
     env = unittest.begin(ctx)
 
-    idx = _make_index()
-
     # Should pick the first alternative
-    idx.add_package(package = "libc6-dev")
-    idx.add_package(package = "eject", depends = "libc6-dev | libc-dev")
+    pkgs = [
+        _pkg("libc6-dev"),
+        _pkg("eject", depends = "libc6-dev | libc-dev"),
+    ]
 
-    root_package, dependencies = idx.resolution.resolve(
-        idx.mock_rctx,
-        arch = _test_arch,
+    setup = _setup(pkgs)
+
+    root_package, dependencies = setup.resolution.resolve(
+        mock.rctx(),
+        arch = setup.arch,
         name = "eject",
-        version = ("=", _test_version),
+        version = ("=", setup.version),
     )
     asserts.equals(env, "eject", root_package["Package"])
     asserts.equals(env, "libc6-dev", dependencies[0]["Package"])
@@ -51,19 +65,21 @@ resolve_optionals_test = unittest.make(_resolve_optionals_test)
 def _resolve_arch_specific_packages_test(ctx):
     env = unittest.begin(ctx)
 
-    idx = _make_index()
-
     #  Should pick bar for amd64 and foo for i386
-    idx.add_package(package = "foo", architecture = "i386")
-    idx.add_package(package = "bar", architecture = "amd64")
-    idx.add_package(package = "glibc", architecture = "all", depends = "foo [i386], bar [amd64]")
+    pkgs = [
+        _pkg("foo", architecture = "i386"),
+        _pkg("bar", architecture = "amd64"),
+        _pkg("glibc", architecture = "all", depends = "foo [i386], bar [amd64]"),
+    ]
+
+    setup = _setup(pkgs)
 
     # bar for amd64
-    root_package, dependencies = idx.resolution.resolve(
-        idx.mock_rctx,
+    root_package, dependencies = setup.resolution.resolve(
+        mock.rctx(),
         arch = "amd64",
         name = "glibc",
-        version = ("=", _test_version),
+        version = ("=", setup.version),
     )
     asserts.equals(env, "glibc", root_package["Package"])
     asserts.equals(env, "all", root_package["Architecture"])
@@ -71,11 +87,11 @@ def _resolve_arch_specific_packages_test(ctx):
     asserts.equals(env, 1, len(dependencies))
 
     # foo for i386
-    root_package, dependencies = idx.resolution.resolve(
-        idx.mock_rctx,
+    root_package, dependencies = setup.resolution.resolve(
+        mock.rctx(),
         arch = "i386",
         name = "glibc",
-        version = ("=", _test_version),
+        version = ("=", setup.version),
     )
     asserts.equals(env, "glibc", root_package["Package"])
     asserts.equals(env, "all", root_package["Architecture"])
@@ -86,37 +102,22 @@ def _resolve_arch_specific_packages_test(ctx):
 
 resolve_arch_specific_packages_test = unittest.make(_resolve_arch_specific_packages_test)
 
-def _resolve_aliases(ctx):
+def _resolve_aliases_1(ctx):
     env = unittest.begin(ctx)
 
-    idx = _make_index()
+    pkgs = [
+        _pkg("foo", depends = "bar (>= 1.0)"),
+        _pkg("bar", version = "0.9"),
+        _pkg("bar-plus", provides = "bar (= 1.0)"),
+    ]
 
-    idx.add_package(package = "foo", depends = "bar (>= 1.0)")
-    idx.add_package(package = "bar", version = "0.9")
-    idx.add_package(package = "bar-plus", provides = "bar (= 1.0)")
+    setup = _setup(pkgs)
 
-    root_package, dependencies = idx.resolution.resolve(
-        idx.mock_rctx,
+    root_package, dependencies = setup.resolution.resolve(
+        mock.rctx(),
         arch = "amd64",
         name = "foo",
-        version = ("=", _test_version),
-    )
-    asserts.equals(env, "foo", root_package["Package"])
-    asserts.equals(env, "amd64", root_package["Architecture"])
-    asserts.equals(env, "bar-plus", dependencies[0]["Package"])
-    asserts.equals(env, 1, len(dependencies))
-    idx.reset()
-
-    idx.add_package(package = "foo", depends = "bar (>= 1.0)")
-    idx.add_package(package = "bar", version = "0.9")
-    idx.add_package(package = "bar-plus", provides = "bar (= 1.0)")
-    idx.add_package(package = "bar-clone", provides = "bar")
-
-    root_package, dependencies = idx.resolution.resolve(
-        idx.mock_rctx,
-        arch = "amd64",
-        name = "foo",
-        version = ("=", _test_version),
+        version = ("=", setup.version),
     )
     asserts.equals(env, "foo", root_package["Package"])
     asserts.equals(env, "amd64", root_package["Architecture"])
@@ -125,11 +126,37 @@ def _resolve_aliases(ctx):
 
     return unittest.end(env)
 
-resolve_aliases_test = unittest.make(_resolve_aliases)
+resolve_aliases_1_test = unittest.make(_resolve_aliases_1)
 
-_TEST_SUITE_PREFIX = "apt_dep_resolver/"
+def _resolve_aliases_2(ctx):
+    env = unittest.begin(ctx)
+
+    pkgs = [
+        _pkg("foo", depends = "bar (>= 1.0)"),
+        _pkg("bar", version = "0.9"),
+        _pkg("bar-plus", provides = "bar (= 1.0)"),
+        _pkg("bar-clone", provides = "bar"),
+    ]
+
+    setup = _setup(pkgs)
+
+    root_package, dependencies = setup.resolution.resolve(
+        mock.rctx(),
+        arch = "amd64",
+        name = "foo",
+        version = ("=", setup.version),
+    )
+    asserts.equals(env, "foo", root_package["Package"])
+    asserts.equals(env, "amd64", root_package["Architecture"])
+    asserts.equals(env, "bar-plus", dependencies[0]["Package"])
+    asserts.equals(env, 1, len(dependencies))
+
+    return unittest.end(env)
+
+resolve_aliases_2_test = unittest.make(_resolve_aliases_2)
 
 def apt_dep_resolver_tests():
     resolve_optionals_test(name = _TEST_SUITE_PREFIX + "resolve_optionals")
     resolve_arch_specific_packages_test(name = _TEST_SUITE_PREFIX + "resolve_arch_specific")
-    resolve_aliases_test(name = _TEST_SUITE_PREFIX + "resolve_aliases")
+    resolve_aliases_1_test(name = _TEST_SUITE_PREFIX + "resolve_aliases_1")
+    resolve_aliases_2_test(name = _TEST_SUITE_PREFIX + "resolve_aliases_2")

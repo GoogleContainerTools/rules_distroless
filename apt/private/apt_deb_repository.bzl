@@ -163,23 +163,3 @@ deb_repository = struct(
         _parse_package_index = _parse_package_index,
     ),
 )
-
-# TESTONLY: DO NOT DEPEND ON THIS
-def _create_test_only():
-    state = struct(
-        packages = nested_dict.new(),
-        virtual_packages = nested_dict.new(),
-    )
-
-    return struct(
-        package_versions = lambda arch, name: state.packages.get((arch, name), {}).keys(),
-        virtual_packages = lambda arch, name: state.virtual_packages.get((arch, name), []),
-        package = lambda arch, name, version: state.packages.get((arch, name, version)),
-        parse_package_index = lambda contents: _parse_package_index(state, contents, "http://nowhere"),
-        packages = state.packages,
-        reset = lambda: state.packages.clear(),
-    )
-
-DO_NOT_DEPEND_ON_THIS_TEST_ONLY = struct(
-    new = _create_test_only,
-)
