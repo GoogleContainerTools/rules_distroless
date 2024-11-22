@@ -114,8 +114,8 @@ def _apt_install(
                 and avoid the DEBUG messages.
         package_template: (EXPERIMENTAL!) a template file for generated BUILD
                           files. Available template replacement keys are:
-                          `{target_name}`, `{deps}`, `{urls}`, `{name}`,
-                          `{arch}`, `{sha256}`, `{repo_name}`
+                          `{target_name}`, `{src}`, `{deps}`, `{urls}`,
+                          `{name}`, `{arch}`, `{sha256}`, `{repo_name}`
         resolve_transitive: whether dependencies of dependencies should be
                             resolved and added to the lockfile.
     """

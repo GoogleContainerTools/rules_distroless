@@ -107,6 +107,7 @@ bzl_library(
     srcs = ["deb_import.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
+        ":starlark_codegen",
         ":util",
         "@bazel_tools//tools/build_defs/repo:http.bzl",
     ],
