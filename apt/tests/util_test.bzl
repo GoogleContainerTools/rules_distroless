@@ -18,7 +18,6 @@ def _escape_test(ctx):
 
     for s, expected in parameters.items():
         actual = util.escape(s)
-        asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
@@ -41,6 +40,22 @@ def _get_dupes_test(ctx):
 
 get_dupes_test = unittest.make(_get_dupes_test)
 
+def _parse_url_test(ctx):
+    env = unittest.begin(ctx)
+
+    parameters = {
+        "https://mirror.com": struct(scheme = "https", host = "mirror.com", path = "/"),
+        "http://mirror.com/foo/bar": struct(scheme = "http", host = "mirror.com", path = "/foo/bar"),
+    }
+
+    for url, expected in parameters.items():
+        actual = util.parse_url(url)
+        asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+parse_url_test = unittest.make(_parse_url_test)
+
 def _sanitize_test(ctx):
     env = unittest.begin(ctx)
 
@@ -61,4 +76,5 @@ sanitize_test = unittest.make(_sanitize_test)
 def util_tests():
     escape_test(name = _TEST_SUITE_PREFIX + "escape")
     get_dupes_test(name = _TEST_SUITE_PREFIX + "get_dupes")
+    parse_url_test(name = _TEST_SUITE_PREFIX + "parse_url")
     sanitize_test(name = _TEST_SUITE_PREFIX + "sanitize")

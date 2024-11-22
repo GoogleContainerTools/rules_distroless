@@ -1,0 +1,23 @@
+{
+	"packages": {
+		"nvidia-container-toolkit-base": {
+			"amd64": {
+				"arch": "amd64",
+				"dependencies": [],
+				"name": "nvidia-container-toolkit-base",
+				"sha256": "a28af3f9a0e88ae04a9f346375c85f4609c8320dbaf1136af7522b54a24f53be",
+				"url": "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/nvidia-container-toolkit-base_1.17.2-1_amd64.deb",
+				"version": "1.17.2-1"
+			},
+			"arm64": {
+				"arch": "arm64",
+				"dependencies": [],
+				"name": "nvidia-container-toolkit-base",
+				"sha256": "55f242746c244b2582fc354f57b5cf7fa467b8dec5105fc39f9f46602b8db590",
+				"url": "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/arm64/nvidia-container-toolkit-base_1.17.2-1_arm64.deb",
+				"version": "1.17.2-1"
+			}
+		}
+	},
+	"version": 2
+}

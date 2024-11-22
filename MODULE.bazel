@@ -90,4 +90,9 @@ apt.install(
     lock = "//examples/ubuntu_snapshot:noble.lock.json",
     manifest = "//examples/ubuntu_snapshot:noble.yaml",
 )
-use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_nolock", "bullseye_rproject", "noble", "shared_dependencies")
+apt.install(
+    name = "nvidia_ubuntu2404_cuda",
+    lock = "//examples/debian_flat_repo:nvidia_ubuntu2404_cuda.lock.json",
+    manifest = "//examples/debian_flat_repo:nvidia_ubuntu2404_cuda.yaml",
+)
+use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_nolock", "bullseye_rproject", "noble", "nvidia_ubuntu2404_cuda", "shared_dependencies")

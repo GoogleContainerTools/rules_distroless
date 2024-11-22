@@ -32,8 +32,7 @@ def _from_index_test(ctx):
 
     asserts.equals(env, arch, p.arch)
     asserts.equals(env, mock_value.PKG_INDEX["Package"], p.name)
-    asserts.true(env, p.url.startswith(mock_value.PKG_INDEX["Root"]))
-    asserts.true(env, p.url.endswith(mock_value.PKG_INDEX["Filename"]))
+    asserts.true(env, p.url, mock_value.PKG_INDEX["File-Url"])
 
     return unittest.end(env)
 

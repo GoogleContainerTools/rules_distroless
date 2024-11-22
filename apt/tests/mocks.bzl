@@ -71,7 +71,7 @@ _PKG_INDEX = {
     "Package": _PKG_LOCK_V2["name"],
     "Architecture": _PKG_LOCK_V2["arch"],
     "Version": _PKG_LOCK_V2["version"],
-    "Root": "/".join(_PKG_LOCK_V2["url"].split("/")[:-1]),
+    "File-Url": _PKG_LOCK_V2["url"],
     "Filename": _PKG_LOCK_V2["url"].split("/")[-1],
     "SHA256": _PKG_LOCK_V2["sha256"],
 }
@@ -80,7 +80,7 @@ _PKG_INDEX_DEPS = [
     {
         "Package": d["name"],
         "Version": d["version"],
-        "Root": "http://nowhere",
+        "File-Url": "http://nowhere/foo.deb",
         "Filename": "foo.deb",
         "SHA256": "deadbeef" * 8,
     }
@@ -187,7 +187,6 @@ def _rctx(**kwargs):
 def _pkg(package, **kwargs):
     defaults = {
         "Package": package,
-        "Root": _URL,
         "Filename": "/foo/bar/pkg.deb",
         "SHA256": "deadbeef" * 8,
     }
