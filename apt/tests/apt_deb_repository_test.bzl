@@ -2,6 +2,7 @@
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//apt/private:apt_deb_repository.bzl", "deb_repository")
+load("//apt/private:manifest.bzl", "manifest")
 load("//apt/private:nested_dict.bzl", "nested_dict")
 load("//apt/tests:mocks.bzl", "mock", "mock_value")
 load("//apt/tests:util.bzl", "test_util")
@@ -14,7 +15,7 @@ def new_setup(pkgs = None):
         name = pkgs[0]["Version"]
         versions = [pkg["Version"] for pkg in pkgs]
     else:
-        arch = "arm64"
+        arch = mock_value.ARCH
         name = "foo"
         versions = ["0.3.20-1~bullseye.1", "1.5.1", "1.5.2"]
 
@@ -23,7 +24,16 @@ def new_setup(pkgs = None):
             for v in versions
         ]
 
+    pkg_names = {p["Package"]: None for p in pkgs}.keys()
+
+    mock_manifest = manifest.__test__._from_dict(
+        mock.manifest_dict(packages = pkg_names, archs = [arch]),
+        mock_value.MANIFEST_LABEL,
+    )
+
     packages_index_content = mock.packages_index_content(*pkgs)
+
+    source = mock_manifest.sources[0]
 
     mock_rctx = mock.rctx(
         read = mock.read(packages_index_content),
@@ -32,9 +42,6 @@ def new_setup(pkgs = None):
     )
 
     return struct(
-        url = mock_value.URL,
-        dist = "bullseye",
-        comp = "main",
         pkgs = pkgs,
         pkg = pkgs[0],
         arch = arch,
@@ -42,6 +49,8 @@ def new_setup(pkgs = None):
         versions = versions,
         version = versions[0],
         packages_index_content = packages_index_content,
+        manifest = mock_manifest,
+        source = source,
         mock_rctx = mock_rctx,
     )
 
@@ -52,10 +61,7 @@ def _fetch_package_index_test(ctx):
 
     actual = deb_repository.__test__._fetch_package_index(
         setup.mock_rctx,
-        setup.url,
-        setup.dist,
-        setup.comp,
-        setup.arch,
+        setup.source,
     )
 
     asserts.equals(env, setup.packages_index_content, actual)
@@ -77,7 +83,7 @@ def _parse_package_index_test(ctx):
     deb_repository.__test__._parse_package_index(
         state,
         setup.packages_index_content,
-        setup.url,
+        setup.source,
     )
 
     actual_pkg = state.packages.get((setup.arch, setup.name, setup.version))
@@ -93,11 +99,7 @@ def _new_test(ctx):
 
     setup = new_setup()
 
-    repository = deb_repository.new(
-        setup.mock_rctx,
-        sources = [(setup.url, setup.dist, setup.comp)],
-        archs = [setup.arch],
-    )
+    repository = deb_repository.new(setup.mock_rctx, setup.manifest)
 
     actual_versions = repository.package_versions(setup.arch, setup.name)
     asserts.equals(env, setup.versions, actual_versions)

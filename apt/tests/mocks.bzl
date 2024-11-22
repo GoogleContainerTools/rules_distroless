@@ -2,6 +2,18 @@
 
 _URL = "http://nowhere"
 _ARCH = "amd64"
+_VERSION = "0.3.20-1~bullseye.1"
+
+_SOURCE = {
+    "arch": _ARCH,
+    "url": _URL,
+    "dist": "bullseye",
+    "comp": "main",
+}
+
+_CHANNEL = "%s %s" % (_SOURCE["dist"], _SOURCE["comp"])
+
+_MANIFEST_LABEL = "mock_manifest"
 
 _PKG_DEPS_V1 = [
     {
@@ -138,6 +150,9 @@ _LOCK_V2 = {
 mock_value = struct(
     URL = _URL,
     ARCH = _ARCH,
+    SOURCE = _SOURCE,
+    CHANNEL = _CHANNEL,
+    MANIFEST_LABEL = _MANIFEST_LABEL,
     PKG_DEPS_V1 = _PKG_DEPS_V1,
     PKG_LOCK_V1 = _PKG_LOCK_V1,
     PKG_DEPS_V2 = _PKG_DEPS_V2,
@@ -173,6 +188,8 @@ def _pkg(package, **kwargs):
     defaults = {
         "Package": package,
         "Root": _URL,
+        "Filename": "/foo/bar/pkg.deb",
+        "SHA256": "deadbeef" * 8,
     }
 
     pkg = {k.title().replace("_", "-"): v for k, v in kwargs.items()}
@@ -188,6 +205,17 @@ def _pkg_index(pkg):
 def _packages_index_content(*pkgs):
     return "".join([_pkg_index(pkg) for pkg in pkgs])
 
+def _manifest_dict(**kwargs):
+    defaults = {
+        "version": 1,
+        "url": _URL,
+        "archs": [_ARCH],
+        "sources": [{"channel": _CHANNEL, "url": _URL}],
+        "packages": [],
+    }
+
+    return defaults | kwargs
+
 mock = struct(
     execute = _execute,
     rctx = _rctx,
@@ -197,4 +225,5 @@ mock = struct(
     pkg = _pkg,
     pkg_index = _pkg_index,
     packages_index_content = _packages_index_content,
+    manifest_dict = _manifest_dict,
 )

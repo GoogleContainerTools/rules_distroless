@@ -1,6 +1,7 @@
 load(":apt_deb_repository_test.bzl", "apt_deb_repository_tests")
 load(":apt_dep_resolver_test.bzl", "apt_dep_resolver_tests")
 load(":lockfile_test.bzl", "lockfile_tests")
+load(":manifest_test.bzl", "manifest_tests")
 load(":nested_dict_test.bzl", "nested_dict_tests")
 load(":pkg_test.bzl", "pkg_tests")
 load(":util_test.bzl", "util_tests")
@@ -12,6 +13,8 @@ apt_deb_repository_tests()
 apt_dep_resolver_tests()
 
 lockfile_tests()
+
+manifest_tests()
 
 nested_dict_tests()
 

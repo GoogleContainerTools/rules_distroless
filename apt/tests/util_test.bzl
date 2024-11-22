@@ -5,6 +5,23 @@ load("//apt/private:util.bzl", "util")
 
 _TEST_SUITE_PREFIX = "util/"
 
+def _get_dupes_test(ctx):
+    env = unittest.begin(ctx)
+
+    parameters = {
+        (): [],
+        (1, 2, 3): [],
+        (2, 1, 2, 2, 3, 1): [1, 2],
+    }
+
+    for l, expected in parameters.items():
+        actual = util.get_dupes(list(l))
+        asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+get_dupes_test = unittest.make(_get_dupes_test)
+
 def _sanitize_test(ctx):
     env = unittest.begin(ctx)
 
@@ -23,4 +40,5 @@ def _sanitize_test(ctx):
 sanitize_test = unittest.make(_sanitize_test)
 
 def util_tests():
+    get_dupes_test(name = _TEST_SUITE_PREFIX + "get_dupes")
     sanitize_test(name = _TEST_SUITE_PREFIX + "sanitize")

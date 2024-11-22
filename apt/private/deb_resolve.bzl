@@ -4,79 +4,8 @@ load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
 load(":apt_deb_repository.bzl", "deb_repository")
 load(":apt_dep_resolver.bzl", "dependency_resolver")
 load(":lockfile.bzl", "lockfile")
+load(":manifest.bzl", "manifest")
 load(":version_constraint.bzl", "version_constraint")
-
-def _parse_manifest(rctx, yq_toolchain_prefix, manifest):
-    is_windows = repo_utils.is_windows(rctx)
-    host_yq = Label("@{}_{}//:yq{}".format(yq_toolchain_prefix, repo_utils.platform(rctx), ".exe" if is_windows else ""))
-    yq_args = [
-        str(rctx.path(host_yq)),
-        str(rctx.path(manifest)),
-        "-o=json",
-    ]
-    result = rctx.execute(yq_args)
-    if result.return_code:
-        fail("failed to parse manifest yq. '{}' exited with {}: \nSTDOUT:\n{}\nSTDERR:\n{}".format(" ".join(yq_args), result.return_code, result.stdout, result.stderr))
-
-    return json.decode(result.stdout if result.stdout != "null" else "{}")
-
-# This function is shared between BZLMOD and WORKSPACE implementations.
-# INTERNAL: DO NOT DEPEND!
-# buildifier: disable=function-docstring-args
-def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
-    manifest = _parse_manifest(rctx, yq_toolchain_prefix, manifest)
-
-    if manifest["version"] != 1:
-        fail("Unsupported manifest version, {}. Please use `version: 1` manifest.".format(manifest["version"]))
-
-    if type(manifest["sources"]) != "list":
-        fail("`sources` should be an array")
-
-    if type(manifest["archs"]) != "list":
-        fail("`archs` should be an array")
-
-    if type(manifest["packages"]) != "list":
-        fail("`packages` should be an array")
-
-    sources = []
-
-    for src in manifest["sources"]:
-        distr, components = src["channel"].split(" ", 1)
-        for comp in components.split(" "):
-            sources.append((
-                src["url"],
-                distr,
-                comp,
-            ))
-
-    repository = deb_repository.new(rctx, sources = sources, archs = manifest["archs"])
-    resolver = dependency_resolver.new(repository)
-    lockf = lockfile.new(rctx)
-
-    for arch in manifest["archs"]:
-        dep_constraint_set = {}
-        for dep_constraint in manifest["packages"]:
-            if dep_constraint in dep_constraint_set:
-                fail("Duplicate package, {}. Please remove it from your manifest".format(dep_constraint))
-            dep_constraint_set[dep_constraint] = True
-
-            constraint = version_constraint.parse_depends(dep_constraint).pop()
-
-            rctx.report_progress("Resolving %s" % dep_constraint)
-            package, dependencies = resolver.resolve(
-                rctx,
-                arch,
-                constraint["name"],
-                constraint["version"],
-                include_transitive = include_transitive,
-            )
-
-            if not package:
-                fail("Unable to locate package `%s`" % dep_constraint)
-
-            lockf.add_package(package, arch, dependencies)
-
-    return lockf
 
 _BUILD_TMPL = """
 filegroup(
@@ -97,7 +26,7 @@ sh_binary(
 """
 
 def _deb_resolve_impl(rctx):
-    lockf = internal_resolve(rctx, rctx.attr.yq_toolchain_prefix, rctx.attr.manifest, rctx.attr.resolve_transitive)
+    lockf = manifest.lock(rctx, rctx.attr.manifest, rctx.attr.resolve_transitive)
     lockf.write("lock.json")
 
     lock_filename = rctx.attr.manifest.name.replace(".yaml", ".lock.json")
