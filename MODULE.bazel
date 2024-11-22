@@ -71,6 +71,11 @@ apt.install(
     nolock = True,
 )
 apt.install(
+    name = "bullseye_rproject",
+    lock = "//examples/debian_flat_repo:bullseye_rproject.lock.json",
+    manifest = "//examples/debian_flat_repo:bullseye_rproject.yaml",
+)
+apt.install(
     name = "apt_security",
     manifest = "//examples/debian_snapshot_security:security.yaml",
     nolock = True,
@@ -85,4 +90,4 @@ apt.install(
     lock = "//examples/ubuntu_snapshot:noble.lock.json",
     manifest = "//examples/ubuntu_snapshot:noble.yaml",
 )
-use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_nolock", "noble", "shared_dependencies")
+use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_nolock", "bullseye_rproject", "noble", "shared_dependencies")
