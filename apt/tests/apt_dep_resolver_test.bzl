@@ -22,16 +22,10 @@ def _pkg(name, **kwargs):
 def _setup(pkgs):
     setup = idx_mock_setup(pkgs)
 
-    idx_mock = deb_repository.new(
-        setup.mock_rctx,
-        sources = [(setup.url, setup.dist, setup.comp)],
-        archs = [setup.arch],
-    )
-
+    idx_mock = deb_repository.new(setup.mock_rctx, setup.manifest)
     resolution = dependency_resolver.new(idx_mock)
 
     return struct(
-        idx_mock = idx_mock,
         resolution = resolution,
         arch = setup.arch,
         version = setup.version,

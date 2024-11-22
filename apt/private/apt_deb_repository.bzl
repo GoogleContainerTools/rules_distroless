@@ -3,7 +3,7 @@
 load(":nested_dict.bzl", "nested_dict")
 load(":version_constraint.bzl", "version_constraint")
 
-def _fetch_package_index(rctx, url, dist, comp, arch):
+def _fetch_package_index(rctx, source):
     # See https://linux.die.net/man/1/xz and https://linux.die.net/man/1/gzip
     #  --keep       -> keep the original file (Bazel might be still committing the output to the cache)
     #  --force      -> overwrite the output if it exists
@@ -17,24 +17,8 @@ def _fetch_package_index(rctx, url, dist, comp, arch):
     failed_attempts = []
 
     for ext, cmd in supported_extensions.items():
-        index = "Packages"
-        index_full = "{}.{}".format(index, ext) if ext else index
-
-        output = "{dist}/{comp}/{arch}/{index}".format(
-            dist = dist,
-            comp = comp,
-            arch = arch,
-            index = index,
-        )
-        output_full = "{}.{}".format(output, ext) if ext else output
-
-        index_url = "{url}/dists/{dist}/{comp}/binary-{arch}/{index_full}".format(
-            url = url,
-            dist = dist,
-            comp = comp,
-            arch = arch,
-            index_full = index_full,
-        )
+        index_url = source.index_url(ext)
+        output_full = source.output_full(ext)
 
         download = rctx.download(
             url = index_url,
@@ -76,9 +60,9 @@ def _fetch_package_index(rctx, url, dist, comp, arch):
 
         fail("Failed to fetch packages index:\n" + "\n".join(attempt_messages))
 
-    return rctx.read(output)
+    return rctx.read(source.output)
 
-def _parse_package_index(state, contents, root):
+def _parse_package_index(state, contents, source):
     last_key = ""
     pkg = {}
     for group in contents.split("\n\n"):
@@ -107,7 +91,7 @@ def _parse_package_index(state, contents, root):
             pkg[key] = value
 
         if len(pkg.keys()) != 0:
-            pkg["Root"] = root
+            pkg["Root"] = source.base_url
             _add_package(state, pkg)
             last_key = ""
             pkg = {}
@@ -127,28 +111,20 @@ def _add_package(state, package):
             value = (provides["version"], package),
         )
 
-def _new(rctx, sources, archs):
+def _new(rctx, manifest):
     state = struct(
         packages = nested_dict.new(),
         virtual_packages = nested_dict.new(),
     )
 
-    for arch in archs:
-        for (url, dist, comp) in sources:
-            # We assume that `url` does not contain a trailing forward slash when passing to
-            # functions below. If one is present, remove it. Some HTTP servers do not handle
-            # redirects properly when a path contains "//"
-            # (ie. https://mymirror.com/ubuntu//dists/noble/stable/... may return a 404
-            # on misconfigured HTTP servers)
-            url = url.rstrip("/")
+    for source in manifest.sources:
+        index = "%s/%s" % (source.index_path, source.index)
 
-            index = "{}/{} for {}".format(dist, comp, arch)
+        rctx.report_progress("Fetching package index: %s" % index)
+        output = _fetch_package_index(rctx, source)
 
-            rctx.report_progress("Fetching package index: %s" % index)
-            output = _fetch_package_index(rctx, url, dist, comp, arch)
-
-            rctx.report_progress("Parsing package index: %s" % index)
-            _parse_package_index(state, output, url)
+        rctx.report_progress("Parsing package index: %s" % index)
+        _parse_package_index(state, output, source)
 
     return struct(
         package_versions = lambda arch, name: state.packages.get((arch, name), {}).keys(),

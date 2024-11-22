@@ -1,5 +1,16 @@
 "utilities"
 
+def _get_dupes(list_):
+    set_ = {}
+    dupes = []
+
+    for value in list_:
+        if value in set_:
+            dupes.append(value)
+        set_[value] = True
+
+    return dupes
+
 def _sanitize(str):
     return str.replace("+", "-p-").replace(":", "-").replace("~", "_")
 
@@ -10,6 +21,7 @@ def _warning(rctx, message):
     ], quiet = False)
 
 util = struct(
+    get_dupes = _get_dupes,
     sanitize = _sanitize,
     warning = _warning,
 )
