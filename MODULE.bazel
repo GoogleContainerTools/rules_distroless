@@ -76,6 +76,11 @@ apt.install(
     manifest = "//examples/debian_flat_repo:bullseye_rproject.yaml",
 )
 apt.install(
+    name = "bullseye_all",
+    lock = "//examples/debian_snapshot_all_arch:bullseye_all.lock.json",
+    manifest = "//examples/debian_snapshot_all_arch:bullseye_all.yaml",
+)
+apt.install(
     name = "apt_security",
     manifest = "//examples/debian_snapshot_security:security.yaml",
     nolock = True,
@@ -95,4 +100,4 @@ apt.install(
     lock = "//examples/debian_flat_repo:nvidia_ubuntu2404_cuda.lock.json",
     manifest = "//examples/debian_flat_repo:nvidia_ubuntu2404_cuda.yaml",
 )
-use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_nolock", "bullseye_rproject", "noble", "nvidia_ubuntu2404_cuda", "shared_dependencies")
+use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_all", "bullseye_all_resolve", "bullseye_nolock", "bullseye_rproject", "noble", "nvidia_ubuntu2404_cuda", "shared_dependencies")

@@ -1,0 +1,32 @@
+load("@aspect_bazel_lib//lib:jq.bzl", "jq")
+load("@aspect_bazel_lib//lib:testing.bzl", "assert_contains")
+
+jq(
+    name = "pick_quake_arch",
+    srcs = [
+        "@bullseye_all_resolve//:lockfile",
+    ],
+    args = ["-rj"],
+    filter = ".packages.quake[] | .arch",
+)
+
+assert_contains(
+    name = "test_quake_arch",
+    actual = ":pick_quake_arch",
+    expected = "all",
+)
+
+jq(
+    name = "pick_quake_version",
+    srcs = [
+        "@bullseye_all_resolve//:lockfile",
+    ],
+    args = ["-rj"],
+    filter = ".packages.quake[] | .version",
+)
+
+assert_contains(
+    name = "test_quake_version",
+    actual = ":pick_quake_version",
+    expected = "67",
+)
