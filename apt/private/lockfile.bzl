@@ -51,6 +51,9 @@ def _packages(lock):
         for package in archs.values()
     ]
 
+def _get_architectures(lock, package_name):
+    return lock.packages.get(keys = (package_name,))
+
 def _new(rctx, lock = None):
     lock = lock or _empty()
 
@@ -64,6 +67,7 @@ def _new(rctx, lock = None):
             dependencies_to_add,
         ),
         get_package = lambda package, arch: _get_package(lock, package, arch),
+        get_architectures = lambda package_name: _get_architectures(lock, package_name),
         as_json = lambda: _as_json(lock),
         write = lambda out: _write(rctx, lock, out),
     )

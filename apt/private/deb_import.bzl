@@ -127,3 +127,55 @@ def package_build(package, repo_prefix, repo_name, template):
         alias_data = alias_data,
         alias_control = alias_control,
     )
+
+def _gen_alias_select(name, package, architectures):
+    if len(architectures) == 1 and architectures.keys()[0] == "all":
+        actual = '"//%s/%s:%s"' % (package.name, "all", name)
+    else:
+        select = {
+            "@platforms//cpu:%s" % util.arch_to_cpu(arch): "//%s/%s:%s" % (package.name, arch, name)
+            for arch in architectures
+        }
+        actual = "select(%s)" % starlark.gen(select, indent_count = 1)
+
+    return actual
+
+def _gen_filegroup_deps(architectures):
+    src = "[]"
+
+    if len(architectures) == 1 and architectures.keys()[0] == "all":
+        package = architectures["all"]
+
+        src = ["//%s/%s:deps" % (package.name, package.arch)]
+        src = starlark.gen(src, indent_count = 1)
+    else:
+        src = {
+            "@platforms//cpu:%s" % util.arch_to_cpu(arch): ["//%s/%s:deps" % (package.name, arch)]
+            for arch, package in architectures.items()
+        }
+        src = "select(%s)" % starlark.gen(src, indent_count = 1)
+
+    return src
+
+def package_aliases_build(package, architectures, repo_prefix, repo_name, arch_template):
+    deb_import_key = make_deb_import_key(repo_name, package)
+
+    pkg_repo_name = "%s%s" % (repo_prefix, deb_import_key)
+
+    alias_data = _gen_alias_select("data", package, architectures)
+    alias_control = _gen_alias_select("control", package, architectures)
+
+    deps = _gen_filegroup_deps(architectures)
+
+    return arch_template.format(
+        target_name = package.name,
+        src = '"@%s%s//:data"' % (repo_prefix, deb_import_key),
+        deps = deps,
+        urls = [package.url],
+        name = package.name,
+        arch = package.arch,
+        sha256 = package.sha256,
+        repo_name = pkg_repo_name,
+        alias_data = alias_data,
+        alias_control = alias_control,
+    )

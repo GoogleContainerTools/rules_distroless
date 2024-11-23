@@ -2,6 +2,20 @@
 
 load("@bazel_skylib//lib:sets.bzl", "sets")
 
+# Map of Debian architectures to platform CPUs
+# https://www.debian.org/ports/
+# https://wiki.debian.org/SupportedArchitectures
+#
+# NOTE: the only architectures that need re-mapping are
+# those that don't match a CPU or CPU alias in:
+# https://github.com/bazelbuild/platforms/blob/main/cpu/BUILD
+DEBIAN_ARCH_TO_CPU = {
+    "amd64": "x86_64",
+    "armhf": "armv7e-mf",  # NOTE: not sure that this is the right mapping :-/
+    "mips64el": "mips64",
+    "ppc64el": "ppc64le",
+}
+
 def _escape(s):
     return s.replace("\\", "\\\\").replace("\n", "\\n")
 
@@ -42,6 +56,7 @@ def _warning(rctx, message):
     ], quiet = False)
 
 util = struct(
+    arch_to_cpu = lambda arch: DEBIAN_ARCH_TO_CPU.get(arch, arch),
     escape = _escape,
     get_dupes = _get_dupes,
     parse_url = _parse_url,
