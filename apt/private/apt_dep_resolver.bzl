@@ -1,22 +1,26 @@
 "package resolution"
 
+load(":util.bzl", "util")
 load(":version.bzl", version_lib = "version")
 load(":version_constraint.bzl", "version_constraint")
 
-def _resolve_package(state, name, version, arch):
-    # First check if the constraint is satisfied by a virtual package
-    virtual_packages = state.repository.virtual_packages(name = name, arch = arch)
-    for (provides, package) in virtual_packages:
-        provided_version = provides["version"]
-        if not provided_version and version:
-            continue
-        if provided_version and version:
-            if version_constraint.is_satisfied_by(version, provided_version):
+def _resolve_package(repository, arch, name, version):
+    if version:
+        # First check if the constraint is satisfied by a virtual package
+        virtual_packages = repository.virtual_packages(arch, name)
+
+        for provided_version, package in virtual_packages:
+            if not provided_version:
+                continue
+
+            va = provided_version
+            op, vb = version
+            if version_lib.compare(va, op, vb):
                 return package
 
     # Get available versions of the package
-    versions_by_arch = state.repository.package_versions(name = name, arch = arch)
-    versions_by_any_arch = state.repository.package_versions(name = name, arch = "all")
+    versions_by_arch = repository.package_versions(arch, name)
+    versions_by_any_arch = repository.package_versions("all", name)
 
     # Order packages by highest to lowest
     versions = version_lib.sort(versions_by_arch + versions_by_any_arch, reverse = True)
@@ -24,21 +28,25 @@ def _resolve_package(state, name, version, arch):
     selected_version = None
 
     if version:
-        for av in versions:
-            if version_constraint.relop(av, version[1], version[0]):
-                selected_version = av
+        op, vb = version
+        for va in versions:
+            if version_lib.compare(va, op, vb):
+                selected_version = va
 
-                # Since versions are ordered by hight to low, the first satisfied version will be
-                # the highest version and rules_distroless ignores Priority field so it's safe.
-                # TODO: rethink this `break` with https://github.com/GoogleContainerTools/rules_distroless/issues/34
+                # Since versions are ordered from high to low and
+                # rules_distroless ignores Priority, the first satisfied
+                # version will be the highest version.
+
+                # TODO: FR: support package priorities
+                # https://github.com/GoogleContainerTools/rules_distroless/issues/34
                 break
     elif len(versions) > 0:
         # First element in the versions list is the latest version.
         selected_version = versions[0]
 
-    package = state.repository.package(name = name, version = selected_version, arch = arch)
+    package = repository.package(arch, name, selected_version)
     if not package:
-        package = state.repository.package(name = name, version = selected_version, arch = "all")
+        package = repository.package("all", name, selected_version)
 
     return package
 
@@ -47,9 +55,10 @@ _ITERATION_MAX_ = 2147483646
 # For future: unfortunately this function uses a few state variables to track
 # certain conditions and package dependency groups.
 # TODO: Try to simplify it in the future.
-def _resolve_all(state, name, version, arch, include_transitive = True):
+def _resolve(repository, rctx, arch, name, version, include_transitive):
+    root_package_name = name
     root_package = None
-    unmet_dependencies = []
+    unresolved_dependencies = []
     dependencies = []
 
     # state variables
@@ -61,27 +70,32 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
         if not len(stack):
             break
         if i == _ITERATION_MAX_:
-            fail("resolve_all exhausted")
+            msg = "Reached _ITERATION_MAX_ trying to resolve %s"
+            fail(msg % root_package_name)
 
         (name, version, dependency_group_idx) = stack.pop()
 
-        # If this iteration is part of a dependency group, and the dependency group is already met, then skip this iteration.
+        # If this iteration is part of a dependency group, and the dependency
+        # group is already met, then skip this iteration.
         if dependency_group_idx > -1 and dependency_group[dependency_group_idx]:
             continue
 
-        package = _resolve_package(state, name, version, arch)
+        package = _resolve_package(repository, arch, name, version)
 
-        # If this package is not found and is part of a dependency group, then just skip it.
+        # If this package is not found and is part of a dependency group, then
+        # just skip it.
         if not package and dependency_group_idx > -1:
             continue
 
-        # If this package is not found but is not part of a dependency group, then add it to unmet dependencies.
+        # If this package is not found but is not part of a dependency group,
+        # then add it to unresolved_dependencies.
         if not package:
             key = "%s~~%s" % (name, version[1] if version else "")
-            unmet_dependencies.append((name, version))
+            unresolved_dependencies.append((name, version))
             continue
 
-        # If this package was requested as part of a dependency group, then mark it's group as `dependency met`
+        # If this package was requested as part of a dependency group, then
+        # mark it's group as resolved.
         if dependency_group_idx > -1:
             dependency_group[dependency_group_idx] = True
 
@@ -122,15 +136,25 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
                 # TODO: arch
                 stack.append((dep["name"], dep["version"], -1))
 
-    return (root_package, dependencies, unmet_dependencies)
+    if unresolved_dependencies:
+        unresolved_dependencies_csv = ", ".join([ud[0] for ud in unresolved_dependencies])
+        msg = "package %s has dependencies that couldn't be resolved: %s"
+        util.warning(rctx, msg % (root_package_name, unresolved_dependencies_csv))
 
-def _create_resolution(repository):
-    state = struct(repository = repository)
+    return root_package, dependencies
+
+def _new(repository):
     return struct(
-        resolve_all = lambda **kwargs: _resolve_all(state, **kwargs),
-        resolve_package = lambda **kwargs: _resolve_package(state, **kwargs),
+        resolve = lambda rctx, arch, name, version, include_transitive = True: _resolve(
+            repository,
+            rctx,
+            arch,
+            name,
+            version,
+            include_transitive,
+        ),
     )
 
 dependency_resolver = struct(
-    new = _create_resolution,
+    new = _new,
 )

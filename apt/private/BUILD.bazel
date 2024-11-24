@@ -26,6 +26,7 @@ bzl_library(
     srcs = ["deb_translate_lock.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
+        ":deb_import",
         ":lockfile",
         "@bazel_tools//tools/build_defs/repo:cache.bzl",
         "@bazel_tools//tools/build_defs/repo:http.bzl",
@@ -37,14 +38,37 @@ bzl_library(
     name = "lockfile",
     srcs = ["lockfile.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
+    deps = [":pkg"],
+)
+
+bzl_library(
+    name = "pkg",
+    srcs = ["pkg.bzl"],
+    visibility = ["//apt:__subpackages__"],
+)
+
+bzl_library(
+    name = "manifest",
+    srcs = ["manifest.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [
+        ":apt_deb_repository",
+        ":apt_dep_resolver",
+        ":lockfile",
+        ":util",
+        ":version_constraint",
+        "@aspect_bazel_lib//lib:repo_utils",
+    ],
 )
 
 bzl_library(
     name = "apt_deb_repository",
     srcs = ["apt_deb_repository.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
+    deps = [
+        ":nested_dict",
+        ":version_constraint",
+    ],
 )
 
 bzl_library(
@@ -52,6 +76,7 @@ bzl_library(
     srcs = ["apt_dep_resolver.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
+        ":util",
         ":version",
         ":version_constraint",
     ],
@@ -65,6 +90,7 @@ bzl_library(
         ":apt_deb_repository",
         ":apt_dep_resolver",
         ":lockfile",
+        ":manifest",
         "@aspect_bazel_lib//lib:repo_utils",
     ],
 )
@@ -80,7 +106,10 @@ bzl_library(
     name = "deb_import",
     srcs = ["deb_import.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
+    deps = [
+        ":util",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+    ],
 )
 
 bzl_library(
@@ -94,4 +123,10 @@ bzl_library(
     srcs = ["version_constraint.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [":version"],
+)
+
+bzl_library(
+    name = "nested_dict",
+    srcs = ["nested_dict.bzl"],
+    visibility = ["//apt:__subpackages__"],
 )
