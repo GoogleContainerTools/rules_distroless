@@ -1,9 +1,10 @@
 "apt extensions"
 
-load("//apt/private:deb_import.bzl", "deb_import")
-load("//apt/private:deb_resolve.bzl", "deb_resolve", "internal_resolve")
+load("//apt/private:deb_import.bzl", "deb_import", "make_deb_import_key")
+load("//apt/private:deb_resolve.bzl", "deb_resolve")
 load("//apt/private:deb_translate_lock.bzl", "deb_translate_lock")
 load("//apt/private:lockfile.bzl", "lockfile")
+load("//apt/private:manifest.bzl", "manifest")
 
 def _distroless_extension(module_ctx):
     root_direct_deps = []
@@ -13,30 +14,27 @@ def _distroless_extension(module_ctx):
         for install in mod.tags.install:
             lockf = None
             if not install.lock:
-                lockf = internal_resolve(
+                lockf = manifest.lock(
                     module_ctx,
-                    "yq",
                     install.manifest,
                     install.resolve_transitive,
                 )
 
                 if not install.nolock:
-                    # buildifier: disable=print
-                    print("\nNo lockfile was given, please run `bazel run @%s//:lock` to create the lockfile." % install.name)
+                    print(
+                        "\nNo lockfile was given. To create one please run " +
+                        "`bazel run @{}//:lock`".format(install.name),
+                    )
             else:
                 lockf = lockfile.from_json(module_ctx, module_ctx.read(install.lock))
 
-            for (package) in lockf.packages():
-                package_key = lockfile.make_package_key(
-                    package["name"],
-                    package["version"],
-                    package["arch"],
-                )
+            for package in lockf.packages():
+                deb_import_key = make_deb_import_key(install.name, package)
 
                 deb_import(
-                    name = "%s_%s" % (install.name, package_key),
-                    urls = [package["url"]],
-                    sha256 = package["sha256"],
+                    name = deb_import_key,
+                    url = package.url,
+                    sha256 = package.sha256,
                 )
 
             deb_resolve(
@@ -49,7 +47,7 @@ def _distroless_extension(module_ctx):
                 name = install.name,
                 lock = install.lock,
                 lock_content = lockf.as_json(),
-                package_template = install.package_template,
+                package_arch_build_template = install.package_arch_build_template,
             )
 
             if mod.is_root:
@@ -168,9 +166,9 @@ install = tag_class(
                   "to `True` to avoid the DEBUG messages.",
             default = False,
         ),
-        "package_template": attr.label(
-            doc = "(EXPERIMENTAL!) a template file for generated BUILD " +
-                  "files.",
+        "package_arch_build_template": attr.label(
+            doc = "(EXPERIMENTAL!) a template file for the generated " +
+                  "package BUILD files per architecture.",
         ),
         "resolve_transitive": attr.bool(
             doc = "Whether dependencies of dependencies should be " +

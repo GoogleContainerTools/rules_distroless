@@ -13,7 +13,7 @@ them and available to use in Bazel.
 <pre>
 load("@rules_distroless//apt:apt.bzl", "apt")
 
-apt.install(<a href="#apt.install-name">name</a>, <a href="#apt.install-manifest">manifest</a>, <a href="#apt.install-lock">lock</a>, <a href="#apt.install-nolock">nolock</a>, <a href="#apt.install-package_template">package_template</a>, <a href="#apt.install-resolve_transitive">resolve_transitive</a>)
+apt.install(<a href="#apt.install-name">name</a>, <a href="#apt.install-manifest">manifest</a>, <a href="#apt.install-lock">lock</a>, <a href="#apt.install-nolock">nolock</a>, <a href="#apt.install-package_arch_build_template">package_arch_build_template</a>, <a href="#apt.install-resolve_transitive">resolve_transitive</a>)
 </pre>
 
 Repository macro to create Debian repositories.
@@ -116,7 +116,7 @@ https://snapshot.ubuntu.com.
 | <a id="apt.install-manifest"></a>manifest |  label to a `manifest.yaml`   |  none |
 | <a id="apt.install-lock"></a>lock |  label to a `lock.json`   |  `None` |
 | <a id="apt.install-nolock"></a>nolock |  bool, set to True if you explicitly want to run without a lock and avoid the DEBUG messages.   |  `False` |
-| <a id="apt.install-package_template"></a>package_template |  (EXPERIMENTAL!) a template file for generated BUILD files. Available template replacement keys are: `{target_name}`, `{deps}`, `{urls}`, `{name}`, `{arch}`, `{sha256}`, `{repo_name}`   |  `None` |
+| <a id="apt.install-package_arch_build_template"></a>package_arch_build_template |  (EXPERIMENTAL!) a template file for generated BUILD files. Available template replacement keys are: `{target_name}`, `{deps}`, `{urls}`, `{name}`, `{arch}`, `{sha256}`, `{repo_name}`   |  `None` |
 | <a id="apt.install-resolve_transitive"></a>resolve_transitive |  whether dependencies of dependencies should be resolved and added to the lockfile.   |  `True` |
 
 

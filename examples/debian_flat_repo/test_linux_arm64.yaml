@@ -1,0 +1,9 @@
+schemaVersion: "2.0.0"
+
+commandTests:
+  - name: "apt list --installed"
+    command: "apt"
+    args: ["list", "--installed"]
+    expectedOutput:
+      - Listing\.\.\.
+      - nvidia-container-toolkit-base/now 1.17.2-1 arm64 \[installed,local\]
