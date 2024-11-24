@@ -2,11 +2,22 @@
 
 load(":version.bzl", version_lib = "version")
 
-def _parse_version_constraint(rawv):
-    vconst_i = rawv.find(" ")
-    if vconst_i == -1:
-        fail('invalid version string %s expected a version constraint ">=", "=", ">=", "<<", ">>"' % rawv)
-    return (rawv[:vconst_i], rawv[vconst_i + 1:])
+def _parse_version_constraint(version_and_constraint):
+    chunks = version_and_constraint.split(" ")
+
+    if len(chunks) != 2:
+        fail("Invalid version constraint %s" % version_and_constraint)
+
+    version_constraint = chunks[0]
+    if version_constraint not in version_lib.VERSION_OPERATORS:
+        msg = "Invalid version constraint: %s\nValid constraints are: %s"
+        fail(msg % (version_constraint, version_lib.VERSION_OPERATORS))
+
+    version = chunks[1]
+
+    version_lib.parse(version)  # parsing version to validate it
+
+    return version_constraint, version
 
 def _parse_dep(raw):
     raw = raw.strip()  # remove leading & trailing whitespace
@@ -57,29 +68,26 @@ def _parse_depends(depends_raw):
 
     return depends
 
-def _version_relop(va, vb, op):
-    if op == "<<":
-        return version_lib.lt(va, vb)
-    elif op == ">>":
-        return version_lib.gt(va, vb)
-    elif op == "<=":
-        return version_lib.lte(va, vb)
-    elif op == ">=":
-        return version_lib.gte(va, vb)
-    elif op == "=":
-        return version_lib.eq(va, vb)
-    fail("unknown op %s" % op)
+def _parse_provides(provides_raw):
+    provides = _parse_dep(provides_raw)
 
-def _is_satisfied_by(va, vb):
-    if vb[0] != "=":
-        fail("Per https://www.debian.org/doc/debian-policy/ch-relationships.html only = is allowed for Provides field.")
+    if not provides["version"]:
+        return provides
 
-    return _version_relop(va[1], vb[1], va[0])
+    op, version = provides["version"]
+
+    if op != "=":
+        msg = "Invalid constraint: {}. Only '=' is allowed in 'Provides', see "
+        msg += "https://www.debian.org/doc/debian-policy/ch-relationships.html"
+        fail(msg.format(op))
+
+    # we just want the version
+    provides["version"] = version
+
+    return provides
 
 version_constraint = struct(
-    relop = _version_relop,
-    is_satisfied_by = _is_satisfied_by,
     parse_version_constraint = _parse_version_constraint,
     parse_depends = _parse_depends,
-    parse_dep = _parse_dep,
+    parse_provides = _parse_provides,
 )
