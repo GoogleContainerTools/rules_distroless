@@ -114,6 +114,14 @@ def _version_cmp_part(va, vb):
                 return res
     return 0
 
+VERSION_OPERATORS = {
+    ">>": lambda v: v == 1,
+    ">=": lambda v: v >= 0,
+    "<<": lambda v: v == -1,
+    "<=": lambda v: v <= 0,
+    "=": lambda v: v == 0,
+}
+
 def _compare_version(va, vb):
     vap = _parse_version(va)
     vbp = _parse_version(vb)
@@ -131,6 +139,16 @@ def _compare_version(va, vb):
     # compare debian revision
     return _version_cmp_part(vap[2] or "0", vbp[2] or "0")
 
+def _compare(va, op, vb):
+    if op not in VERSION_OPERATORS:
+        fail("unknown version operator: '%s'" % op)
+
+    res = _compare_version(va, vb)
+
+    operator = VERSION_OPERATORS[op]
+
+    return operator(res)
+
 def _sort(versions, reverse = False):
     vr = versions
     for i in range(len(vr)):
@@ -145,12 +163,8 @@ def _sort(versions, reverse = False):
     return vr
 
 version = struct(
+    VERSION_OPERATORS = VERSION_OPERATORS.keys(),
     parse = _parse_version,
-    cmp = lambda va, vb: _compare_version(va, vb),
-    gt = lambda va, vb: _compare_version(va, vb) == 1,
-    gte = lambda va, vb: _compare_version(va, vb) >= 0,
-    lt = lambda va, vb: _compare_version(va, vb) == -1,
-    lte = lambda va, vb: _compare_version(va, vb) <= 0,
-    eq = lambda va, vb: _compare_version(va, vb) == 0,
+    compare = _compare,
     sort = lambda versions, reverse = False: _sort(versions, reverse = reverse),
 )
