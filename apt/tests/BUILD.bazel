@@ -4,6 +4,7 @@ load(":lockfile_test.bzl", "lockfile_tests")
 load(":manifest_test.bzl", "manifest_tests")
 load(":nested_dict_test.bzl", "nested_dict_tests")
 load(":pkg_test.bzl", "pkg_tests")
+load(":starlark_codegen_test.bzl", "starlark_codegen_tests")
 load(":util_test.bzl", "util_tests")
 load(":version_constraint_test.bzl", "version_constraint_tests")
 load(":version_test.bzl", "version_tests")
@@ -19,6 +20,8 @@ manifest_tests()
 nested_dict_tests()
 
 pkg_tests()
+
+starlark_codegen_tests()
 
 util_tests()
 

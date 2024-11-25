@@ -133,3 +133,12 @@ bzl_library(
     srcs = ["nested_dict.bzl"],
     visibility = ["//apt:__subpackages__"],
 )
+
+bzl_library(
+    name = "starlark_codegen",
+    srcs = ["starlark_codegen.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [
+        ":util",
+    ],
+)

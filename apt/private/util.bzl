@@ -2,6 +2,9 @@
 
 load("@bazel_skylib//lib:sets.bzl", "sets")
 
+def _escape(s):
+    return s.replace("\\", "\\\\").replace("\n", "\\n")
+
 def _get_dupes(list_):
     seen = sets.make()
     dupes = sets.make()
@@ -23,6 +26,7 @@ def _warning(rctx, message):
     ], quiet = False)
 
 util = struct(
+    escape = _escape,
     get_dupes = _get_dupes,
     sanitize = _sanitize,
     warning = _warning,

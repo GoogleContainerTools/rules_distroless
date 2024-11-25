@@ -5,6 +5,25 @@ load("//apt/private:util.bzl", "util")
 
 _TEST_SUITE_PREFIX = "util/"
 
+def _escape_test(ctx):
+    env = unittest.begin(ctx)
+
+    parameters = {
+        "": "",
+        "foo": "foo",
+        '"foo"': '"foo"',
+        "\\e": "\\\\e",
+        "\n": "\\n",
+    }
+
+    for s, expected in parameters.items():
+        actual = util.escape(s)
+        asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+escape_test = unittest.make(_escape_test)
+
 def _get_dupes_test(ctx):
     env = unittest.begin(ctx)
 
@@ -40,5 +59,6 @@ def _sanitize_test(ctx):
 sanitize_test = unittest.make(_sanitize_test)
 
 def util_tests():
+    escape_test(name = _TEST_SUITE_PREFIX + "escape")
     get_dupes_test(name = _TEST_SUITE_PREFIX + "get_dupes")
     sanitize_test(name = _TEST_SUITE_PREFIX + "sanitize")
