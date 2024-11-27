@@ -64,3 +64,46 @@ assert_tar_listing(
 ./root time=0.0 mode=700 gid=0 uid=0 type=dir
 """,
 )
+
+# Flatten with deduplication
+tar(
+    name = "source1",
+    srcs = glob(["dir/*"]),
+    compress = "xz",
+)
+
+tar(
+    name = "source2",
+    srcs = glob(["dir/**/*"]),
+    compress = "xz",
+)
+
+tar(
+    name = "source3",
+    srcs = glob(["dir/**/*"]),
+    compress = "xz",
+)
+
+flatten(
+    name = "flatten_dedup",
+    deduplicate = True,
+    tars = [
+        ":source2",
+        ":source1",
+        ":source3",
+    ],
+)
+
+assert_tar_listing(
+    name = "test_flatten_dedup",
+    actual = "flatten_dedup",
+    expected = """\
+#mtree
+./examples time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./examples/flatten time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./examples/flatten/dir time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./examples/flatten/dir/changelog time=1672560000.0 mode=755 gid=0 uid=0 type=file size=0
+./examples/flatten/dir/sub time=1672560000.0 mode=755 gid=0 uid=0 type=dir
+./examples/flatten/dir/sub/content.txt time=1672560000.0 mode=755 gid=0 uid=0 type=file size=0
+""",
+)

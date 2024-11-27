@@ -4,6 +4,7 @@ load("@rules_java//java:defs.bzl", "java_binary")
 exports_files([
     "cacerts.sh",
     "locale.sh",
+    "flatten.sh",
 ])
 
 java_binary(

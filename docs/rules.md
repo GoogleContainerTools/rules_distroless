@@ -70,7 +70,7 @@ oci_image(
 <pre>
 load("@rules_distroless//distroless:defs.bzl", "flatten")
 
-flatten(<a href="#flatten-name">name</a>, <a href="#flatten-compress">compress</a>, <a href="#flatten-tars">tars</a>)
+flatten(<a href="#flatten-name">name</a>, <a href="#flatten-compress">compress</a>, <a href="#flatten-deduplicate">deduplicate</a>, <a href="#flatten-tars">tars</a>)
 </pre>
 
 Flatten multiple archives into single archive.
@@ -82,6 +82,7 @@ Flatten multiple archives into single archive.
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="flatten-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="flatten-compress"></a>compress |  Compress the archive file with a supported algorithm.   | String | optional |  `""`  |
+| <a id="flatten-deduplicate"></a>deduplicate |  EXPERIMENTAL: Remove duplicate entries from the archives after flattening.<br><br>This requires `awk`, `sort` and `tar` to be available in the PATH.<br><br>To support macOS, presence of `gtar` is checked, and `tar` if it does not exist, and ensured if supports the `--delete` mode.<br><br>On macOS: `brew install gnu-tar` can be run to install gnutar. See: https://formulae.brew.sh/formula/gnu-tar<br><br>NOTE: You may also need to run `sudo ln -s /opt/homebrew/bin/gtar /usr/local/bin/gtar` to make it available to Bazel.   | Boolean | optional |  `False`  |
 | <a id="flatten-tars"></a>tars |  List of tars to flatten   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
 
 
