@@ -46,7 +46,10 @@ bzl_library(
     name = "apt_deb_repository",
     srcs = ["apt_deb_repository.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
+    deps = [
+        ":util",
+        ":version_constraint",
+    ],
 )
 
 bzl_library(
