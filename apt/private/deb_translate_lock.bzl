@@ -3,6 +3,7 @@
 load("@bazel_skylib//lib:new_sets.bzl", "sets")
 load(":lockfile.bzl", "lockfile")
 load(":starlark_codegen_utils.bzl", "starlark_codegen_utils")
+load(":util.bzl", "util")
 
 # header template for packages.bzl file
 _DEB_IMPORT_HEADER_TMPL = '''\
@@ -181,7 +182,7 @@ def _deb_translate_lock_impl(rctx):
 
     rctx.file("packages.bzl", "\n".join(package_defs))
     rctx.file("BUILD.bazel", _ROOT_BUILD_TMPL.format(
-        target_name = rctx.attr.name.split("~")[-1],
+        target_name = util.get_repo_name(rctx.attr.name),
         packages = starlark_codegen_utils.to_list_attr(packages._values),
         architectures = starlark_codegen_utils.to_list_attr(architectures._values),
     ))

@@ -23,6 +23,11 @@ def _get_dict(struct, keys = [], default_value = None):
 def _sanitize(str):
     return str.replace("+", "-p-").replace(":", "-").replace("~", "_")
 
+def _get_repo_name(st):
+    if st.find("+") != -1:
+        return st.split("+")[-1]
+    return st.split("~")[-1]
+
 def _warning(rctx, message):
     rctx.execute([
         "echo",
@@ -34,4 +39,5 @@ util = struct(
     set_dict = _set_dict,
     get_dict = _get_dict,
     warning = _warning,
+    get_repo_name = _get_repo_name,
 )
