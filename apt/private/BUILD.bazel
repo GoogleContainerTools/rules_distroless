@@ -27,6 +27,8 @@ bzl_library(
     visibility = ["//apt:__subpackages__"],
     deps = [
         ":lockfile",
+        ":starlark_codegen_utils",
+        "@bazel_skylib//lib:new_sets",
         "@bazel_tools//tools/build_defs/repo:cache.bzl",
         "@bazel_tools//tools/build_defs/repo:http.bzl",
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
@@ -94,4 +96,10 @@ bzl_library(
     srcs = ["version_constraint.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [":version"],
+)
+
+bzl_library(
+    name = "starlark_codegen_utils",
+    srcs = ["starlark_codegen_utils.bzl"],
+    visibility = ["//apt:__subpackages__"],
 )

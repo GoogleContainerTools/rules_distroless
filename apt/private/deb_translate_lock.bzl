@@ -169,11 +169,11 @@ def _deb_translate_lock_impl(rctx):
             _PACKAGE_TEMPLATE.format(
                 target_name = package["name"],
                 data_targets = starlark_codegen_utils.to_dict_attr({
-                    "//:linux_%s" % arch: "//%s/%s" % (package["name"], package["arch"])
+                    "//:linux_%s" % arch: "//%s/%s" % (package["name"], arch)
                     for arch in architectures._values
                 }),
                 control_targets = starlark_codegen_utils.to_dict_attr({
-                    "//:linux_%s" % arch: "//%s/%s:control" % (package["name"], package["arch"])
+                    "//:linux_%s" % arch: "//%s/%s:control" % (package["name"], arch)
                     for arch in architectures._values
                 }),
             ),
