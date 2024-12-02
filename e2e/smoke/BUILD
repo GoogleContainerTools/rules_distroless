@@ -1,8 +1,18 @@
+"""
+NOTE:
+
+        This is the main test used in the e2e testing.
+
+  PLEASE KEEP e2e/smoke/BUILD and examples/debian_snapshot/BUILD
+  IN-SYNC WITH EACH OTHER, AS WELL AS THE REST OF THE TEST FILES
+    (test_linux_<ARCH> files and the bullseye YAML manifest)
+"""
+
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
 load("@container_structure_test//:defs.bzl", "container_structure_test")
-load("@rules_distroless//apt:defs.bzl", "dpkg_status")
 load("@rules_distroless//distroless:defs.bzl", "cacerts", "group", "passwd")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_oci//oci:defs.bzl", "oci_image")
 
 passwd(
     name = "passwd",
@@ -54,65 +64,57 @@ cacerts(
     }),
 )
 
-PACKAGES = [
-    "@bullseye//ncurses-base",
-    "@bullseye//libncurses6",
-    "@bullseye//tzdata",
-    "@bullseye_nolock//bash",
-    "@bullseye//coreutils",
-    "@bullseye//dpkg",
-    "@bullseye//apt",
-    "@bullseye//perl",
-    "@bullseye//nvidia-kernel-common",
-]
-
-# Creates /var/lib/dpkg/status with installed package information.
-dpkg_status(
-    name = "dpkg_status",
-    controls = select({
-        "@platforms//cpu:arm64": [
-            "%s/arm64:control" % package
-            for package in PACKAGES
-        ],
-        "@platforms//cpu:x86_64": [
-            "%s/amd64:control" % package
-            for package in PACKAGES
-        ],
-    }),
-)
-
 oci_image(
-    name = "apt",
-    architecture = select({
-        "@platforms//cpu:arm64": "arm64",
-        "@platforms//cpu:x86_64": "amd64",
-    }),
+    name = "image",
+    architecture = "arm64",
+    env = {
+        # Required to use the SSL certs from `cacerts()`
+        "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
+    },
     os = "linux",
+    tags = ["manual"],
     tars = [
+        # This target contains all the installed packages.
+        "@bullseye//:flat",
         ":sh",
         ":passwd",
         ":group",
-        ":dpkg_status",
         ":cacerts",
-    ] + select({
-        "@platforms//cpu:arm64": [
-            "%s/arm64" % package
-            for package in PACKAGES
-        ],
-        "@platforms//cpu:x86_64": [
-            "%s/amd64" % package
-            for package in PACKAGES
-        ],
+    ],
+)
+
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+platform(
+    name = "linux_amd64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+platform_transition_filegroup(
+    name = "image_platform",
+    srcs = [":image"],
+    target_platform = select({
+        "@platforms//cpu:arm64": ":linux_arm64",
+        "@platforms//cpu:x86_64": ":linux_amd64",
     }),
 )
 
-oci_load(
-    name = "tarball",
-    image = ":apt",
-    repo_tags = [
-        "distroless/test:latest",
-    ],
-)
+# oci_load(
+#     name = "tarball",
+#     image = ":image_platform",
+#     repo_tags = [
+#         "distroless/test:latest",
+#     ],
+# )
 
 container_structure_test(
     name = "test",
@@ -120,7 +122,7 @@ container_structure_test(
         "@platforms//cpu:arm64": ["test_linux_arm64.yaml"],
         "@platforms//cpu:x86_64": ["test_linux_amd64.yaml"],
     }),
-    image = ":apt",
+    image = ":image_platform",
     target_compatible_with = select({
         "@platforms//cpu:x86_64": ["@platforms//cpu:x86_64"],
         "@platforms//cpu:arm64": ["@platforms//cpu:arm64"],
