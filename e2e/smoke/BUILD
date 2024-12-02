@@ -66,7 +66,10 @@ cacerts(
 
 oci_image(
     name = "image",
-    architecture = "arm64",
+    architecture = select({
+        "@platforms//cpu:arm64": "arm64",
+        "@platforms//cpu:x86_64": "amd64",
+    }),
     env = {
         # Required to use the SSL certs from `cacerts()`
         "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
