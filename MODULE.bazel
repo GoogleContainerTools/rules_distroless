@@ -68,7 +68,7 @@ apt.install(
 )
 apt.install(
     name = "bullseye_nolock",
-    manifest = "//examples/debian_snapshot:bullseye_nolock.yaml",
+    manifest = "//examples/debian_snapshot:bullseye.yaml",
     nolock = True,
 )
 apt.install(
