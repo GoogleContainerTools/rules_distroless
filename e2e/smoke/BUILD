@@ -58,10 +58,7 @@ tar(
 
 cacerts(
     name = "cacerts",
-    package = select({
-        "@platforms//cpu:arm64": "@bullseye//ca-certificates/arm64:data",
-        "@platforms//cpu:x86_64": "@bullseye//ca-certificates/amd64:data",
-    }),
+    package = "@bullseye//ca-certificates:data",
 )
 
 oci_image(
