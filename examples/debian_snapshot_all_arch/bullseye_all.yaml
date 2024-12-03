@@ -1,0 +1,20 @@
+# Packages for examples/debian_snapshot_all_arch.
+#
+#  Anytime this file is changed, the lockfile needs to be regenerated.
+#
+#  To generate the bullseye_all.lock.json run the following command
+#
+#     bazel run @bullseye_all//:lock
+#
+# See debian_package_index at WORKSPACE.bazel
+version: 1
+
+sources:
+  - channel: bullseye contrib
+    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z
+
+archs:
+  - all
+
+packages:
+  - quake

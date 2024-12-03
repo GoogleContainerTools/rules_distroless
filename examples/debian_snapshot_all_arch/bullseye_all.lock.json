@@ -1,0 +1,43 @@
+{
+	"packages": [
+		{
+			"arch": "all",
+			"dependencies": [
+				{
+					"key": "game-data-packager_67_all",
+					"name": "game-data-packager",
+					"version": "67"
+				},
+				{
+					"key": "game-data-packager-runtime_67_all",
+					"name": "game-data-packager-runtime",
+					"version": "67"
+				}
+			],
+			"key": "quake_67_all",
+			"name": "quake",
+			"sha256": "54298c07795d65cf216262980a8be700f2859aa6be16c7441b688e7d7a627af6",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/contrib/g/game-data-packager/quake_67_all.deb",
+			"version": "67"
+		},
+		{
+			"arch": "all",
+			"dependencies": [],
+			"key": "game-data-packager_67_all",
+			"name": "game-data-packager",
+			"sha256": "8501a030e574e941f1bcf94358e3d73470387d25bcfda1223d401835374c189b",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/contrib/g/game-data-packager/game-data-packager_67_all.deb",
+			"version": "67"
+		},
+		{
+			"arch": "all",
+			"dependencies": [],
+			"key": "game-data-packager-runtime_67_all",
+			"name": "game-data-packager-runtime",
+			"sha256": "eee39c4ef95519191f8a3c2582661a4ba812962203046cfe5f97af00d73045ed",
+			"url": "https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/pool/contrib/g/game-data-packager/game-data-packager-runtime_67_all.deb",
+			"version": "67"
+		}
+	],
+	"version": 1
+}
