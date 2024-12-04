@@ -2,7 +2,7 @@ load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
 load("@container_structure_test//:defs.bzl", "container_structure_test")
 load("@rules_distroless//distroless:defs.bzl", "cacerts", "group", "passwd")
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_oci//oci:defs.bzl", "oci_image")
 
 passwd(
     name = "passwd",
@@ -62,6 +62,7 @@ oci_image(
         "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
     },
     os = "linux",
+    tags = ["manual"],
     tars = [
         # This target contains all the installed packages.
         "@bullseye//:bullseye",
@@ -97,13 +98,13 @@ platform_transition_filegroup(
     }),
 )
 
-oci_load(
-    name = "tarball",
-    image = ":image_platform",
-    repo_tags = [
-        "distroless/test:latest",
-    ],
-)
+# oci_load(
+#     name = "tarball",
+#     image = ":image_platform",
+#     repo_tags = [
+#         "distroless/test:latest",
+#     ],
+# )
 
 container_structure_test(
     name = "test",
