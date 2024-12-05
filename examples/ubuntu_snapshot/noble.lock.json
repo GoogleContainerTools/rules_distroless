@@ -77,12 +77,27 @@
 		},
 		{
 			"arch": "amd64",
-			"dependencies": [],
+			"dependencies": [
+				{
+					"key": "debconf_1.5.86_amd64",
+					"name": "debconf",
+					"version": "1.5.86"
+				}
+			],
 			"key": "tzdata_2024a-1ubuntu1_amd64",
 			"name": "tzdata",
 			"sha256": "26cdb43f541d5b7d089d2c1cf7d50b4c5e630c79a6d4d6ce34e20dcace4f0d29",
 			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/t/tzdata/tzdata_2024a-1ubuntu1_all.deb",
 			"version": "2024a-1ubuntu1"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "debconf_1.5.86_amd64",
+			"name": "debconf",
+			"sha256": "725da1e474ff8ce916e7954ed262273a02e4f74ee1f6cd342b19ff283617d91b",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/d/debconf/debconf_1.5.86_all.deb",
+			"version": "1.5.86"
 		},
 		{
 			"arch": "amd64",
@@ -264,6 +279,36 @@
 			"sha256": "275cc58e50e49b8226f1ca705ac79bea3997b6e15b59e76cd2ade7d753a9298f",
 			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/a/acl/libacl1_2.3.2-1_amd64.deb",
 			"version": "2.3.2-1"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [
+				{
+					"key": "libpcre2-8-0_10.42-4ubuntu1_amd64",
+					"name": "libpcre2-8-0",
+					"version": "10.42-4ubuntu1"
+				},
+				{
+					"key": "libc6_2.39-0ubuntu2_amd64",
+					"name": "libc6",
+					"version": "2.39-0ubuntu2"
+				},
+				{
+					"key": "libgcc-s1_14-20240221-2.1ubuntu1_amd64",
+					"name": "libgcc-s1",
+					"version": "14-20240221-2.1ubuntu1"
+				},
+				{
+					"key": "gcc-14-base_14-20240221-2.1ubuntu1_amd64",
+					"name": "gcc-14-base",
+					"version": "14-20240221-2.1ubuntu1"
+				}
+			],
+			"key": "grep_3.11-4_amd64",
+			"name": "grep",
+			"sha256": "300247caf38c19f88f8ddf27abb2111cbd39a7364e9706fa0d53b15dc7dae866",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/g/grep/grep_3.11-4_amd64.deb",
+			"version": "3.11-4"
 		},
 		{
 			"arch": "amd64",
@@ -541,6 +586,86 @@
 					"key": "libassuan0_2.5.6-1_amd64",
 					"name": "libassuan0",
 					"version": "2.5.6-1"
+				},
+				{
+					"key": "adduser_3.137ubuntu1_amd64",
+					"name": "adduser",
+					"version": "3.137ubuntu1"
+				},
+				{
+					"key": "passwd_1-4.13-p-dfsg1-4ubuntu1_amd64",
+					"name": "passwd",
+					"version": "1:4.13+dfsg1-4ubuntu1"
+				},
+				{
+					"key": "libpam-modules_1.5.2-9.1ubuntu3_amd64",
+					"name": "libpam-modules",
+					"version": "1.5.2-9.1ubuntu3"
+				},
+				{
+					"key": "libpam-modules-bin_1.5.2-9.1ubuntu3_amd64",
+					"name": "libpam-modules-bin",
+					"version": "1.5.2-9.1ubuntu3"
+				},
+				{
+					"key": "libselinux1_3.5-2build1_amd64",
+					"name": "libselinux1",
+					"version": "3.5-2build1"
+				},
+				{
+					"key": "libpcre2-8-0_10.42-4ubuntu1_amd64",
+					"name": "libpcre2-8-0",
+					"version": "10.42-4ubuntu1"
+				},
+				{
+					"key": "libpam0g_1.5.2-9.1ubuntu3_amd64",
+					"name": "libpam0g",
+					"version": "1.5.2-9.1ubuntu3"
+				},
+				{
+					"key": "debconf_1.5.86_amd64",
+					"name": "debconf",
+					"version": "1.5.86"
+				},
+				{
+					"key": "libaudit1_1-3.1.2-2_amd64",
+					"name": "libaudit1",
+					"version": "1:3.1.2-2"
+				},
+				{
+					"key": "libcap-ng0_0.8.4-2_amd64",
+					"name": "libcap-ng0",
+					"version": "0.8.4-2"
+				},
+				{
+					"key": "libaudit-common_1-3.1.2-2_amd64",
+					"name": "libaudit-common",
+					"version": "1:3.1.2-2"
+				},
+				{
+					"key": "libcrypt1_1-4.4.36-4_amd64",
+					"name": "libcrypt1",
+					"version": "1:4.4.36-4"
+				},
+				{
+					"key": "libdb5.3_5.3.28-p-dfsg2-4_amd64",
+					"name": "libdb5.3",
+					"version": "5.3.28+dfsg2-4"
+				},
+				{
+					"key": "libsemanage2_3.5-1build2_amd64",
+					"name": "libsemanage2",
+					"version": "3.5-1build2"
+				},
+				{
+					"key": "libsepol2_3.5-2_amd64",
+					"name": "libsepol2",
+					"version": "3.5-2"
+				},
+				{
+					"key": "libsemanage-common_3.5-1build2_amd64",
+					"name": "libsemanage-common",
+					"version": "3.5-1build2"
 				}
 			],
 			"key": "apt_2.7.12_amd64",
@@ -749,6 +874,114 @@
 		},
 		{
 			"arch": "amd64",
+			"dependencies": [],
+			"key": "adduser_3.137ubuntu1_amd64",
+			"name": "adduser",
+			"sha256": "542aff2395eb912a56833e11a78076342779689d8fede7adcf08d1d6b0d0cd8b",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/a/adduser/adduser_3.137ubuntu1_all.deb",
+			"version": "3.137ubuntu1"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "passwd_1-4.13-p-dfsg1-4ubuntu1_amd64",
+			"name": "passwd",
+			"sha256": "e8c7650e3c410102e8c6f0f306e14d10a7dec78ef8c84cf6c3c84a5aec5dead6",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/s/shadow/passwd_4.13+dfsg1-4ubuntu1_amd64.deb",
+			"version": "1:4.13+dfsg1-4ubuntu1"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libpam-modules_1.5.2-9.1ubuntu3_amd64",
+			"name": "libpam-modules",
+			"sha256": "ee8f5cea447827ce65b5e4d62ba55139496ddbbb0b075b43a8888ac4e17e1ff4",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/p/pam/libpam-modules_1.5.2-9.1ubuntu3_amd64.deb",
+			"version": "1.5.2-9.1ubuntu3"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libpam-modules-bin_1.5.2-9.1ubuntu3_amd64",
+			"name": "libpam-modules-bin",
+			"sha256": "edc639f73eb1479fcd7776c2d5b077895ee5b0ae4a502aa35a7efc0b900dd0be",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/p/pam/libpam-modules-bin_1.5.2-9.1ubuntu3_amd64.deb",
+			"version": "1.5.2-9.1ubuntu3"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libpam0g_1.5.2-9.1ubuntu3_amd64",
+			"name": "libpam0g",
+			"sha256": "d5010f67db9121c0b0f673caeacbbcae39f1b3b103296196eda1a445ad60d5e1",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/p/pam/libpam0g_1.5.2-9.1ubuntu3_amd64.deb",
+			"version": "1.5.2-9.1ubuntu3"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libaudit1_1-3.1.2-2_amd64",
+			"name": "libaudit1",
+			"sha256": "508671000fc0b536f394e026d5c4695362fa91b5cb2bf943b03136093124a0c0",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/a/audit/libaudit1_3.1.2-2_amd64.deb",
+			"version": "1:3.1.2-2"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libcap-ng0_0.8.4-2_amd64",
+			"name": "libcap-ng0",
+			"sha256": "199a43ea519896fb5c08662876f3c03af6fb373099e57eaaae292c9cd1f1a7d3",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/libc/libcap-ng/libcap-ng0_0.8.4-2_amd64.deb",
+			"version": "0.8.4-2"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libaudit-common_1-3.1.2-2_amd64",
+			"name": "libaudit-common",
+			"sha256": "7e9d54ab2042d4fa348a144726b575db6ec43d6e86589c656e859f8a105dbffb",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/a/audit/libaudit-common_3.1.2-2_all.deb",
+			"version": "1:3.1.2-2"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libdb5.3_5.3.28-p-dfsg2-4_amd64",
+			"name": "libdb5.3",
+			"sha256": "439d822a4d19edb3ea466b3ad085d1783d2319611061090df4bef2c562bc625e",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/d/db5.3/libdb5.3_5.3.28+dfsg2-4_amd64.deb",
+			"version": "5.3.28+dfsg2-4"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libsemanage2_3.5-1build2_amd64",
+			"name": "libsemanage2",
+			"sha256": "19afa3045bd49df29d7ebb65da1724d4a1f3b881a6e4c8a055ebf44791c5d6db",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/libs/libsemanage/libsemanage2_3.5-1build2_amd64.deb",
+			"version": "3.5-1build2"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libsepol2_3.5-2_amd64",
+			"name": "libsepol2",
+			"sha256": "17a1b2ec75189f0ca3d25aa1955d69c12d7517fe4a17f58b851ce56745ff3dbe",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/libs/libsepol/libsepol2_3.5-2_amd64.deb",
+			"version": "3.5-2"
+		},
+		{
+			"arch": "amd64",
+			"dependencies": [],
+			"key": "libsemanage-common_3.5-1build2_amd64",
+			"name": "libsemanage-common",
+			"sha256": "da42f15ddad6390e9dcb0e4864dabca48971ac3e3d0bedcecfcc1ba37ec6d298",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/libs/libsemanage/libsemanage-common_3.5-1build2_all.deb",
+			"version": "3.5-1build2"
+		},
+		{
+			"arch": "amd64",
 			"dependencies": [
 				{
 					"key": "libperl5.38_5.38.2-3_amd64",
@@ -903,15 +1136,6 @@
 			"version": "1.23-5"
 		},
 		{
-			"arch": "amd64",
-			"dependencies": [],
-			"key": "libdb5.3_5.3.28-p-dfsg2-4_amd64",
-			"name": "libdb5.3",
-			"sha256": "439d822a4d19edb3ea466b3ad085d1783d2319611061090df4bef2c562bc625e",
-			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/d/db5.3/libdb5.3_5.3.28+dfsg2-4_amd64.deb",
-			"version": "5.3.28+dfsg2-4"
-		},
-		{
 			"arch": "arm64",
 			"dependencies": [],
 			"key": "ncurses-base_6.4-p-20240113-1ubuntu1_arm64",
@@ -988,12 +1212,27 @@
 		},
 		{
 			"arch": "arm64",
-			"dependencies": [],
+			"dependencies": [
+				{
+					"key": "debconf_1.5.86_arm64",
+					"name": "debconf",
+					"version": "1.5.86"
+				}
+			],
 			"key": "tzdata_2024a-1ubuntu1_arm64",
 			"name": "tzdata",
 			"sha256": "26cdb43f541d5b7d089d2c1cf7d50b4c5e630c79a6d4d6ce34e20dcace4f0d29",
 			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/t/tzdata/tzdata_2024a-1ubuntu1_all.deb",
 			"version": "2024a-1ubuntu1"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "debconf_1.5.86_arm64",
+			"name": "debconf",
+			"sha256": "725da1e474ff8ce916e7954ed262273a02e4f74ee1f6cd342b19ff283617d91b",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/d/debconf/debconf_1.5.86_all.deb",
+			"version": "1.5.86"
 		},
 		{
 			"arch": "arm64",
@@ -1161,6 +1400,36 @@
 			"sha256": "1e683ce20074199ed9dd9c4ffdbb5bf30f5e494d9c9452512f8709a9fbe76562",
 			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/a/acl/libacl1_2.3.2-1_arm64.deb",
 			"version": "2.3.2-1"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [
+				{
+					"key": "libpcre2-8-0_10.42-4ubuntu1_arm64",
+					"name": "libpcre2-8-0",
+					"version": "10.42-4ubuntu1"
+				},
+				{
+					"key": "libc6_2.39-0ubuntu2_arm64",
+					"name": "libc6",
+					"version": "2.39-0ubuntu2"
+				},
+				{
+					"key": "libgcc-s1_14-20240221-2.1ubuntu1_arm64",
+					"name": "libgcc-s1",
+					"version": "14-20240221-2.1ubuntu1"
+				},
+				{
+					"key": "gcc-14-base_14-20240221-2.1ubuntu1_arm64",
+					"name": "gcc-14-base",
+					"version": "14-20240221-2.1ubuntu1"
+				}
+			],
+			"key": "grep_3.11-4_arm64",
+			"name": "grep",
+			"sha256": "52060ea1c0776bf7ccf5e23650ba7a0990e4ba675b03d3129c690759c6a7d6d0",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/g/grep/grep_3.11-4_arm64.deb",
+			"version": "3.11-4"
 		},
 		{
 			"arch": "arm64",
@@ -1438,6 +1707,86 @@
 					"key": "libassuan0_2.5.6-1_arm64",
 					"name": "libassuan0",
 					"version": "2.5.6-1"
+				},
+				{
+					"key": "adduser_3.137ubuntu1_arm64",
+					"name": "adduser",
+					"version": "3.137ubuntu1"
+				},
+				{
+					"key": "passwd_1-4.13-p-dfsg1-4ubuntu1_arm64",
+					"name": "passwd",
+					"version": "1:4.13+dfsg1-4ubuntu1"
+				},
+				{
+					"key": "libpam-modules_1.5.2-9.1ubuntu3_arm64",
+					"name": "libpam-modules",
+					"version": "1.5.2-9.1ubuntu3"
+				},
+				{
+					"key": "libpam-modules-bin_1.5.2-9.1ubuntu3_arm64",
+					"name": "libpam-modules-bin",
+					"version": "1.5.2-9.1ubuntu3"
+				},
+				{
+					"key": "libselinux1_3.5-2build1_arm64",
+					"name": "libselinux1",
+					"version": "3.5-2build1"
+				},
+				{
+					"key": "libpcre2-8-0_10.42-4ubuntu1_arm64",
+					"name": "libpcre2-8-0",
+					"version": "10.42-4ubuntu1"
+				},
+				{
+					"key": "libpam0g_1.5.2-9.1ubuntu3_arm64",
+					"name": "libpam0g",
+					"version": "1.5.2-9.1ubuntu3"
+				},
+				{
+					"key": "debconf_1.5.86_arm64",
+					"name": "debconf",
+					"version": "1.5.86"
+				},
+				{
+					"key": "libaudit1_1-3.1.2-2_arm64",
+					"name": "libaudit1",
+					"version": "1:3.1.2-2"
+				},
+				{
+					"key": "libcap-ng0_0.8.4-2_arm64",
+					"name": "libcap-ng0",
+					"version": "0.8.4-2"
+				},
+				{
+					"key": "libaudit-common_1-3.1.2-2_arm64",
+					"name": "libaudit-common",
+					"version": "1:3.1.2-2"
+				},
+				{
+					"key": "libcrypt1_1-4.4.36-4_arm64",
+					"name": "libcrypt1",
+					"version": "1:4.4.36-4"
+				},
+				{
+					"key": "libdb5.3_5.3.28-p-dfsg2-4_arm64",
+					"name": "libdb5.3",
+					"version": "5.3.28+dfsg2-4"
+				},
+				{
+					"key": "libsemanage2_3.5-1build2_arm64",
+					"name": "libsemanage2",
+					"version": "3.5-1build2"
+				},
+				{
+					"key": "libsepol2_3.5-2_arm64",
+					"name": "libsepol2",
+					"version": "3.5-2"
+				},
+				{
+					"key": "libsemanage-common_3.5-1build2_arm64",
+					"name": "libsemanage-common",
+					"version": "3.5-1build2"
 				}
 			],
 			"key": "apt_2.7.12_arm64",
@@ -1646,6 +1995,114 @@
 		},
 		{
 			"arch": "arm64",
+			"dependencies": [],
+			"key": "adduser_3.137ubuntu1_arm64",
+			"name": "adduser",
+			"sha256": "542aff2395eb912a56833e11a78076342779689d8fede7adcf08d1d6b0d0cd8b",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/a/adduser/adduser_3.137ubuntu1_all.deb",
+			"version": "3.137ubuntu1"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "passwd_1-4.13-p-dfsg1-4ubuntu1_arm64",
+			"name": "passwd",
+			"sha256": "c03a2cc10779e0701cade58b024dab7625ce7906d9107bc0ccf3015b3e6cc555",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/s/shadow/passwd_4.13+dfsg1-4ubuntu1_arm64.deb",
+			"version": "1:4.13+dfsg1-4ubuntu1"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libpam-modules_1.5.2-9.1ubuntu3_arm64",
+			"name": "libpam-modules",
+			"sha256": "87b205503f65f75d60da24fdc2a83516508ec95ae401f5828ed86027315e8b54",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/p/pam/libpam-modules_1.5.2-9.1ubuntu3_arm64.deb",
+			"version": "1.5.2-9.1ubuntu3"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libpam-modules-bin_1.5.2-9.1ubuntu3_arm64",
+			"name": "libpam-modules-bin",
+			"sha256": "4c5c8d85942db7306f338f7922d7461c9de334d40a2076370dabf872ff7b9ecd",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/p/pam/libpam-modules-bin_1.5.2-9.1ubuntu3_arm64.deb",
+			"version": "1.5.2-9.1ubuntu3"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libpam0g_1.5.2-9.1ubuntu3_arm64",
+			"name": "libpam0g",
+			"sha256": "ad87f73f38dae94bad7dcb592deeabb26be5a0ce19b1a593c219000497537f0a",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/p/pam/libpam0g_1.5.2-9.1ubuntu3_arm64.deb",
+			"version": "1.5.2-9.1ubuntu3"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libaudit1_1-3.1.2-2_arm64",
+			"name": "libaudit1",
+			"sha256": "49ba782e4faff111b6f97e79e1476569d59f686ba36df62876f9da3ba184cef0",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/a/audit/libaudit1_3.1.2-2_arm64.deb",
+			"version": "1:3.1.2-2"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libcap-ng0_0.8.4-2_arm64",
+			"name": "libcap-ng0",
+			"sha256": "cca7c575f2dc7b133ea909ca8d1208248ddf8228cefb521f1ad5efcf9aea455e",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/libc/libcap-ng/libcap-ng0_0.8.4-2_arm64.deb",
+			"version": "0.8.4-2"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libaudit-common_1-3.1.2-2_arm64",
+			"name": "libaudit-common",
+			"sha256": "7e9d54ab2042d4fa348a144726b575db6ec43d6e86589c656e859f8a105dbffb",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/a/audit/libaudit-common_3.1.2-2_all.deb",
+			"version": "1:3.1.2-2"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libdb5.3_5.3.28-p-dfsg2-4_arm64",
+			"name": "libdb5.3",
+			"sha256": "522c7f6719d3e950eb6e7809af4c072a137c2c29927a0167745a997582ea7cde",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/d/db5.3/libdb5.3_5.3.28+dfsg2-4_arm64.deb",
+			"version": "5.3.28+dfsg2-4"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libsemanage2_3.5-1build2_arm64",
+			"name": "libsemanage2",
+			"sha256": "2eba7014d5f46fd35e50a52e3e6317a349df6e9975b7a051c7aac03fff03bce4",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/libs/libsemanage/libsemanage2_3.5-1build2_arm64.deb",
+			"version": "3.5-1build2"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libsepol2_3.5-2_arm64",
+			"name": "libsepol2",
+			"sha256": "b2197a98e2c4bb2c83baad78a98c592d70c2ed8df9c2411436e0507e140d96ae",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/libs/libsepol/libsepol2_3.5-2_arm64.deb",
+			"version": "3.5-2"
+		},
+		{
+			"arch": "arm64",
+			"dependencies": [],
+			"key": "libsemanage-common_3.5-1build2_arm64",
+			"name": "libsemanage-common",
+			"sha256": "da42f15ddad6390e9dcb0e4864dabca48971ac3e3d0bedcecfcc1ba37ec6d298",
+			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/libs/libsemanage/libsemanage-common_3.5-1build2_all.deb",
+			"version": "3.5-1build2"
+		},
+		{
+			"arch": "arm64",
 			"dependencies": [
 				{
 					"key": "libperl5.38_5.38.2-3_arm64",
@@ -1798,15 +2255,6 @@
 			"sha256": "eb0ada72e019ce958cc01c09419a61215f6c9ffb468eed59944dce21060f6354",
 			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/g/gdbm/libgdbm-compat4_1.23-5_arm64.deb",
 			"version": "1.23-5"
-		},
-		{
-			"arch": "arm64",
-			"dependencies": [],
-			"key": "libdb5.3_5.3.28-p-dfsg2-4_arm64",
-			"name": "libdb5.3",
-			"sha256": "522c7f6719d3e950eb6e7809af4c072a137c2c29927a0167745a997582ea7cde",
-			"url": "https://snapshot.ubuntu.com/ubuntu/20240301T030400Z/pool/main/d/db5.3/libdb5.3_5.3.28+dfsg2-4_arm64.deb",
-			"version": "5.3.28+dfsg2-4"
 		}
 	],
 	"version": 1
