@@ -6,6 +6,7 @@ module(
     compatibility_level = 1,
 )
 
+bazel_dep(name = "platforms", version = "0.0.10")
 # Bazel 8 fails without a working version of protobuf
 bazel_dep(name = "protobuf", version = "29.0-rc2.bcr.1")
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
@@ -27,7 +28,6 @@ use_repo(bazel_lib_toolchains, "yq_windows_amd64")
 bazel_dep(name = "gazelle", version = "0.34.0", dev_dependency = True, repo_name = "bazel_gazelle")
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.1.2", dev_dependency = True)
-bazel_dep(name = "platforms", version = "0.0.10", dev_dependency = True)
 bazel_dep(name = "rules_oci", version = "2.0.0-rc0", dev_dependency = True)
 bazel_dep(name = "container_structure_test", version = "1.16.0", dev_dependency = True)
 bazel_dep(name = "bazel_features", version = "1.20.0", dev_dependency = True)
