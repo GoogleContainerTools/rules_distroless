@@ -6,13 +6,14 @@ load(":version_constraint.bzl", "version_constraint")
 def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
 
-    # See https://linux.die.net/man/1/xz and https://linux.die.net/man/1/gzip
+    # See https://linux.die.net/man/1/xz , https://linux.die.net/man/1/gzip , and https://linux.die.net/man/1/bzip2
     #  --keep       -> keep the original file (Bazel might be still committing the output to the cache)
     #  --force      -> overwrite the output if it exists
     #  --decompress -> decompress
     supported_extensions = {
         "xz": ["xz", "--decompress", "--keep", "--force"],
         "gz": ["gzip", "--decompress", "--keep", "--force"],
+        "bz2": ["bzip2", "--decompress", "--keep", "--force"],
     }
 
     failed_attempts = []
