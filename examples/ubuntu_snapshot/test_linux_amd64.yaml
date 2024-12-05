@@ -14,10 +14,16 @@ commandTests:
       - bash/now 5\.2\.21\-2ubuntu2 amd64 \[installed,local\]
       - coreutils/now 9\.4\-2ubuntu4 amd64 \[installed,local\]
       - dpkg/now 1\.22\.4ubuntu5 amd64 \[installed,local\]
+      - grep/now 3\.11-4 amd64 \[installed,local\]
+      - libssl3/now 3\.0\.10-1ubuntu4 amd64 \[installed,local\]
       - libncurses6/now 6\.4\+20240113\-1ubuntu1 amd64 \[installed,local\]
       - ncurses-base/now 6\.4\+20240113\-1ubuntu1 all \[installed,local\]
       - perl/now 5\.38\.2\-3 amd64 \[installed,local\]
       - tzdata/now 2024a\-1ubuntu1 all \[installed,local\]
+  - name: "coreutils depends on libssl3 on amd64"
+    command: "/bin/bash"
+    args: ["-c", "apt list --installed | grep -Eo libssl3"]
+    expectedOutput: ["libssl3"]
   - name: "whoami"
     command: "whoami"
     expectedOutput: [r00t]
