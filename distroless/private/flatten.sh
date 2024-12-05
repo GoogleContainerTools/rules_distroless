@@ -31,17 +31,20 @@ if [[ "$output" != "-" ]]; then
         fi
     done
 
-
     awk '{
         if (substr($0,0,1) == "#") {
             next;
         }
         line_count[$1]++;
         if (line_count[$1] > 1) {
-            print substr($1, 3, length($1));
+            if ($1 == "/.") {
+                next
+            }
+            print $1
         }
     }' "$mtree" | sort | uniq | sort -r  > "$duplicates"
-    $bsdtar $@ | run_gtar --delete --file - --occurrence=1 --files-from="$duplicates" > "$output"
+
+    $bsdtar --exclude "^./$" $@  | run_gtar --delete --file - --occurrence=1 --files-from="$duplicates" > "$output"
     rm "$mtree"
 else 
     # No deduplication, business as usual
