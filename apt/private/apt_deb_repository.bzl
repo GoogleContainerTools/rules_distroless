@@ -11,16 +11,17 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     #  --force      -> overwrite the output if it exists
     #  --decompress -> decompress
     supported_extensions = {
-        "xz": ["xz", "--decompress", "--keep", "--force"],
-        "gz": ["gzip", "--decompress", "--keep", "--force"],
-        "bz2": ["bzip2", "--decompress", "--keep", "--force"],
+        "": ["true"],
+        ".xz": ["xz", "--decompress", "--keep", "--force"],
+        ".gz": ["gzip", "--decompress", "--keep", "--force"],
+        ".bz2": ["bzip2", "--decompress", "--keep", "--force"],
     }
 
     failed_attempts = []
 
     for (ext, cmd) in supported_extensions.items():
-        output = "{}/Packages.{}".format(target_triple, ext)
-        dist_url = "{}/dists/{}/{}/binary-{}/Packages.{}".format(url, dist, comp, arch, ext)
+        output = "{}/Packages{}".format(target_triple, ext)
+        dist_url = "{}/dists/{}/{}/binary-{}/Packages{}".format(url, dist, comp, arch, ext)
         download = rctx.download(
             url = dist_url,
             output = output,
