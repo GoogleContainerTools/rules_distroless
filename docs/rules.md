@@ -70,7 +70,7 @@ oci_image(
 <pre>
 load("@rules_distroless//distroless:defs.bzl", "flatten")
 
-flatten(<a href="#flatten-name">name</a>, <a href="#flatten-compress">compress</a>, <a href="#flatten-tars">tars</a>)
+flatten(<a href="#flatten-name">name</a>, <a href="#flatten-compress">compress</a>, <a href="#flatten-deduplicate">deduplicate</a>, <a href="#flatten-tars">tars</a>)
 </pre>
 
 Flatten multiple archives into single archive.
@@ -82,6 +82,7 @@ Flatten multiple archives into single archive.
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="flatten-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="flatten-compress"></a>compress |  Compress the archive file with a supported algorithm.   | String | optional |  `""`  |
+| <a id="flatten-deduplicate"></a>deduplicate |  EXPERIMENTAL: We may change or remove it without a notice.<br><br>Remove duplicate entries from the archives after flattening. Deduplication is performed only for directories.<br><br>This requires `awk` to be available in the PATH.   | Boolean | optional |  `False`  |
 | <a id="flatten-tars"></a>tars |  List of tars to flatten   | <a href="https://bazel.build/concepts/labels">List of labels</a> | required |  |
 
 
