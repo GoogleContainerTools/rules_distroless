@@ -42,17 +42,12 @@ flatten = rule(
             doc = "List of tars to flatten",
         ),
         "deduplicate": attr.bool(doc = """\
-EXPERIMENTAL: Remove duplicate entries from the archives after flattening.
-        
-This requires `awk`, `sort` and `tar` to be available in the PATH.
+EXPERIMENTAL: We may change or remove it without a notice.
 
-To support macOS, presence of `gtar` is checked, and `tar` if it does not exist, 
-and ensured if supports the `--delete` mode.
+Remove duplicate entries from the archives after flattening.
+Deduplication is performed only for directories.
 
-On macOS: `brew install gnu-tar` can be run to install gnutar.
-See: https://formulae.brew.sh/formula/gnu-tar
-
-NOTE: You may also need to run `sudo ln -s /opt/homebrew/bin/gtar /usr/local/bin/gtar` to make it available to Bazel.
+This requires `awk` to be available in the PATH.
         """, default = False),
         "compress": attr.string(
             doc = "Compress the archive file with a supported algorithm.",
