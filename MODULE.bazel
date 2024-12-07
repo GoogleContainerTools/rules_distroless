@@ -13,6 +13,7 @@ bazel_dep(name = "protobuf", version = "29.0-rc2.bcr.1")
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
 bazel_dep(name = "aspect_bazel_lib", version = "2.9.4")
 bazel_dep(name = "rules_java", version = "8.3.2")
+bazel_dep(name = "platforms", version = "0.0.10")
 
 bazel_lib_toolchains = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
 use_repo(bazel_lib_toolchains, "zstd_toolchains")
@@ -72,6 +73,12 @@ apt.install(
     nolock = True,
 )
 apt.install(
+    name = "bullseye_all",
+    lock = "//examples/debian_snapshot_all_arch:bullseye_all.lock.json",
+    manifest = "//examples/debian_snapshot_all_arch:bullseye_all.yaml",
+    nolock = True,
+)
+apt.install(
     name = "apt_security",
     manifest = "//examples/debian_snapshot_security:security.yaml",
     nolock = True,
@@ -86,4 +93,4 @@ apt.install(
     lock = "//examples/ubuntu_snapshot:noble.lock.json",
     manifest = "//examples/ubuntu_snapshot:noble.yaml",
 )
-use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_nolock", "noble", "shared_dependencies")
+use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_all", "bullseye_all_resolve", "bullseye_nolock", "noble", "shared_dependencies")

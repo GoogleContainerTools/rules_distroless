@@ -46,32 +46,6 @@ tar(
     ],
 )
 
-PACKAGES = [
-    "@noble//ncurses-base",
-    "@noble//libncurses6",
-    "@noble//tzdata",
-    "@noble//bash",
-    "@noble//coreutils",
-    "@noble//dpkg",
-    "@noble//apt",
-    "@noble//perl",
-]
-
-# Creates /var/lib/dpkg/status with installed package information.
-dpkg_status(
-    name = "dpkg_status",
-    controls = select({
-        "@platforms//cpu:arm64": [
-            "%s/arm64:control" % package
-            for package in PACKAGES
-        ],
-        "@platforms//cpu:x86_64": [
-            "%s/amd64:control" % package
-            for package in PACKAGES
-        ],
-    }),
-)
-
 oci_image(
     name = "noble",
     architecture = select({
@@ -83,17 +57,8 @@ oci_image(
         ":sh",
         ":passwd",
         ":group",
-        ":dpkg_status",
-    ] + select({
-        "@platforms//cpu:arm64": [
-            "%s/arm64" % package
-            for package in PACKAGES
-        ],
-        "@platforms//cpu:x86_64": [
-            "%s/amd64" % package
-            for package in PACKAGES
-        ],
-    }),
+        "@noble//:noble",
+    ],
 )
 
 oci_load(

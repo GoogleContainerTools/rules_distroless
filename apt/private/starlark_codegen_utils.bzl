@@ -34,6 +34,7 @@ def _to_dict_list_attr(dict, indent_count = 0, indent_size = 4, quote_key = True
     result = "{"
     for k, v in dict.items():
         key = "\"{}\"".format(k) if quote_key else k
+        v = _to_list_attr(v, indent_count + 1, indent_size)
         result += "\n%s%s%s: %s," % (indent, tab, key, v)
     result += "\n%s}" % indent
     return result
