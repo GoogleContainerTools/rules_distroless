@@ -37,7 +37,6 @@ def assert_tar_mtree(name, actual, expected):
         timeout = "short",
     )
 
-
 def assert_tar_listing(name, actual, expected):
     """
     Assert that the listed contents of a tarball match an expected value. This is useful when checking for duplicated paths.
