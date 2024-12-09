@@ -1,6 +1,6 @@
 # buildifier: disable=bzl-visibility
 load("//apt:defs.bzl", "dpkg_statusd")
-load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+load("//distroless/tests:asserts.bzl", "assert_tar_mtree")
 
 dpkg_statusd(
     name = "statusd",
@@ -8,7 +8,7 @@ dpkg_statusd(
     control = "@example-bullseye-ca-certificates//:control.tar.xz",
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_statusd",
     actual = "statusd",
     expected = """\

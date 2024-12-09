@@ -1,5 +1,5 @@
 load("//distroless:defs.bzl", "home")
-load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+load("//distroless/tests:asserts.bzl", "assert_tar_mtree")
 
 home(
     name = "home",
@@ -17,7 +17,7 @@ home(
     ],
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_home",
     actual = "home",
     expected = """\

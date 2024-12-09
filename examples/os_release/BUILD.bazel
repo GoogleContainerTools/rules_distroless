@@ -1,6 +1,6 @@
 load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("//distroless:defs.bzl", "os_release")
-load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+load("//distroless/tests:asserts.bzl", "assert_tar_mtree")
 
 os_release(
     name = "os_release",
@@ -16,7 +16,7 @@ diff_test(
     file2 = "content.expected.txt",
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_os_release",
     actual = "os_release",
     expected = """\
@@ -37,7 +37,7 @@ os_release(
     path = "/etc/os-release",
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_os_release_alternative_path",
     actual = "os_release_alternative_path",
     expected = """\

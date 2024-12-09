@@ -1,6 +1,6 @@
 load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("//distroless:defs.bzl", "passwd")
-load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+load("//distroless/tests:asserts.bzl", "assert_tar_mtree")
 
 passwd(
     name = "passwd",
@@ -22,7 +22,7 @@ diff_test(
     file2 = "passwd.expected.txt",
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_passwd",
     actual = "passwd",
     expected = """\

@@ -1,6 +1,6 @@
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("//distroless:defs.bzl", "flatten", "home", "passwd")
-load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+load("//distroless/tests:asserts.bzl", "assert_tar_listing", "assert_tar_mtree")
 
 passwd(
     name = "passwd",
@@ -47,7 +47,7 @@ flatten(
     ],
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_flatten",
     actual = "flatten",
     expected = """\
@@ -94,8 +94,8 @@ flatten(
     ],
 )
 
-assert_tar_listing(
-    name = "test_flatten_dedup",
+assert_tar_mtree(
+    name = "test_flatten_dedup_mtree",
     actual = "flatten_dedup",
     expected = """\
 #mtree
@@ -107,3 +107,17 @@ assert_tar_listing(
 ./examples/flatten/dir/sub/content.txt time=1672560000.0 mode=755 gid=0 uid=0 type=file size=0
 """,
 )
+
+assert_tar_listing(
+    name = "test_flatten_dedup_listing",
+    actual = "flatten_dedup",
+    expected = """\
+examples/
+examples/flatten/
+examples/flatten/dir/
+examples/flatten/dir/changelog
+examples/flatten/dir/sub/
+examples/flatten/dir/sub/content.txt
+""",
+)
+

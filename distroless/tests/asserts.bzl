@@ -3,8 +3,50 @@
 load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 
-# buildifier: disable=function-docstring
+def assert_tar_mtree(name, actual, expected):
+    """
+    Assert that an mtree representation of a tarball matches an expected value.
+
+    Args:
+        name: name of this assertion
+        actual: label for a tarball
+        expected: expected mtree
+    """
+    actual_mtree = "_{}_mtree".format(name)
+    expected_mtree = "_{}_expected".format(name)
+
+    native.genrule(
+        name = actual_mtree,
+        srcs = [actual],
+        outs = ["_{}.mtree".format(name)],
+        cmd = "cat $(execpath {}) | $(BSDTAR_BIN) -cf $@ --format=mtree --options '!nlink' @-".format(actual),
+        toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
+    )
+
+    write_file(
+        name = expected_mtree,
+        out = "_{}.expected".format(name),
+        content = [expected],
+        newline = "unix",
+    )
+
+    diff_test(
+        name = name,
+        file1 = actual_mtree,
+        file2 = expected_mtree,
+        timeout = "short",
+    )
+
+
 def assert_tar_listing(name, actual, expected):
+    """
+    Assert that the listed contents of a tarball match an expected value. This is useful when checking for duplicated paths.
+
+    Args:
+        name: name of this assertion
+        actual: label for a tarball
+        expected: expected listing
+    """
     actual_listing = "_{}_listing".format(name)
     expected_listing = "_{}_expected".format(name)
 
@@ -12,7 +54,7 @@ def assert_tar_listing(name, actual, expected):
         name = actual_listing,
         srcs = [actual],
         outs = ["_{}.listing".format(name)],
-        cmd = "cat $(execpath {}) | $(BSDTAR_BIN) -cf $@ --format=mtree --options '!nlink' @-".format(actual),
+        cmd = "cat $(execpath {}) | $(BSDTAR_BIN) -tf - > $@".format(actual),
         toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
     )
 
