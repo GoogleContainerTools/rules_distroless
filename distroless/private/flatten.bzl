@@ -12,12 +12,12 @@ def _flatten_impl(ctx):
 
     args = ctx.actions.args()
     args.add(bsdtar.tarinfo.binary)
-    args.add(output if ctx.attr.deduplicate else "-")
+    args.add(str(ctx.attr.deduplicate))
     args.add_all(tar_lib.DEFAULT_ARGS)
     args.add("--create")
     tar_lib.common.add_compression_args(ctx.attr.compress, args)
     tar_lib.add_default_compression_args(ctx.attr.compress, args)
-    args.add("--file", "-" if ctx.attr.deduplicate else output)
+    args.add("--file", output)
     args.add_all(ctx.files.tars, format_each = "@%s")
 
     ctx.actions.run(
@@ -26,6 +26,8 @@ def _flatten_impl(ctx):
         outputs = [output],
         tools = bsdtar.default.files,
         arguments = [args],
+        mnemonic = "Flatten",
+        progress_message = "Flattening %{label}}",
     )
 
     return [

@@ -65,7 +65,7 @@ oci_image(
     tags = ["manual"],
     tars = [
         # This target contains all the installed packages.
-        "@bullseye//:bullseye",
+        "@bullseye//:flat",
         ":sh",
         ":passwd",
         ":group",
