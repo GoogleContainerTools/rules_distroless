@@ -10,11 +10,12 @@ def _fetch_package_index(rctx, url, dist, comp, arch, integrity):
     #  --keep       -> keep the original file (Bazel might be still committing the output to the cache)
     #  --force      -> overwrite the output if it exists
     #  --decompress -> decompress
+    # Order of these matter, we want to try the one that is most likely first.
     supported_extensions = {
-        "": ["true"],
         ".xz": ["xz", "--decompress", "--keep", "--force"],
         ".gz": ["gzip", "--decompress", "--keep", "--force"],
         ".bz2": ["bzip2", "--decompress", "--keep", "--force"],
+        "": ["true"],
     }
 
     failed_attempts = []

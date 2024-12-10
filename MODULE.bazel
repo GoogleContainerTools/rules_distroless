@@ -29,7 +29,7 @@ use_repo(bazel_lib_toolchains, "yq_windows_amd64")
 bazel_dep(name = "gazelle", version = "0.34.0", dev_dependency = True, repo_name = "bazel_gazelle")
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.1.2", dev_dependency = True)
-bazel_dep(name = "rules_oci", version = "2.0.0-rc0", dev_dependency = True)
+bazel_dep(name = "rules_oci", version = "2.0.0", dev_dependency = True)
 bazel_dep(name = "container_structure_test", version = "1.16.0", dev_dependency = True)
 bazel_dep(name = "bazel_features", version = "1.20.0", dev_dependency = True)
 
@@ -72,18 +72,13 @@ apt.install(
     nolock = True,
 )
 apt.install(
-    name = "apt_security",
-    manifest = "//examples/debian_snapshot_security:security.yaml",
-    nolock = True,
-)
-apt.install(
-    name = "shared_dependencies",
-    lock = "//examples/debian_shared_dependencies:bullseye.lock.json",
-    manifest = "//examples/debian_shared_dependencies:bullseye.yaml",
-)
-apt.install(
     name = "noble",
     lock = "//examples/ubuntu_snapshot:noble.lock.json",
     manifest = "//examples/ubuntu_snapshot:noble.yaml",
 )
-use_repo(apt, "apt_security", "apt_security_resolve", "bullseye", "bullseye_nolock", "noble", "shared_dependencies")
+apt.install(
+    name = "resolution_test",
+    manifest = "apt/tests/resolution/security.yaml",
+    nolock = True,
+)
+use_repo(apt, "bullseye", "bullseye_nolock", "noble", "resolution_test", "resolution_test_resolve")

@@ -11,11 +11,11 @@ version: 1
 
 sources:
   - channel: bullseye main contrib
-    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z
+    url: https://snapshot.debian.org/archive/debian/20240210T223313Z
   - channel: bullseye-security main
-    url: https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z
+    url: https://snapshot.debian.org/archive/debian-security/20240210T223313Z
   - channel: bullseye-updates main
-    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/
+    url: https://snapshot.debian.org/archive/debian/20240210T223313Z/
 
 archs:
   - "amd64"
@@ -25,13 +25,12 @@ packages:
   - "ncurses-base"
   - "libncurses6"
   - "tzdata"
-  - "coreutils" # for commands like `ls`
-  # for apt list --installed
+  - "coreutils"
   - "dpkg"
   - "apt"
   - "perl"
-  # test cacerts() compatibility
   - "ca-certificates"
-  # test multiple components: contrib
   - "nvidia-kernel-common"
   - "bash"
+  - "nginx-full"
+  - "nginx-core"

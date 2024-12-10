@@ -2,11 +2,11 @@
 set -o pipefail -o errexit
 
 bsdtar="$1";
-output="$2";
+deduplicate="$2";
 shift 2;
 
 # Deduplication requested, use this complex pipeline to deduplicate.
-if [[ "$output" != "-" ]]; then
+if [[ "$deduplicate" == "True" ]]; then
 
     mtree=$(mktemp)
 
@@ -33,7 +33,7 @@ if [[ "$output" != "-" ]]; then
     # number of occurrences of each path, and the second pass determines whether each entry is the final (or only)
     # occurrence of that path.
 
-    $bsdtar --confirmation "$@" > $output 2< <(awk '{
+    $bsdtar --confirmation "$@" 2< <(awk '{
         count[$1]++;
         files[NR] = $1
     }
@@ -52,5 +52,5 @@ if [[ "$output" != "-" ]]; then
     rm "$mtree"
 else 
     # No deduplication, business as usual
-    $bsdtar $@
+    $bsdtar "$@"
 fi
