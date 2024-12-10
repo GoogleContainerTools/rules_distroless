@@ -15,3 +15,33 @@ assert_contains(
     actual = ":pick_libuuid_version",
     expected = "2.38.1-5+deb12u1",
 )
+
+jq(
+    name = "pick_quake_arch",
+    srcs = [
+        "@arch_all_test_resolve//:lockfile",
+    ],
+    args = ["-rj"],
+    filter = '.packages | map(select(.name == "quake")) | .[0].arch',
+)
+
+assert_contains(
+    name = "test_quake_arch",
+    actual = ":pick_quake_arch",
+    expected = "all",
+)
+
+jq(
+    name = "pick_quake_version",
+    srcs = [
+        "@arch_all_test_resolve//:lockfile",
+    ],
+    args = ["-rj"],
+    filter = '.packages | map(select(.name == "quake")) | .[0].version',
+)
+
+assert_contains(
+    name = "test_quake_version",
+    actual = ":pick_quake_version",
+    expected = "73",
+)

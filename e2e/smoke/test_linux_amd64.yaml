@@ -26,3 +26,7 @@ commandTests:
     command: "head"
     args: ["-1", "/etc/ssl/certs/ca-certificates.crt"]
     expectedOutput: [-----BEGIN CERTIFICATE-----]
+  - name: "in depth ca-certs check"
+    command: "/usr/bin/openssl"
+    args: ["s_client", "-connect", "www.google.com:443"]
+    expectedOutput: ["Verify return code: 0 .ok."]
