@@ -81,4 +81,9 @@ apt.install(
     manifest = "apt/tests/resolution/security.yaml",
     nolock = True,
 )
-use_repo(apt, "bullseye", "bullseye_nolock", "noble", "resolution_test", "resolution_test_resolve")
+apt.install(
+    name = "arch_all_test",
+    manifest = "apt/tests/resolution/arch_all.yaml",
+    nolock = True,
+)
+use_repo(apt, "arch_all_test", "arch_all_test_resolve", "bullseye", "bullseye_nolock", "noble", "resolution_test", "resolution_test_resolve")
