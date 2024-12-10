@@ -36,8 +36,8 @@ if [[ "$output" != "-" ]]; then
     $bsdtar --confirmation "$@" > $output 2< <(awk '{
         count[$1]++;
         files[NR] = $1
-     }
-     END {
+    }
+    END {
         ORS=""
         for (i=1; i<=NR; i++) {
             seen[files[i]]++
