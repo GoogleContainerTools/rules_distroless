@@ -45,22 +45,34 @@ load("@rules_distroless//distroless:defs.bzl", "flatten")
 
 exports_files(['packages.bzl'])
 
+# Map Debian architectures to platform CPUs.
+#
+# For more info on Debian architectures, see:
+#     * https://wiki.debian.org/SupportedArchitectures
+#     * https://wiki.debian.org/ArchitectureSpecificsMemo
+#     * https://www.debian.org/releases/stable/amd64/ch02s01.en.html#idm186
+#
+# For more info on Bazel's platforms CPUs see:
+#     * https://github.com/bazelbuild/platforms/blob/main/cpu/BUILD
 _ARCHITECTURE_MAP = {{
     "amd64": "x86_64",
-    "arm64": "aarch64",
-    "ppc64el": "ppc",
-    "mips64el": "mips64"
+    "arm64": "arm64",
+    "ppc64el": "ppc64le",
+    "mips64el": "mips64",
+    "s390x": "s390x",
+    "i386": "x86_32",
+    "armhf": "armv7e-mf",
+    "all": "all",
 }}
 
 _ARCHITECTURES = {architectures}
 
-# See officially supported platforms at https://www.debian.org/releases/stable/armel/ch02s01.en.html
 [
    config_setting(
     name = os + "_" + arch,
     constraint_values = [
        "@platforms//os:" + os,
-       "@platforms//cpu:" + (_ARCHITECTURE_MAP[arch] or arch),
+       "@platforms//cpu:" + _ARCHITECTURE_MAP[arch],
     ],
   )
   for os in ["linux"]
