@@ -1,5 +1,5 @@
 load("//distroless:defs.bzl", "java_keystore")
-load("//distroless/tests:asserts.bzl", "assert_jks_listing", "assert_tar_listing")
+load("//distroless/tests:asserts.bzl", "assert_jks_listing", "assert_tar_mtree")
 
 java_keystore(
     name = "java_keystore",
@@ -23,7 +23,7 @@ assert_jks_listing(
     expected = "expected.jks.output",
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_java_keystore",
     actual = "java_keystore",
     expected = """\

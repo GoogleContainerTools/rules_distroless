@@ -1,5 +1,5 @@
 load("//distroless:defs.bzl", "locale")
-load("//distroless/tests:asserts.bzl", "assert_tar_listing")
+load("//distroless/tests:asserts.bzl", "assert_tar_mtree")
 
 locale(
     name = "bullseye",
@@ -7,7 +7,7 @@ locale(
     package = "@example-bullseye-libc-bin//:data.tar.xz",
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_bullseye",
     actual = "bullseye",
     expected = """\
@@ -41,7 +41,7 @@ locale(
     package = "@example-bookworm-libc-bin//:data.tar.xz",
 )
 
-assert_tar_listing(
+assert_tar_mtree(
     name = "test_bookworm",
     actual = "bookworm",
     expected = """\

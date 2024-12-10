@@ -17,7 +17,6 @@ if [[ "$output" != "-" ]]; then
         fi
     done
 
-    
     # There not a lot happening here but there is still too many implicit knowledge.
     # 
     # When we run bsdtar, we ask for it to prompt every entry, in the same order we created above, the mtree.
@@ -29,21 +28,26 @@ if [[ "$output" != "-" ]]; then
     # See: https://github.com/libarchive/libarchive/blob/f745a848d7a81758cd9fcd49d7fd45caeebe1c3d/tar/util.c#L240
     # See: https://github.com/libarchive/libarchive/blob/f745a848d7a81758cd9fcd49d7fd45caeebe1c3d/tar/util.c#L216
     # 
-    # And finally we iterate over all the entries generating 31 bytes of interleaved 'Y' or 'N' date based on if 
-    # we came across the entry before, for directories the first occurrence is kept, and for files copies are 
-    # preserved.
+    # To match the extraction behavior of tar itself, we want to preserve only the final occurrence of each file
+    # and directory in the archive. To do this, we iterate over all the entries twice. The first pass computes the
+    # number of occurrences of each path, and the second pass determines whether each entry is the final (or only)
+    # occurrence of that path.
+
     $bsdtar --confirmation "$@" > $output 2< <(awk '{
-        if (substr($0,0,1) == "#") {
-            next;
-        }
         count[$1]++;
+        files[NR] = $1
+    }
+    END {
         ORS=""
-        keep="n"
-        if (count[$1] == 1 || $1 !~ "/$") {
-            keep="y"
+        for (i=1; i<=NR; i++) {
+            seen[files[i]]++
+            keep="n"
+            if (count[files[i]] == seen[files[i]]) {
+                keep="y"
+            }
+            for (j=0; j<31; j++) print keep
+            fflush()
         }
-        for (i=0;i<31;i++) print keep
-        fflush() 
     }' "$mtree")
     rm "$mtree"
 else 
