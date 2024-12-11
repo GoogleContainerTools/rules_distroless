@@ -44,8 +44,15 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
     for src in manifest["sources"]:
         distr, components = src["channel"].split(" ", 1)
         for comp in components.split(" "):
+            if "urls" in src:
+                urls = src["urls"]
+            elif "url" in src:
+                urls = [src["url"]]
+            else:
+                fail("Source missing 'url' or 'urls' field")
+
             sources.append((
-                src["url"],
+                urls,
                 distr,
                 comp,
             ))
