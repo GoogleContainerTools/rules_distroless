@@ -4,7 +4,9 @@ Bazel helper rules to aid with some of the steps needed to create a Linux /
 Debian installation. These rules are designed to replace commands such as
 `apt-get install`, `passwd`, `groupadd`, `useradd`, `update-ca-certificates`.
 
-> [!CAUTION] > `rules_distroless` is currently in beta and does not yet offer a stable
+> [!CAUTION]
+>
+> `rules_distroless` is currently in beta and does not yet offer a stable
 > Public API. However, many users are already successfully using it in
 > production environments. Check [Adopters](#adopters) to see who's already
 > using it.
@@ -14,8 +16,9 @@ Debian installation. These rules are designed to replace commands such as
 ## Bzlmod (Bazel 6+)
 
 > [!NOTE]
-> If you are using Bazel 6 you need to enable Bzlmod by adding `common --enable_bzlmod` to `.bazelrc`
-> If you are using Bazel 7+ [it's enabled by default].
+> If you are using Bazel 6 you need to enable Bzlmod by adding
+> `common --enable_bzlmod` to `.bazelrc` If you are using Bazel 7+
+> [it's enabled by default].
 
 Add the following to your `MODULE.bazel` file:
 
@@ -97,9 +100,9 @@ can use it to get rid of the warning.
 
 > [!CAUTION]
 > GitHub source archives don't have a strong guarantee on the sha256 stability.
-> Check Github's [Update on the future stability of source code archives and
->
-> > hashes] for more information.
+> Check Github's
+> [Update on the future stability of source code archives and hashes] for more
+> information.
 
 # Examples
 
@@ -153,12 +156,12 @@ formats other than `.deb`).
 > project or company name here!
 
 [it's enabled by default]: https://blog.bazel.build/2023/12/11/bazel-7-release.html#bzlmod
-[bazel central registry]: https://registry.bazel.build/modules/rules_distroless
+[Bazel Central Registry]: https://registry.bazel.build/modules/rules_distroless
 [`git_override`]: https://bazel.build/versions/6.0.0/rules/lib/globals#git_override
 [`archive_override`]: https://bazel.build/versions/6.0.0/rules/lib/globals#archive_override
 [`local_path_override`]: https://bazel.build/versions/6.0.0/rules/lib/globals#local_path_override
-[bzlmod migration guide]: https://bazel.build/external/migration
-[`rules_distroless` github releases page]: https://github.com/GoogleContainerTools/rules_distroless/releases
-[update on the future stability of source code archives and hashes]: https://github.blog/2023-02-21-update-on-the-future-stability-of-source-code-archives-and-hashes
-[google's `distroless` container images]: https://github.com/GoogleContainerTools/distroless
-[arize ai]: https://www.arize.com
+[Bzlmod migration guide]: https://bazel.build/external/migration
+[`rules_distroless` Github releases page]: https://github.com/GoogleContainerTools/rules_distroless/releases
+[Update on the future stability of source code archives and hashes]: https://github.blog/2023-02-21-update-on-the-future-stability-of-source-code-archives-and-hashes
+[Google's `distroless` container images]: https://github.com/GoogleContainerTools/distroless
+[Arize AI]: https://www.arize.com
