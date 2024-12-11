@@ -1,6 +1,7 @@
 "deb_import"
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load(":pkg.bzl", "pkg")
 
 # BUILD.bazel template
 _DEB_IMPORT_BUILD_TMPL = '''
@@ -52,6 +53,9 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 '''
+
+def make_deb_import_key(repo_name, package):
+    return "{}_{}".format(repo_name, pkg.key(package))
 
 def deb_import(**kwargs):
     http_archive(

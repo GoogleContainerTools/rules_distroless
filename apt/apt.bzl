@@ -126,8 +126,10 @@ def _apt_install(
     )
 
     if not lock and not nolock:
-        # buildifier: disable=print
-        print("\nNo lockfile was given, please run `bazel run @%s//:lock` to create the lockfile." % name)
+        print(
+            "\nNo lockfile was given. To create one please run " +
+            "`bazel run @{}//:lock`".format(name),
+        )
 
     _deb_translate_lock(
         name = name,
