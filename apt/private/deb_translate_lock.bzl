@@ -1,6 +1,5 @@
 "repository rule for generating a dependency graph from a lockfile."
 
-load("@bazel_skylib//lib:new_sets.bzl", "sets")
 load(":lockfile.bzl", "lockfile")
 load(":starlark_codegen_utils.bzl", "starlark_codegen_utils")
 load(":util.bzl", "util")
