@@ -1,6 +1,7 @@
 "repository rule for generating a dependency graph from a lockfile."
 
 load("@bazel_skylib//lib:new_sets.bzl", "sets")
+load(":deb_import.bzl", "make_deb_import_key")
 load(":lockfile.bzl", "lockfile")
 load(":starlark_codegen_utils.bzl", "starlark_codegen_utils")
 load(":util.bzl", "util")
@@ -127,48 +128,44 @@ def _deb_translate_lock_impl(rctx):
     if not lock_content:
         package_defs = [_DEB_IMPORT_HEADER_TMPL.format(rctx.attr.name)]
 
-        if len(lockf.packages()) < 1:
+        if not lockf.packages():
             package_defs.append("   pass")
 
     # TODO: rework lockfile to include architecure information
     architectures = sets.make()
     packages = sets.make()
 
-    for (package) in lockf.packages():
-        package_key = lockfile.make_package_key(
-            package["name"],
-            package["version"],
-            package["arch"],
-        )
+    for package in lockf.packages():
+        deb_import_key = make_deb_import_key(rctx.attr.name, package)
 
-        sets.insert(architectures, package["arch"])
-        sets.insert(packages, package["name"])
+        sets.insert(architectures, package.arch)
+        sets.insert(packages, package.name)
 
         if not lock_content:
             package_defs.append(
                 _DEB_IMPORT_TMPL.format(
-                    name = "%s_%s" % (rctx.attr.name, package_key),
-                    package_name = package["name"],
-                    urls = [package["url"]],
-                    sha256 = package["sha256"],
+                    name = deb_import_key,
+                    package_name = package.name,
+                    urls = [package.url],
+                    sha256 = package.sha256,
                 ),
             )
 
-        repo_name = "%s%s_%s" % ("@" if lock_content else "", rctx.attr.name, package_key)
+        repo_name = "%s%s" % ("@" if lock_content else "", deb_import_key)
 
         rctx.file(
-            "%s/%s/BUILD.bazel" % (package["name"], package["arch"]),
+            "%s/%s/BUILD.bazel" % (package.name, package.arch),
             package_template.format(
-                target_name = package["arch"],
+                target_name = package.arch,
                 src = '"@%s//:data"' % repo_name,
                 deps = starlark_codegen_utils.to_list_attr([
-                    "//%s/%s" % (dep["name"], package["arch"])
-                    for dep in package["dependencies"]
+                    "//%s/%s" % (dep.name, package.arch)
+                    for dep in package.dependencies
                 ]),
-                urls = [package["url"]],
-                name = package["name"],
-                arch = package["arch"],
-                sha256 = package["sha256"],
+                urls = [package.url],
+                name = package.name,
+                arch = package.arch,
+                sha256 = package.sha256,
                 repo_name = "%s" % repo_name,
             ),
         )
@@ -176,15 +173,15 @@ def _deb_translate_lock_impl(rctx):
     # TODO: rework lockfile to include architecure information and merge these two loops
     for (package) in lockf.packages():
         rctx.file(
-            "%s/BUILD.bazel" % (package["name"]),
+            "%s/BUILD.bazel" % (package.name),
             _PACKAGE_TEMPLATE.format(
-                target_name = package["name"],
+                target_name = package.name,
                 data_targets = starlark_codegen_utils.to_dict_attr({
-                    "//:linux_%s" % arch: "//%s/%s" % (package["name"], arch)
+                    "//:linux_%s" % arch: "//%s/%s" % (package.name, package.arch)
                     for arch in architectures._values
                 }),
                 control_targets = starlark_codegen_utils.to_dict_attr({
-                    "//:linux_%s" % arch: "//%s/%s:control" % (package["name"], arch)
+                    "//:linux_%s" % arch: "//%s/%s:control" % (package.name, package.arch)
                     for arch in architectures._values
                 }),
             ),

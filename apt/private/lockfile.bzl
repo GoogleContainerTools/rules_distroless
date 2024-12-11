@@ -1,82 +1,119 @@
 "lock"
 
-load(":util.bzl", "util")
+load(":nested_dict.bzl", "nested_dict")
+load(":pkg.bzl", "pkg")
 
-def _make_package_key(name, version, arch):
-    return "%s_%s_%s" % (
-        util.sanitize(name),
-        util.sanitize(version),
-        arch,
+VERSION = 2
+
+def _empty():
+    return struct(version = VERSION, packages = nested_dict.new())
+
+def _add_package(lock, package, arch, dependencies_to_add = None):
+    dependencies_to_add = [
+        pkg.from_index(d, arch)
+        for d in dependencies_to_add or []
+    ]
+
+    # NOTE: sorting the dependencies makes the contents
+    # of the lock file stable and thus they diff better
+    dependencies_to_add = sorted(
+        dependencies_to_add,
+        key = lambda d: (d.name, d.version),
     )
 
-def _package_key(package, arch):
-    return _make_package_key(package["Package"], package["Version"], arch)
+    p = pkg.from_index(package, arch)
 
-def _add_package(lock, package, arch):
-    k = _package_key(package, arch)
-    if k in lock.fast_package_lookup:
-        return
-    lock.packages.append({
-        "key": k,
-        "name": package["Package"],
-        "version": package["Version"],
-        "url": "%s/%s" % (package["Root"], package["Filename"]),
-        "sha256": package["SHA256"],
-        "arch": arch,
-        "dependencies": [],
-    })
-    lock.fast_package_lookup[k] = len(lock.packages) - 1
+    for p_dep in dependencies_to_add:
+        pkg.add_dependency(p, p_dep)
+        lock.packages.set(keys = (p_dep.name, arch), value = p_dep)
 
-def _add_package_dependency(lock, package, dependency, arch):
-    k = _package_key(package, arch)
-    if k not in lock.fast_package_lookup:
-        fail("Broken state: %s is not in the lockfile." % package["Package"])
-    i = lock.fast_package_lookup[k]
-    lock.packages[i]["dependencies"].append(dict(
-        key = _package_key(dependency, arch),
-        name = dependency["Package"],
-        version = dependency["Version"],
-    ))
+    lock.packages.set(keys = (p.name, arch), value = p)
 
-def _has_package(lock, name, version, arch):
-    key = "%s_%s_%s" % (util.sanitize(name), util.sanitize(version), arch)
-    return key in lock.fast_package_lookup
+def _get_package(lock, package, arch):
+    p = pkg.from_index(package, arch)
+    return lock.packages.get(keys = (p.name, arch))
 
-def _create(rctx, lock):
+def _as_json(lock):
+    return json.encode_indent(
+        struct(
+            version = lock.version,
+            packages = lock.packages.as_dict(),
+        ),
+    )
+
+def _write(rctx, lock, out):
+    return rctx.file(out, _as_json(lock))
+
+def _packages(lock):
+    return [
+        package
+        for archs in lock.packages.values()
+        for package in archs.values()
+    ]
+
+def _new(rctx, lock = None):
+    lock = lock or _empty()
+
     return struct(
-        has_package = lambda *args, **kwargs: _has_package(lock, *args, **kwargs),
-        add_package = lambda *args, **kwargs: _add_package(lock, *args, **kwargs),
-        add_package_dependency = lambda *args, **kwargs: _add_package_dependency(lock, *args, **kwargs),
-        packages = lambda: lock.packages,
-        write = lambda out: rctx.file(out, json.encode_indent(struct(version = lock.version, packages = lock.packages))),
-        as_json = lambda: json.encode_indent(struct(version = lock.version, packages = lock.packages)),
+        version = lock.version,
+        packages = lambda: _packages(lock),
+        add_package = lambda package, arch, dependencies_to_add: _add_package(
+            lock,
+            package,
+            arch,
+            dependencies_to_add,
+        ),
+        get_package = lambda package, arch: _get_package(lock, package, arch),
+        as_json = lambda: _as_json(lock),
+        write = lambda out: _write(rctx, lock, out),
     )
 
-def _empty(rctx):
-    lock = struct(
-        version = 1,
-        packages = list(),
-        fast_package_lookup = dict(),
-    )
-    return _create(rctx, lock)
+def _from_lock_v1(lock_content):
+    if lock_content["version"] != 1:
+        fail("Invalid lockfile version: %s" % lock_content["version"])
 
-def _from_json(rctx, content):
-    lock = json.decode(content)
-    if lock["version"] != 1:
-        fail("invalid lockfile version")
+    lockv2 = _empty()
 
-    lock = struct(
-        version = lock["version"],
-        packages = lock["packages"],
-        fast_package_lookup = dict(),
-    )
-    for (i, package) in enumerate(lock.packages):
-        lock.packages[i] = package
-        lock.fast_package_lookup[package["key"]] = i
-    return _create(rctx, lock)
+    for package in lock_content["packages"]:
+        p = pkg.from_lock_v1(package)
+        lockv2.packages.set(keys = (p.name, p.arch), value = p)
+
+    return lockv2
+
+def _from_lock_v2(lock_content):
+    if lock_content["version"] != 2:
+        fail("Invalid lockfile version: %s" % lock_content["version"])
+
+    lockv2 = _empty()
+
+    for archs in lock_content["packages"].values():
+        for package in archs.values():
+            p = pkg.from_lock_v2(package)
+            lockv2.packages.set(keys = (p.name, p.arch), value = p)
+
+    return lockv2
+
+def _from_json(rctx, lock_content):
+    if lock_content["version"] == 2:
+        lock = _from_lock_v2(lock_content)
+    elif lock_content["version"] == 1:
+        print(
+            "\n\nAuto-converting lockfile format from v1 to v2. " +
+            "To permanently convert an existing lockfile please run " +
+            "`bazel run @<REPO>//:lock`\n\n",
+        )
+
+        lock = _from_lock_v1(lock_content)
+    else:
+        fail("Invalid lockfile version: %s" % lock_content["version"])
+
+    return _new(rctx, lock)
 
 lockfile = struct(
-    empty = _empty,
-    from_json = _from_json,
-    make_package_key = _make_package_key,
+    VERSION = VERSION,
+    new = lambda rctx: _new(rctx),
+    from_json = lambda rctx, lock_content: _from_json(rctx, json.decode(lock_content)),
+    __test__ = struct(
+        _from_json = _from_json,
+    ),
 )

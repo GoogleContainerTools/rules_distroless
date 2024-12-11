@@ -38,6 +38,8 @@ def _new():
         get = lambda keys, default_value = None: _get(store, keys, default_value),
         has = lambda keys: _get(store, keys, default_value = None) != None,
         clear = lambda: store.clear(),
+        values = lambda: store.values(),
+        as_dict = lambda: store,
     )
 
 nested_dict = struct(

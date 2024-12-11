@@ -26,6 +26,7 @@ bzl_library(
     srcs = ["deb_translate_lock.bzl"],
     visibility = ["//apt:__subpackages__"],
     deps = [
+        ":deb_import",
         ":lockfile",
         ":starlark_codegen_utils",
         "@bazel_skylib//lib:new_sets",
@@ -39,7 +40,16 @@ bzl_library(
     name = "lockfile",
     srcs = ["lockfile.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = [":util"],
+    deps = [":pkg"],
+)
+
+bzl_library(
+    name = "pkg",
+    srcs = ["pkg.bzl"],
+    visibility = ["//apt:__subpackages__"],
+    deps = [
+        ":util",
+    ],
 )
 
 bzl_library(
@@ -86,7 +96,10 @@ bzl_library(
     name = "deb_import",
     srcs = ["deb_import.bzl"],
     visibility = ["//apt:__subpackages__"],
-    deps = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
+    deps = [
+        ":pkg",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+    ],
 )
 
 bzl_library(

@@ -52,7 +52,7 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
 
     repository = deb_repository.new(rctx, sources = sources, archs = manifest["archs"])
     resolver = dependency_resolver.new(repository)
-    lockf = lockfile.empty(rctx)
+    lockf = lockfile.new(rctx)
 
     for arch in manifest["archs"]:
         dep_constraint_set = {}
@@ -78,11 +78,8 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
                 # buildifier: disable=print
                 util.warning(rctx, "Following dependencies could not be resolved for %s: %s" % (constraint["name"], ",".join([up[0] for up in unmet_dependencies])))
 
-            lockf.add_package(package, arch)
+            lockf.add_package(package, arch, dependencies)
 
-            for dep in dependencies:
-                lockf.add_package(dep, arch)
-                lockf.add_package_dependency(package, dep, arch)
     return lockf
 
 _BUILD_TMPL = """

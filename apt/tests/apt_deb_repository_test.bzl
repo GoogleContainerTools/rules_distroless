@@ -3,7 +3,7 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//apt/private:apt_deb_repository.bzl", "deb_repository")
 load("//apt/private:nested_dict.bzl", "nested_dict")
-load("//apt/tests:mocks.bzl", "mock")
+load("//apt/tests:mocks.bzl", "mock", "mock_value")
 load("//apt/tests:util.bzl", "test_util")
 
 _TEST_SUITE_PREFIX = "apt_deb_repository/"
@@ -32,7 +32,7 @@ def new_setup(pkgs = None):
     )
 
     return struct(
-        url = mock.URL,
+        url = mock_value.URL,
         dist = "bullseye",
         comp = "main",
         pkgs = pkgs,
