@@ -4,20 +4,17 @@ Bazel helper rules to aid with some of the steps needed to create a Linux /
 Debian installation. These rules are designed to replace commands such as
 `apt-get install`, `passwd`, `groupadd`, `useradd`, `update-ca-certificates`.
 
-> [!CAUTION]
-> `rules_distroless` is currently in beta and does not yet offer a stable
+> [!CAUTION] > `rules_distroless` is currently in beta and does not yet offer a stable
 > Public API. However, many users are already successfully using it in
 > production environments. Check [Adopters](#adopters) to see who's already
 > using it.
-
 
 # Usage
 
 ## Bzlmod (Bazel 6+)
 
 > [!NOTE]
-> If you are using Bazel 6 you need to enable Bzlmod by adding `common
-> --enable_bzlmod` to `.bazelrc`
+> If you are using Bazel 6 you need to enable Bzlmod by adding `common --enable_bzlmod` to `.bazelrc`
 > If you are using Bazel 7+ [it's enabled by default].
 
 Add the following to your `MODULE.bazel` file:
@@ -34,6 +31,7 @@ provides to override repos.
 
 You can use [`git_override`], [`archive_override`], etc (or
 [`local_path_override`] if you want to test a local patch):
+
 ```starlark
 bazel_dep(name = "rules_distroless", version = "0.3.9")
 
@@ -100,8 +98,8 @@ can use it to get rid of the warning.
 > [!CAUTION]
 > GitHub source archives don't have a strong guarantee on the sha256 stability.
 > Check Github's [Update on the future stability of source code archives and
-> hashes] for more information.
-
+>
+> > hashes] for more information.
 
 # Examples
 
@@ -124,7 +122,6 @@ We also have `distroless`-specific rules that could be useful:
 - [dpkg_statusd](/examples/statusd): creates a `/var/lib/dpkg/status.d`
   package database for scanners to discover installed packages.
 
-
 # Public API Docs
 
 To read more specific documentation for each of the rules in the repo please
@@ -136,8 +133,8 @@ check the following docs:
 - [rules](/docs/rules.md): various helper rules to aid with creating a Linux /
   Debian installation from scratch.
 
-
 # Contributing
+
 This ruleset is primarily funded to support [Google's `distroless` container
 images]. We may not work on feature requests that do not support this mission.
 
@@ -146,8 +143,8 @@ align with the project goals (e.g. add support for a different compression
 format) and may reject requests that do not (e.g. supporting other packaging
 formats other than `.deb`).
 
-
 # Adopters
+
 - [Google's `distroless` container images]
 - [Arize AI](https://www.arize.com)
 
@@ -155,14 +152,13 @@ formats other than `.deb`).
 > Are you using `rules_distroless`? Please send us a Pull Request to add your
 > project or company name here!
 
-
 [it's enabled by default]: https://blog.bazel.build/2023/12/11/bazel-7-release.html#bzlmod
-[Bazel Central Registry]: https://registry.bazel.build/modules/rules_distroless
+[bazel central registry]: https://registry.bazel.build/modules/rules_distroless
 [`git_override`]: https://bazel.build/versions/6.0.0/rules/lib/globals#git_override
 [`archive_override`]: https://bazel.build/versions/6.0.0/rules/lib/globals#archive_override
 [`local_path_override`]: https://bazel.build/versions/6.0.0/rules/lib/globals#local_path_override
-[Bzlmod migration guide]: https://bazel.build/external/migration
-[`rules_distroless` Github releases page]: https://github.com/GoogleContainerTools/rules_distroless/releases
-[Update on the future stability of source code archives and hashes]: https://github.blog/2023-02-21-update-on-the-future-stability-of-source-code-archives-and-hashes
-[Google's `distroless` container images]: https://github.com/GoogleContainerTools/distroless
-[Arize AI]: https://www.arize.com
+[bzlmod migration guide]: https://bazel.build/external/migration
+[`rules_distroless` github releases page]: https://github.com/GoogleContainerTools/rules_distroless/releases
+[update on the future stability of source code archives and hashes]: https://github.blog/2023-02-21-update-on-the-future-stability-of-source-code-archives-and-hashes
+[google's `distroless` container images]: https://github.com/GoogleContainerTools/distroless
+[arize ai]: https://www.arize.com

@@ -1,6 +1,5 @@
 "repository rule for generating a dependency graph from a lockfile."
 
-load("@bazel_skylib//lib:new_sets.bzl", "sets")
 load(":lockfile.bzl", "lockfile")
 load(":starlark_codegen_utils.bzl", "starlark_codegen_utils")
 load(":util.bzl", "util")
@@ -45,22 +44,34 @@ load("@rules_distroless//distroless:defs.bzl", "flatten")
 
 exports_files(['packages.bzl'])
 
+# Map Debian architectures to platform CPUs.
+#
+# For more info on Debian architectures, see:
+#     * https://wiki.debian.org/SupportedArchitectures
+#     * https://wiki.debian.org/ArchitectureSpecificsMemo
+#     * https://www.debian.org/releases/stable/amd64/ch02s01.en.html#idm186
+#
+# For more info on Bazel's platforms CPUs see:
+#     * https://github.com/bazelbuild/platforms/blob/main/cpu/BUILD
 _ARCHITECTURE_MAP = {{
     "amd64": "x86_64",
-    "arm64": "aarch64",
-    "ppc64el": "ppc",
-    "mips64el": "mips64"
+    "arm64": "arm64",
+    "ppc64el": "ppc64le",
+    "mips64el": "mips64",
+    "s390x": "s390x",
+    "i386": "x86_32",
+    "armhf": "armv7e-mf",
+    "all": "all",
 }}
 
 _ARCHITECTURES = {architectures}
 
-# See officially supported platforms at https://www.debian.org/releases/stable/armel/ch02s01.en.html
 [
    config_setting(
     name = os + "_" + arch,
     constraint_values = [
        "@platforms//os:" + os,
-       "@platforms//cpu:" + (_ARCHITECTURE_MAP[arch] or arch),
+       "@platforms//cpu:" + _ARCHITECTURE_MAP[arch],
     ],
   )
   for os in ["linux"]
@@ -80,19 +91,19 @@ _PACKAGES = {packages}
 # Creates /var/lib/dpkg/status with installed package information.
 dpkg_status(
     name = "dpkg_status",
-    controls = [
-        "//%s:control" % package
-        for package in _PACKAGES
-    ],
+    controls = select({{
+        "//:linux_%s" % arch: ["//%s:control" % package for package in packages]
+        for arch, packages in _PACKAGES.items()
+    }}),
     visibility = ["//visibility:public"],
 )
 
 filegroup(
     name = "packages",
-    srcs = [
-        "//%s" % package
-        for package in _PACKAGES
-    ],
+    srcs = select({{
+        "//:linux_%s" % arch: ["//%s" % package for package in packages]
+        for arch, packages in _PACKAGES.items()
+    }}),
     visibility = ["//visibility:public"],
 )
 
@@ -131,8 +142,8 @@ def _deb_translate_lock_impl(rctx):
             package_defs.append("   pass")
 
     # TODO: rework lockfile to include architecure information
-    architectures = sets.make()
-    packages = sets.make()
+    architectures = {}
+    packages = {}
 
     for (package) in lockf.packages():
         package_key = lockfile.make_package_key(
@@ -141,8 +152,13 @@ def _deb_translate_lock_impl(rctx):
             package["arch"],
         )
 
-        sets.insert(architectures, package["arch"])
-        sets.insert(packages, package["name"])
+        if package["arch"] not in architectures:
+            architectures[package["arch"]] = []
+        architectures[package["arch"]].append(package["name"])
+
+        if package["name"] not in packages:
+            packages[package["name"]] = []
+        packages[package["name"]].append(package["arch"])
 
         if not lock_content:
             package_defs.append(
@@ -174,18 +190,18 @@ def _deb_translate_lock_impl(rctx):
         )
 
     # TODO: rework lockfile to include architecure information and merge these two loops
-    for (package) in lockf.packages():
+    for package_name, package_archs in packages.items():
         rctx.file(
-            "%s/BUILD.bazel" % (package["name"]),
+            "%s/BUILD.bazel" % (package_name),
             _PACKAGE_TEMPLATE.format(
-                target_name = package["name"],
+                target_name = package_name,
                 data_targets = starlark_codegen_utils.to_dict_attr({
-                    "//:linux_%s" % arch: "//%s/%s" % (package["name"], arch)
-                    for arch in architectures._values
+                    "//:linux_%s" % arch: "//%s/%s" % (package_name, arch)
+                    for arch in package_archs
                 }),
                 control_targets = starlark_codegen_utils.to_dict_attr({
-                    "//:linux_%s" % arch: "//%s/%s:control" % (package["name"], arch)
-                    for arch in architectures._values
+                    "//:linux_%s" % arch: "//%s/%s:control" % (package_name, arch)
+                    for arch in package_archs
                 }),
             ),
         )
@@ -193,8 +209,8 @@ def _deb_translate_lock_impl(rctx):
     rctx.file("packages.bzl", "\n".join(package_defs))
     rctx.file("BUILD.bazel", _ROOT_BUILD_TMPL.format(
         target_name = util.get_repo_name(rctx.attr.name),
-        packages = starlark_codegen_utils.to_list_attr(packages._values),
-        architectures = starlark_codegen_utils.to_list_attr(architectures._values),
+        packages = starlark_codegen_utils.to_dict_list_attr(architectures),
+        architectures = starlark_codegen_utils.to_list_attr(architectures.keys()),
     ))
 
 deb_translate_lock = repository_rule(

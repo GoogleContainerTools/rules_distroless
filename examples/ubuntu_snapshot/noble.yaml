@@ -27,6 +27,7 @@ packages:
   - "tzdata"
   - "bash"
   - "coreutils" # for commands like `ls`
+  - "grep"
   # for apt list --installed
   - "dpkg"
   - "apt"

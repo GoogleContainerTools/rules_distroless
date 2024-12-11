@@ -11,12 +11,12 @@ version: 1
 
 sources:
   - channel: bullseye main contrib
-    url: https://snapshot.debian.org/archive/debian/20240210T223313Z
+    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z
   - channel: bullseye-security main
-    url: https://snapshot.debian.org/archive/debian-security/20240210T223313Z
+    url: https://snapshot-cloudflare.debian.org/archive/debian-security/20240210T223313Z
   - channel: bullseye-updates main
-    url: https://snapshot.debian.org/archive/debian/20240210T223313Z/
-  # This channel contains an uncompressed Packages file 
+    url: https://snapshot-cloudflare.debian.org/archive/debian/20240210T223313Z/
+  # This channel contains an uncompressed Packages file
   - channel: cloud-sdk main
     url: https://packages.cloud.google.com/apt
 
@@ -28,15 +28,13 @@ packages:
   - "ncurses-base"
   - "libncurses6"
   - "tzdata"
-  - "bash"
-  - "coreutils" # for commands like `ls`
-  # for apt list --installed
+  - "coreutils"
   - "dpkg"
   - "apt"
   - "perl"
-  # test cacerts() compatibility
   - "ca-certificates"
-  # test multiple components: contrib
   - "nvidia-kernel-common"
-  # test uncompressed Package
-  - google-cloud-cli
+  - "bash"
+  - "nginx-full"
+  - "nginx-core"
+  - "google-cloud-cli"
