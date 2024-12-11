@@ -3,7 +3,12 @@
 load("@aspect_bazel_lib//lib:docs.bzl", "stardoc_with_diff_test", "update_docs")
 load("@bazel_features//private:util.bzl", "ge")
 
-COMPATIBLE = ["@platforms//:incompatible"] if ge("8.0.0rc1") else []
+COMPATIBLE = ["@platforms//:incompatible"] if ge("8.0.0rc1") else select({
+    "@platforms//cpu:x86_64": ["@platforms//cpu:x86_64"],
+    "@platforms//cpu:arm64": ["@platforms//cpu:arm64"],
+}) + [
+    "@platforms//os:linux",
+]
 
 stardoc_with_diff_test(
     name = "rules",
