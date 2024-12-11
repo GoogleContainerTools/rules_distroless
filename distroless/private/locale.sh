@@ -14,4 +14,6 @@ shift 4
 
 tmp=$(mktemp -d)
 "$bsdtar" -xf "$package_path" $@ -C "$tmp"
-"$bsdtar" -cf - $@ --format=mtree --options '!gname,!uname,!sha1,!nlink,!time' "@$package_path" |  sed 's/$/ time=0.0/' | "$bsdtar" --gzip --options 'gzip:!timestamp' -cf "$out" -C "$tmp/" @-
+"$bsdtar" -cf - $@ --format=mtree --options '!gname,!uname,!sha1,!nlink,!time' "@$package_path" |
+    sed 's/$/ time='"$time"'/' |
+    "$bsdtar" --gzip --options 'gzip:!timestamp' -cf "$out" -C "$tmp/" @-

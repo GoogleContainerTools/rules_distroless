@@ -1,6 +1,8 @@
 load("//distroless:defs.bzl", "locale")
 load("//distroless/tests:asserts.bzl", "assert_tar_mtree")
 
+EPOCH = 123
+
 locale(
     name = "bullseye",
     charset = "C.UTF-8",
@@ -39,6 +41,7 @@ assert_tar_mtree(
 locale(
     name = "bookworm",
     package = "@example-bookworm-libc-bin//:data.tar.xz",
+    time = str(EPOCH),
 )
 
 assert_tar_mtree(
@@ -46,26 +49,26 @@ assert_tar_mtree(
     actual = "bookworm",
     expected = """\
 #mtree
-./usr time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/locale time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/locale/C.utf8 time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/locale/C.utf8/LC_ADDRESS time=0.0 mode=644 gid=0 uid=0 type=file size=127
-./usr/lib/locale/C.utf8/LC_COLLATE time=0.0 mode=644 gid=0 uid=0 type=file size=1406
-./usr/lib/locale/C.utf8/LC_CTYPE time=0.0 mode=644 gid=0 uid=0 type=file size=353616
-./usr/lib/locale/C.utf8/LC_IDENTIFICATION time=0.0 mode=644 gid=0 uid=0 type=file size=258
-./usr/lib/locale/C.utf8/LC_MEASUREMENT time=0.0 mode=644 gid=0 uid=0 type=file size=23
-./usr/lib/locale/C.utf8/LC_MONETARY time=0.0 mode=644 gid=0 uid=0 type=file size=270
-./usr/lib/locale/C.utf8/LC_NAME time=0.0 mode=644 gid=0 uid=0 type=file size=62
-./usr/lib/locale/C.utf8/LC_NUMERIC time=0.0 mode=644 gid=0 uid=0 type=file size=50
-./usr/lib/locale/C.utf8/LC_PAPER time=0.0 mode=644 gid=0 uid=0 type=file size=34
-./usr/lib/locale/C.utf8/LC_TELEPHONE time=0.0 mode=644 gid=0 uid=0 type=file size=47
-./usr/lib/locale/C.utf8/LC_TIME time=0.0 mode=644 gid=0 uid=0 type=file size=3360
-./usr/lib/locale/C.utf8/LC_MESSAGES time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/lib/locale/C.utf8/LC_MESSAGES/SYS_LC_MESSAGES time=0.0 mode=644 gid=0 uid=0 type=file size=48
-./usr/share time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc/libc-bin time=0.0 mode=755 gid=0 uid=0 type=dir
-./usr/share/doc/libc-bin/copyright time=0.0 mode=644 gid=0 uid=0 type=file size=25467
-""",
+./usr time={time}.0 mode=755 gid=0 uid=0 type=dir
+./usr/lib time={time}.0 mode=755 gid=0 uid=0 type=dir
+./usr/lib/locale time={time}.0 mode=755 gid=0 uid=0 type=dir
+./usr/lib/locale/C.utf8 time={time}.0 mode=755 gid=0 uid=0 type=dir
+./usr/lib/locale/C.utf8/LC_ADDRESS time={time}.0 mode=644 gid=0 uid=0 type=file size=127
+./usr/lib/locale/C.utf8/LC_COLLATE time={time}.0 mode=644 gid=0 uid=0 type=file size=1406
+./usr/lib/locale/C.utf8/LC_CTYPE time={time}.0 mode=644 gid=0 uid=0 type=file size=353616
+./usr/lib/locale/C.utf8/LC_IDENTIFICATION time={time}.0 mode=644 gid=0 uid=0 type=file size=258
+./usr/lib/locale/C.utf8/LC_MEASUREMENT time={time}.0 mode=644 gid=0 uid=0 type=file size=23
+./usr/lib/locale/C.utf8/LC_MONETARY time={time}.0 mode=644 gid=0 uid=0 type=file size=270
+./usr/lib/locale/C.utf8/LC_NAME time={time}.0 mode=644 gid=0 uid=0 type=file size=62
+./usr/lib/locale/C.utf8/LC_NUMERIC time={time}.0 mode=644 gid=0 uid=0 type=file size=50
+./usr/lib/locale/C.utf8/LC_PAPER time={time}.0 mode=644 gid=0 uid=0 type=file size=34
+./usr/lib/locale/C.utf8/LC_TELEPHONE time={time}.0 mode=644 gid=0 uid=0 type=file size=47
+./usr/lib/locale/C.utf8/LC_TIME time={time}.0 mode=644 gid=0 uid=0 type=file size=3360
+./usr/lib/locale/C.utf8/LC_MESSAGES time={time}.0 mode=755 gid=0 uid=0 type=dir
+./usr/lib/locale/C.utf8/LC_MESSAGES/SYS_LC_MESSAGES time={time}.0 mode=644 gid=0 uid=0 type=file size=48
+./usr/share time={time}.0 mode=755 gid=0 uid=0 type=dir
+./usr/share/doc time={time}.0 mode=755 gid=0 uid=0 type=dir
+./usr/share/doc/libc-bin time={time}.0 mode=755 gid=0 uid=0 type=dir
+./usr/share/doc/libc-bin/copyright time={time}.0 mode=644 gid=0 uid=0 type=file size=25467
+""".format(time = EPOCH),
 )
