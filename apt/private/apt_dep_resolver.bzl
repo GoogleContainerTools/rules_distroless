@@ -77,7 +77,6 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
 
         # If this package is not found but is not part of a dependency group, then add it to unmet dependencies.
         if not package:
-            key = "%s~~%s" % (name, version[1] if version else "")
             unmet_dependencies.append((name, version))
             continue
 
@@ -89,7 +88,7 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
         if i == 0:
             root_package = package
 
-        key = "%s~~%s" % (package["Package"], package["Version"])
+        key = package["Package"]
 
         # If we encountered package before in the transitive closure, skip it
         if key in already_recursed:
