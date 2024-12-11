@@ -16,7 +16,7 @@ sources:
     url: https://snapshot.debian.org/archive/debian-security/20240210T223313Z
   - channel: bullseye-updates main
     url: https://snapshot.debian.org/archive/debian/20240210T223313Z/
-  # This channel contains an uncompressed Packages file 
+  # This channel contains an uncompressed Packages file
   - channel: cloud-sdk main
     url: https://packages.cloud.google.com/apt
 
