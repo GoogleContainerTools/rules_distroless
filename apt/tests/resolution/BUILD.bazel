@@ -1,5 +1,6 @@
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_contains")
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 
 jq(
     name = "pick_libuuid_version",
@@ -44,4 +45,14 @@ assert_contains(
     name = "test_quake_version",
     actual = ":pick_quake_version",
     expected = "73",
+)
+
+build_test(
+    name = "build_clang",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
+    targets = [
+        "@clang//clang",
+    ],
 )

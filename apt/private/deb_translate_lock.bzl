@@ -154,11 +154,14 @@ def _deb_translate_lock_impl(rctx):
 
         if package["arch"] not in architectures:
             architectures[package["arch"]] = []
-        architectures[package["arch"]].append(package["name"])
+
+        if package["name"] not in architectures[package["arch"]]:
+            architectures[package["arch"]].append(package["name"])
 
         if package["name"] not in packages:
             packages[package["name"]] = []
-        packages[package["name"]].append(package["arch"])
+        if package["arch"] not in packages[package["name"]]:
+            packages[package["name"]].append(package["arch"])
 
         if not lock_content:
             package_defs.append(

@@ -27,7 +27,7 @@ def _flatten_impl(ctx):
         tools = bsdtar.default.files,
         arguments = [args],
         mnemonic = "Flatten",
-        progress_message = "Flattening %{label}}",
+        progress_message = "Flattening %{label}",
     )
 
     return [
