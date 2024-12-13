@@ -3,6 +3,13 @@ load("@container_structure_test//:defs.bzl", "container_structure_test")
 load("@rules_distroless//distroless:defs.bzl", "group", "passwd")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
 
+COMPATIBLE_WITH = select({
+    "@platforms//cpu:x86_64": ["@platforms//cpu:x86_64"],
+    "@platforms//cpu:arm64": ["@platforms//cpu:arm64"],
+}) + [
+    "@platforms//os:linux",
+]
+
 passwd(
     name = "passwd",
     entries = [
@@ -52,6 +59,10 @@ oci_image(
         "@platforms//cpu:x86_64": "amd64",
     }),
     os = "linux",
+    # NOTE: this is needed because, otherwise, bazel test //... fails, even
+    # when container_structure_test already has target_compatible_with.
+    # See 136
+    target_compatible_with = COMPATIBLE_WITH,
     tars = [
         ":sh",
         ":passwd",
@@ -66,6 +77,10 @@ oci_load(
     repo_tags = [
         "distroless/noble:latest",
     ],
+    # NOTE: this is needed because, otherwise, bazel test //... fails, even
+    # when container_structure_test already has target_compatible_with.
+    # See 136
+    target_compatible_with = COMPATIBLE_WITH,
 )
 
 container_structure_test(
@@ -75,10 +90,5 @@ container_structure_test(
         "@platforms//cpu:x86_64": ["test_linux_amd64.yaml"],
     }),
     image = ":noble",
-    target_compatible_with = select({
-        "@platforms//cpu:x86_64": ["@platforms//cpu:x86_64"],
-        "@platforms//cpu:arm64": ["@platforms//cpu:arm64"],
-    }) + [
-        "@platforms//os:linux",
-    ],
+    target_compatible_with = COMPATIBLE_WITH,
 )
