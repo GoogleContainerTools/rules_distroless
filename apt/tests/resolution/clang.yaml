@@ -11,6 +11,7 @@ sources:
     url: https://snapshot.ubuntu.com/ubuntu/20240301T030400Z
 archs:
   - "amd64"
+  - "arm64"
 
 packages:
   - "clang"
