@@ -121,6 +121,7 @@ def _apt_install(
     """
     _deb_resolve(
         name = name + "_resolve",
+        install_name = name,
         manifest = manifest,
         resolve_transitive = resolve_transitive,
     )

@@ -10,6 +10,10 @@ load(":version_constraint.bzl", "version_constraint")
 def _parse_manifest(rctx, yq_toolchain_prefix, manifest):
     is_windows = repo_utils.is_windows(rctx)
     host_yq = Label("@{}_{}//:yq{}".format(yq_toolchain_prefix, repo_utils.platform(rctx), ".exe" if is_windows else ""))
+
+    if hasattr(rctx, "watch"):
+        rctx.watch(manifest)
+
     yq_args = [
         str(rctx.path(host_yq)),
         str(rctx.path(manifest)),
@@ -120,7 +124,7 @@ def _deb_resolve_impl(rctx):
             # NOTE: the split("~") is needed when we run bazel from another
             # directory, e.g. when running e2e tests we change dir to e2e/smoke
             # and then rctx.name is 'rules_distroless~~apt~bullseye'
-            repo_name = rctx.name.split("~")[-1].replace("_resolve", ""),
+            repo_name = rctx.attr.install_name,
             lock_label = lock_label,
             workspace_relative_path = workspace_relative_path,
         ),
@@ -132,6 +136,7 @@ def _deb_resolve_impl(rctx):
 deb_resolve = repository_rule(
     implementation = _deb_resolve_impl,
     attrs = {
+        "install_name": attr.string(),
         "manifest": attr.label(),
         "resolve_transitive": attr.bool(default = True),
         "yq_toolchain_prefix": attr.string(default = "yq"),
