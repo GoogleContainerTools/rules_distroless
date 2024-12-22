@@ -92,14 +92,45 @@ def _parse_repository(state, contents, root):
             pkg = {}
 
 def _add_package(state, package):
-    util.set_dict(state.packages, value = package, keys = (package["Architecture"], package["Package"], package["Version"]))
+    util.set_dict(
+        state.packages,
+        value = package,
+        keys = (package["Architecture"], package["Package"], package["Version"]),
+    )
 
     # https://www.debian.org/doc/debian-policy/ch-relationships.html#virtual-packages-provides
     if "Provides" in package:
-        provides = version_constraint.parse_dep(package["Provides"])
-        vp = util.get_dict(state.virtual_packages, (package["Architecture"], provides["name"]), [])
-        vp.append((provides, package))
-        util.set_dict(state.virtual_packages, vp, (package["Architecture"], provides["name"]))
+        for virtual in version_constraint.parse_depends(package["Provides"]):
+            providers = util.get_dict(
+                state.virtual_packages,
+                (package["Architecture"], virtual["name"]),
+                [],
+            )
+
+            # If multiple versions of a package expose the same virtual package,
+            # we should only keep a single reference for the one with greater
+            # version.
+            for (i, (provider, provided_version)) in enumerate(providers):
+                if package["Package"] == provider["Package"] and (
+                    virtual["version"] == provided_version
+                ):
+                    if version_constraint.relop(
+                        package["Version"],
+                        provider["Version"],
+                        ">>",
+                    ):
+                        providers[i] = (package, virtual["version"])
+
+                    # Return since we found the same package + version.
+                    return
+
+            # Otherwise, first time encountering package.
+            providers.append((package, virtual["version"]))
+            util.set_dict(
+                state.virtual_packages,
+                providers,
+                (package["Architecture"], virtual["name"]),
+            )
 
 def _virtual_packages(state, name, arch):
     return util.get_dict(state.virtual_packages, [arch, name], [])
@@ -149,13 +180,17 @@ def _create_test_only():
         virtual_packages = dict(),
     )
 
+    def reset():
+        state.packages.clear()
+        state.virtual_packages.clear()
+
     return struct(
         package_versions = lambda **kwargs: _package_versions(state, **kwargs),
         virtual_packages = lambda **kwargs: _virtual_packages(state, **kwargs),
         package = lambda **kwargs: _package(state, **kwargs),
         parse_repository = lambda contents: _parse_repository(state, contents, "http://nowhere"),
         packages = state.packages,
-        reset = lambda: state.packages.clear(),
+        reset = reset,
     )
 
 DO_NOT_DEPEND_ON_THIS_TEST_ONLY = struct(

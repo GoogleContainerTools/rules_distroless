@@ -185,37 +185,71 @@ resolve_architecture_specific_packages_test = unittest.make(_resolve_architectur
 def _resolve_aliases(ctx):
     env = unittest.begin(ctx)
 
-    idx = _make_index()
+    def with_package(**kwargs):
+        def add_package(idx):
+            idx.add_package(**kwargs)
 
-    idx.add_package(package = "foo", depends = "bar (>= 1.0)")
-    idx.add_package(package = "bar", version = "0.9")
-    idx.add_package(package = "bar-plus", provides = "bar (= 1.0)")
+        return add_package
 
-    (root_package, dependencies, _) = idx.resolution.resolve_all(
-        name = "foo",
-        version = ("=", _test_version),
-        arch = "amd64",
-    )
-    asserts.equals(env, "foo", root_package["Package"])
-    asserts.equals(env, "amd64", root_package["Architecture"])
-    asserts.equals(env, "bar-plus", dependencies[0]["Package"])
-    asserts.equals(env, 1, len(dependencies))
-    idx.reset()
+    def check_resolves(with_packages, resolved_name):
+        idx = _make_index()
 
-    idx.add_package(package = "foo", depends = "bar (>= 1.0)")
-    idx.add_package(package = "bar", version = "0.9")
-    idx.add_package(package = "bar-plus", provides = "bar (= 1.0)")
-    idx.add_package(package = "bar-clone", provides = "bar")
+        for package in with_packages:
+            package(idx)
 
-    (root_package, dependencies, _) = idx.resolution.resolve_all(
-        name = "foo",
-        version = ("=", _test_version),
-        arch = "amd64",
-    )
-    asserts.equals(env, "foo", root_package["Package"])
-    asserts.equals(env, "amd64", root_package["Architecture"])
-    asserts.equals(env, "bar-plus", dependencies[0]["Package"])
-    asserts.equals(env, 1, len(dependencies))
+        (root_package, dependencies, _) = idx.resolution.resolve_all(
+            name = "foo",
+            version = ("=", _test_version),
+            arch = "amd64",
+        )
+        asserts.equals(env, "foo", root_package["Package"])
+        asserts.equals(env, "amd64", root_package["Architecture"])
+
+        if resolved_name:
+            asserts.equals(env, 1, len(dependencies))
+            asserts.equals(env, resolved_name, dependencies[0]["Package"])
+        else:
+            asserts.equals(env, 0, len(dependencies))
+
+    # Version match
+    check_resolves([
+        with_package(package = "foo", depends = "bar (>= 1.0)"),
+        with_package(package = "bar", version = "0.9"),
+        with_package(package = "bar-plus", provides = "bar (= 1.0)"),
+    ], resolved_name = "bar-plus")
+
+    # Version match, ignores un-versioned
+    check_resolves([
+        with_package(package = "foo", depends = "bar (>= 1.0)"),
+        with_package(package = "bar", version = "0.9"),
+        with_package(package = "bar-plus", provides = "bar (= 1.0)"),
+        with_package(package = "bar-clone", provides = "bar"),
+    ], resolved_name = "bar-plus")
+
+    # Un-versioned match
+    check_resolves([
+        with_package(package = "foo", depends = "bar"),
+        with_package(package = "bar-plus", provides = "bar"),
+    ], resolved_name = "bar-plus")
+
+    # Un-versioned match, multiple provides
+    check_resolves([
+        with_package(package = "foo", depends = "bar"),
+        with_package(package = "bar-plus", provides = "bar, baz"),
+    ], resolved_name = "bar-plus")
+
+    # Un-versioned match, versioned provides
+    check_resolves([
+        with_package(package = "foo", depends = "bar"),
+        with_package(package = "bar-plus", provides = "bar (= 1.0)"),
+    ], resolved_name = "bar-plus")
+
+    # Un-versioned does not match with multiple candidates
+    check_resolves([
+        with_package(package = "foo", depends = "bar"),
+        with_package(package = "bar-plus", provides = "bar"),
+        with_package(package = "bar-plus2", provides = "bar"),
+    ], resolved_name = None)
 
     return unittest.end(env)
 

@@ -6,13 +6,40 @@ load(":version_constraint.bzl", "version_constraint")
 def _resolve_package(state, name, version, arch):
     # First check if the constraint is satisfied by a virtual package
     virtual_packages = state.repository.virtual_packages(name = name, arch = arch)
-    for (provides, package) in virtual_packages:
-        provided_version = provides["version"]
-        if not provided_version and version:
-            continue
-        if provided_version and version:
-            if version_constraint.is_satisfied_by(version, provided_version):
+
+    candidates = [
+        package
+        for (package, provided_version) in virtual_packages
+        # If no version constraint, all candidates are acceptable.
+        # else, only candidates matching is_satisfied_by are acceptable.
+        if not version or (
+            provided_version and version_constraint.is_satisfied_by(version, provided_version)
+        )
+    ]
+
+    if len(candidates) == 1:
+        return candidates[0]
+
+    if len(candidates) > 1:
+        for package in candidates:
+            # Return 'required' packages immediately since it is implicit that
+            # they should exist on a default debian install.
+            # https://wiki.debian.org/Proposals/EssentialOnDiet.
+            #
+            # Packages would ideally specify a default through an alternative:
+            #
+            #  Depends: mawk | awk
+            #
+            # In the case of required packages, these defaults are not specified.
+            if "Priority" in package and package["Priority"] == "required":
                 return package
+
+        # Otherwise, we can't disambiguate the virtual package providers so
+        # choose none and warn.
+        print("Multiple candidates for virtual package '{}': {}".format(
+            name,
+            [package["Package"] for package in candidates],
+        ))
 
     # Get available versions of the package
     versions_by_arch = state.repository.package_versions(name = name, arch = arch)
@@ -66,7 +93,7 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
         (name, version, dependency_group_idx) = stack.pop()
 
         # If this iteration is part of a dependency group, and the dependency group is already met, then skip this iteration.
-        if dependency_group_idx > -1 and dependency_group[dependency_group_idx]:
+        if dependency_group_idx > -1 and dependency_group[dependency_group_idx][0]:
             continue
 
         package = _resolve_package(state, name, version, arch)
@@ -82,7 +109,7 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
 
         # If this package was requested as part of a dependency group, then mark it's group as `dependency met`
         if dependency_group_idx > -1:
-            dependency_group[dependency_group_idx] = True
+            dependency_group[dependency_group_idx] = (True, dependency_group[dependency_group_idx][1])
 
         # set the root package, if this is the first iteration
         if i == 0:
@@ -113,13 +140,20 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
             if type(dep) == "list":
                 # create a dependency group
                 new_dependency_group_idx = len(dependency_group)
-                dependency_group.append(False)
-                for gdep in dep:
+                dependency_group.append((False, " | ".join([p["name"] for p in dep])))
+
+                # Dependencies should be searched left to right, given it is a
+                # stack it means we need to push in reverse order.
+                for gdep in reversed(dep):
                     # TODO: arch
                     stack.append((gdep["name"], gdep["version"], new_dependency_group_idx))
             else:
                 # TODO: arch
                 stack.append((dep["name"], dep["version"], -1))
+
+    for (met, dep) in dependency_group:
+        if not met:
+            unmet_dependencies.append((dep, None))
 
     return (root_package, dependencies, unmet_dependencies)
 
