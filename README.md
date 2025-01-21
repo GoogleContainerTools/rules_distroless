@@ -4,10 +4,23 @@ Bazel helper rules to aid with some of the steps needed to create a Linux /
 Debian installation. These rules are designed to replace commands such as
 `apt-get install`, `passwd`, `groupadd`, `useradd`, `update-ca-certificates`.
 
-> [!CAUTION] > `rules_distroless` is currently in beta and does not yet offer a stable
+> `rules_distroless` is currently in beta and does not yet offer a stable
 > Public API. However, many users are already successfully using it in
 > production environments. Check [Adopters](#adopters) to see who's already
 > using it.
+
+# Contributing
+
+This ruleset is primarily funded to support [Google's `distroless` container
+images]. We may not work on feature requests that do not support this mission.
+
+We will however accept fully tested contributions via pull requests if they
+align with the project goals (e.g. add support for a different compression
+format) and may reject requests that do not (e.g. supporting other packaging
+formats other than `.deb`).
+
+> There's limited maintainer time for this project, so we strongly encourage focused, small, and readable Pull Requests.
+
 
 # Usage
 
@@ -50,56 +63,8 @@ git_override(
 > in Bazel 9 (late 2025). Please migrate to Bzlmod following the steps in the
 > [Bzlmod migration guide].
 
-Add the following to your `WORKSPACE` file:
-
-```starlark
-REPO = "https://github.com/GoogleContainerTools/rules_distroless"
-
-VERSION = "0.3.8"
-SHA256 = "6d1d739617e48fc3579781e694d3fabb08fc6c9300510982c01882732c775b8e"
-URL = "{repo}/releases/download/v{v}/rules_distroless-v{v}.tar.gz".format(repo=REPO, v=VERSION)
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-http_archive(
-    name = "rules_distroless",
-    sha256 = SHA256,
-    strip_prefix = "rules_distroless-{}".format(VERSION),
-    url = URL,
-)
-```
-
 You can find the latest release in the [`rules_distroless` Github releases
 page].
-
-If you want to use a specific commit (e.g. there are commits in `main` that are
-still not part of a release) you can change the Github URL pointing it to a
-Github archive, as follows:
-
-```starlark
-REPO = "https://github.com/GoogleContainerTools/rules_distroless"
-
-COMMIT = "6ccc0307f618e67a9252bc6ce2112313c2c42b7f"
-SHA256 = ""
-URL = "{}/archive/{}.tar.gz".format(REPO, COMMIT)
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-http_archive(
-    name = "rules_distroless",
-    sha256 = SHA256,
-    strip_prefix = "rules_distroless-{}".format(COMMIT),
-    url = URL,
-)
-```
-
-Note that the `SHA256` is initially empty. This is the easiest way to get the
-correct value because Bazel will print a warning message with the hash so you
-can use it to get rid of the warning.
-
-> [!CAUTION]
-> GitHub source archives don't have a strong guarantee on the sha256 stability.
-> Check Github's [Update on the future stability of source code archives and
->
-> > hashes] for more information.
 
 # Examples
 
@@ -132,16 +97,6 @@ check the following docs:
   packages.
 - [rules](/docs/rules.md): various helper rules to aid with creating a Linux /
   Debian installation from scratch.
-
-# Contributing
-
-This ruleset is primarily funded to support [Google's `distroless` container
-images]. We may not work on feature requests that do not support this mission.
-
-We will however accept fully tested contributions via pull requests if they
-align with the project goals (e.g. add support for a different compression
-format) and may reject requests that do not (e.g. supporting other packaging
-formats other than `.deb`).
 
 # Adopters
 
