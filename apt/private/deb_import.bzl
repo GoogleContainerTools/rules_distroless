@@ -27,20 +27,25 @@ genrule(
     # Bazel needs the output filename to be fixed in advanced so we settle for
     # gzip compression.
 
-    data_file="$$(basename $<)"
+    data_file="$<"
+    layer="$@"
 
-    if [[ "$$data_file" == "data.tar.bz2" ]]; then
-      # TODO: support bz2
-      echo "ERROR: unsupported compression: bz2"
-      exit 1
-    elif [[ "$$data_file" == "data.tar.gz" ]]; then
-      mv $< $@
-    elif [[ "$$data_file" == "data.tar" ]]; then
-      $(ZSTD_BIN) --compress --format=gzip $< >$@
-    else
-      $(ZSTD_BIN) --force --decompress --stdout $< |
-      $(ZSTD_BIN) --compress --format=gzip - >$@
-    fi
+    case "$$data_file" in
+        *data.tar.gz)
+            mv "$$data_file" "$$layer"
+        ;;
+        *data.tar)
+            $(ZSTD_BIN) --compress --format=gzip "$$data_file" > "$$layer"
+        ;;
+        *data.tar.xz|*data.tar.zst|*data.tar.lzma)
+            $(ZSTD_BIN) --force --decompress --stdout "$$data_file" |
+            $(ZSTD_BIN) --compress --format=gzip - > "$$layer"
+        ;;
+        *)
+            echo "ERROR: data file not supported: $$data_file"
+            exit 1
+        ;;
+    esac
     """,
     toolchains = ["@zstd_toolchains//:resolved_toolchain"],
     visibility = ["//visibility:public"],
