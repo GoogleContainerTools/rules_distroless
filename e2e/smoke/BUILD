@@ -12,7 +12,14 @@ load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
 load("@container_structure_test//:defs.bzl", "container_structure_test")
 load("@rules_distroless//distroless:defs.bzl", "cacerts", "group", "passwd")
-load("@rules_oci//oci:defs.bzl", "oci_image")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+
+COMPATIBLE_WITH = select({
+    "@platforms//cpu:x86_64": ["@platforms//cpu:x86_64"],
+    "@platforms//cpu:arm64": ["@platforms//cpu:arm64"],
+}) + [
+    "@platforms//os:linux",
+]
 
 passwd(
     name = "passwd",
@@ -59,6 +66,7 @@ tar(
 cacerts(
     name = "cacerts",
     package = "@bullseye//ca-certificates:data",
+    target_compatible_with = COMPATIBLE_WITH,
 )
 
 oci_image(
@@ -72,7 +80,10 @@ oci_image(
         "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
     },
     os = "linux",
-    tags = ["manual"],
+    # NOTE: this is needed because, otherwise, bazel test //... fails, even
+    # when container_structure_test already has target_compatible_with.
+    # See 136
+    target_compatible_with = COMPATIBLE_WITH,
     tars = [
         # This target contains all the installed packages.
         "@bullseye//:flat",
@@ -108,13 +119,17 @@ platform_transition_filegroup(
     }),
 )
 
-# oci_load(
-#     name = "tarball",
-#     image = ":image_platform",
-#     repo_tags = [
-#         "distroless/test:latest",
-#     ],
-# )
+oci_load(
+    name = "tarball",
+    image = ":image_platform",
+    repo_tags = [
+        "distroless/test:latest",
+    ],
+    # NOTE: this is needed because, otherwise, bazel test //... fails, even
+    # when container_structure_test already has target_compatible_with.
+    # See 136
+    target_compatible_with = COMPATIBLE_WITH,
+)
 
 container_structure_test(
     name = "test",
@@ -123,10 +138,5 @@ container_structure_test(
         "@platforms//cpu:x86_64": ["test_linux_amd64.yaml"],
     }),
     image = ":image_platform",
-    target_compatible_with = select({
-        "@platforms//cpu:x86_64": ["@platforms//cpu:x86_64"],
-        "@platforms//cpu:arm64": ["@platforms//cpu:arm64"],
-    }) + [
-        "@platforms//os:linux",
-    ],
+    target_compatible_with = COMPATIBLE_WITH,
 )
