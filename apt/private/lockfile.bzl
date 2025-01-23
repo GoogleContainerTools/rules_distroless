@@ -20,7 +20,10 @@ def _add_package(lock, package, arch):
         "key": k,
         "name": package["Package"],
         "version": package["Version"],
-        "url": "%s/%s" % (package["Root"], package["Filename"]),
+        "urls": [
+            "%s/%s" % (root, package["Filename"])
+            for root in package["Roots"]
+        ],
         "sha256": package["SHA256"],
         "arch": arch,
         "dependencies": [],
@@ -71,6 +74,10 @@ def _from_json(rctx, content):
         fast_package_lookup = dict(),
     )
     for (i, package) in enumerate(lock.packages):
+        # TODO: only support urls before 1.0
+        if "url" in package:
+            package["urls"] = [package.pop("url")]
+
         lock.packages[i] = package
         lock.fast_package_lookup[package["key"]] = i
     return _create(rctx, lock)

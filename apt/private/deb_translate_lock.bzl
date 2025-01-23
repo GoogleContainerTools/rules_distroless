@@ -176,7 +176,7 @@ def _deb_translate_lock_impl(rctx):
                 _DEB_IMPORT_TMPL.format(
                     name = "%s_%s" % (rctx.attr.name, package_key),
                     package_name = package["name"],
-                    urls = [package["url"]],
+                    urls = package["urls"],
                     sha256 = package["sha256"],
                 ),
             )
@@ -194,7 +194,7 @@ def _deb_translate_lock_impl(rctx):
                     "//%s/%s" % (dep["name"], package["arch"])
                     for dep in package["dependencies"]
                 ]),
-                urls = [package["url"]],
+                urls = package["urls"],
                 name = package["name"],
                 arch = package["arch"],
                 sha256 = package["sha256"],

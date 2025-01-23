@@ -35,7 +35,7 @@ def _distroless_extension(module_ctx):
 
                 deb_import(
                     name = "%s_%s" % (install.name, package_key),
-                    urls = [package["url"]],
+                    urls = package["urls"],
                     sha256 = package["sha256"],
                 )
 
