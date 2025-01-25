@@ -36,7 +36,8 @@ def _resolve_package(state, name, version, arch):
 
         # Otherwise, we can't disambiguate the virtual package providers so
         # choose none and warn.
-        print("Multiple candidates for virtual package '{}': {}".format(
+        # buildifier: disable=print
+        print("\nMultiple candidates for virtual package '{}': {}".format(
             name,
             [package["Package"] for package in candidates],
         ))
