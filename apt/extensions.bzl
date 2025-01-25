@@ -41,7 +41,6 @@ def _distroless_extension(module_ctx):
 
             deb_resolve(
                 name = install.name + "_resolve",
-                install_name = install.name,
                 manifest = install.manifest,
                 resolve_transitive = install.resolve_transitive,
             )

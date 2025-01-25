@@ -121,10 +121,7 @@ def _deb_resolve_impl(rctx):
     rctx.file(
         "copy.sh",
         rctx.read(rctx.attr._copy_sh_tmpl).format(
-            # NOTE: the split("~") is needed when we run bazel from another
-            # directory, e.g. when running e2e tests we change dir to e2e/smoke
-            # and then rctx.name is 'rules_distroless~~apt~bullseye'
-            repo_name = rctx.attr.install_name,
+            repo_name = util.get_repo_name(rctx.name).replace("_resolve", ""),
             lock_label = lock_label,
             workspace_relative_path = workspace_relative_path,
         ),
@@ -136,7 +133,6 @@ def _deb_resolve_impl(rctx):
 deb_resolve = repository_rule(
     implementation = _deb_resolve_impl,
     attrs = {
-        "install_name": attr.string(),
         "manifest": attr.label(),
         "resolve_transitive": attr.bool(default = True),
         "yq_toolchain_prefix": attr.string(default = "yq"),
