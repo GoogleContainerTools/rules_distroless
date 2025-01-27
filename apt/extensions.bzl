@@ -68,7 +68,7 @@ def _distroless_extension(module_ctx):
     return module_ctx.extension_metadata(
         root_module_direct_deps = root_direct_deps,
         root_module_direct_dev_deps = root_direct_dev_deps,
-        **metadata_kwargs,
+        **metadata_kwargs
     )
 
 _install_doc = """
