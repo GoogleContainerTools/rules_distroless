@@ -30,6 +30,7 @@ bzl_library(
     srcs = ["extensions.bzl"],
     visibility = ["//visibility:public"],
     deps = [
+        "@bazel_features//:features",
         "//apt/private:deb_import",
         "//apt/private:deb_resolve",
         "//apt/private:deb_translate_lock",
