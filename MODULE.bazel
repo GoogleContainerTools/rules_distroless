@@ -10,6 +10,7 @@ bazel_dep(name = "platforms", version = "0.0.10")
 
 # Bazel 8 fails without a working version of protobuf
 bazel_dep(name = "protobuf", version = "29.0-rc2.bcr.1")
+bazel_dep(name = "bazel_features", version = "1.20.0")
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
 bazel_dep(name = "aspect_bazel_lib", version = "2.9.4")
 bazel_dep(name = "rules_java", version = "8.3.2")
@@ -31,7 +32,6 @@ bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependenc
 bazel_dep(name = "buildifier_prebuilt", version = "6.1.2", dev_dependency = True)
 bazel_dep(name = "rules_oci", version = "2.0.0", dev_dependency = True)
 bazel_dep(name = "container_structure_test", version = "1.16.0", dev_dependency = True)
-bazel_dep(name = "bazel_features", version = "1.20.0", dev_dependency = True)
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
