@@ -66,7 +66,10 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
     resolver = dependency_resolver.new(repository)
     lockf = lockfile.empty(rctx)
 
+    resolved_count = 0
+
     for arch in manifest["archs"]:
+        resolved_count = 0
         dep_constraint_set = {}
         for dep_constraint in manifest["packages"]:
             if dep_constraint in dep_constraint_set:
@@ -75,7 +78,7 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
 
             constraint = version_constraint.parse_depends(dep_constraint).pop()
 
-            rctx.report_progress("Resolving %s" % dep_constraint)
+            rctx.report_progress("Resolving %s for %s" % (dep_constraint, arch))
             (package, dependencies, unmet_dependencies) = resolver.resolve_all(
                 name = constraint["name"],
                 version = constraint["version"],
@@ -84,7 +87,7 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
             )
 
             if not package:
-                fail("Unable to locate package `%s`" % dep_constraint)
+                fail("Unable to locate package `%s` for architecture: %s. It may only exist for specific set of architectures." % (dep_constraint, arch))
 
             if len(unmet_dependencies):
                 # buildifier: disable=print
@@ -92,9 +95,13 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
 
             lockf.add_package(package, arch)
 
+            resolved_count += len(dependencies) + 1
+
             for dep in dependencies:
                 lockf.add_package(dep, arch)
                 lockf.add_package_dependency(package, dep, arch)
+
+        rctx.report_progress("Resolved %d packages for %s" % (resolved_count, arch))
     return lockf
 
 _BUILD_TMPL = """
