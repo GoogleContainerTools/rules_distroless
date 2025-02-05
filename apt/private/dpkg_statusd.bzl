@@ -7,22 +7,31 @@ _DOC = """TODO: docs"""
 
 def _dpkg_statusd_impl(ctx):
     bsdtar = ctx.toolchains[tar_lib.TOOLCHAIN_TYPE]
+    coreutils = ctx.toolchains["@aspect_bazel_lib//lib:coreutils_toolchain_type"]
 
     ext = tar_lib.common.compression_to_extension[ctx.attr.compression] if ctx.attr.compression else ".tar"
     output = ctx.actions.declare_file(ctx.attr.name + ext)
 
     args = ctx.actions.args()
     args.add(bsdtar.tarinfo.binary)
+    args.add(coreutils.coreutils_info.bin.path)
     args.add(output)
     args.add(ctx.file.control)
     args.add(ctx.attr.package_name)
     tar_lib.common.add_compression_args(ctx.attr.compression, args)
 
+    tools = depset(
+        transitive = [
+            bsdtar.default.files,
+            depset([coreutils.coreutils_info.bin]),
+        ]
+    )
+
     ctx.actions.run(
         executable = ctx.executable._dpkg_statusd_sh,
         inputs = [ctx.file.control],
         outputs = [output],
-        tools = bsdtar.default.files,
+        tools = tools,
         arguments = [args],
     )
 
@@ -50,5 +59,8 @@ dpkg_statusd = rule(
         ),
     },
     implementation = _dpkg_statusd_impl,
-    toolchains = [tar_lib.TOOLCHAIN_TYPE],
+    toolchains = [
+        tar_lib.TOOLCHAIN_TYPE,
+        "@aspect_bazel_lib//lib:coreutils_toolchain_type",
+    ],
 )
