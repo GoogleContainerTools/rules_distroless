@@ -122,7 +122,8 @@ def _resolve_all(state, name, version, arch, include_transitive = True):
         if key in already_recursed:
             continue
 
-        if i != 0:
+        # Do not add dependency if it's a root package to avoid circular dependency.
+        if i != 0 and key != root_package["Package"]:
             # Add it to the dependencies
             already_recursed[key] = True
             dependencies.append(package)
