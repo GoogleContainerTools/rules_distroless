@@ -13,13 +13,18 @@ mv "$tmp/usr/share/doc/ca-certificates/copyright" "$copyright_out"
 
 function add_cert () {
     local dir="$1"
-    for cert in $(ls -d -1 "$dir"/* | sort); do
-        if [[ -d "$cert" ]]; then
-            add_cert "$cert"
-            continue
-        fi
-        cat $cert >> $cacerts_out
-    done
+
+    if test -d "${dir}"; then
+        for cert in "${dir}"/*; do
+            if test -d "${cert}"; then
+                add_cert "${cert}"
+                continue
+            fi
+            while IFS= read -r IN; do
+                printf "%s\n" "${IN}" >> $cacerts_out
+            done <"${cert}"
+        done
+    fi
 }
 
 add_cert "$tmp/usr/share/ca-certificates"
