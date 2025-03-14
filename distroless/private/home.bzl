@@ -28,7 +28,7 @@ def home(name, dirs, **kwargs):
     tar(
         name = name,
         mtree = mtree.content(),
-        args = tar_lib.DEFAULT_ARGS + tar_lib.DEFAULT_COMPRESSION_ARGS["gzip"],
+        args = tar_lib.DEFAULT_ARGS,
         compress = "gzip",
         **kwargs
     )
