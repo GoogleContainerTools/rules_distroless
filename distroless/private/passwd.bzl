@@ -63,7 +63,7 @@ def passwd(name, entries, mode = "0644", time = "0.0", **kwargs):
         name = name,
         srcs = [":%s_content" % name],
         mtree = mtree.content(),
-        args = tar_lib.DEFAULT_ARGS + tar_lib.DEFAULT_COMPRESSION_ARGS["gzip"],
+        args = tar_lib.DEFAULT_ARGS,
         compress = "gzip",
         **common_kwargs
     )
