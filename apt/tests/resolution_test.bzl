@@ -255,10 +255,73 @@ def _resolve_aliases(ctx):
 
 resolve_aliases_test = unittest.make(_resolve_aliases)
 
+def _resolve_circular_deps_test(ctx):
+    env = unittest.begin(ctx)
+
+    idx = _make_index()
+
+    # `ruby` dependencies should have no `ruby`
+    idx.add_package(package = "libruby")
+    idx.add_package(package = "ruby3.1", depends = "ruby")
+    idx.add_package(package = "ruby-rubygems", depends = "ruby3.1")
+    idx.add_package(package = "ruby", depends = "libruby, ruby-rubygems")
+
+    (root_package, dependencies, _) = idx.resolution.resolve_all(
+        name = "ruby",
+        version = "",
+        arch = _test_arch,
+    )
+    asserts.equals(env, "ruby", root_package["Package"])
+    asserts.equals(env, "ruby-rubygems", dependencies[0]["Package"])
+    asserts.equals(env, 3, len(dependencies))
+    asserts.false(env, "ruby" in [d["Package"] for d in dependencies], "Circular `ruby` dependency")
+
+    return unittest.end(env)
+
+resolve_circular_deps_test = unittest.make(_resolve_circular_deps_test)
+
 _TEST_SUITE_PREFIX = "package_resolution/"
 
 def resolution_tests():
+    """Repository macro to create package resolution tests.
+
+    The tests cover:
+      - parse depend packages, e.g.,
+        ```
+        Package: gcc
+        Depends: gcc-i686-linux-gnu, gcc-x86-64-linux-gnu
+        ```
+      - resolve optional packages, e.g.,
+        ```
+        Package: libc6-dev-amd64
+        Depends: libc6-dev | libc-dev
+        ```
+      - resolve architecture specific packages, e.g.,
+        ```
+        Package: gcc:amd64
+        ```
+      - resolve aliases, e.g.,
+        ```
+        Package: foo
+        Depends: bar (>= 1.0)
+
+        Package: bar-plus
+        Provides: bar (= 1.0)
+        ```
+      - resolve circular dependencies, e.g.,
+        ```
+        Package: ruby
+        Depends: ruby-rubygems
+
+        Package: ruby-rubygems
+        Depends: ruby3.1
+
+        Package: ruby3.1
+        Depends: ruby
+        ```
+    """
     parse_depends_test(name = _TEST_SUITE_PREFIX + "parse_depends")
     resolve_optionals_test(name = _TEST_SUITE_PREFIX + "resolve_optionals")
     resolve_architecture_specific_packages_test(name = _TEST_SUITE_PREFIX + "resolve_architectures_specific")
     resolve_aliases_test(name = _TEST_SUITE_PREFIX + "resolve_aliases")
+    resolve_circular_deps_test(name = _TEST_SUITE_PREFIX + "parse_circular")
