@@ -55,16 +55,19 @@ def _create(rctx, lock):
         as_json = lambda: json.encode_indent(struct(version = lock.version, packages = lock.packages)),
     )
 
+_EMPTY_LOCK_DICT = dict(
+    version = 1,
+    packages = list(),
+    fast_package_lookup = dict(),
+)
+
 def _empty(rctx):
-    lock = struct(
-        version = 1,
-        packages = list(),
-        fast_package_lookup = dict(),
-    )
+    lock = struct(**_EMPTY_LOCK_DICT)
     return _create(rctx, lock)
 
 def _from_json(rctx, content):
-    lock = json.decode(content)
+    lock = json.decode(content) if content else _EMPTY_LOCK_DICT
+
     if lock["version"] != 1:
         fail("invalid lockfile version")
 
