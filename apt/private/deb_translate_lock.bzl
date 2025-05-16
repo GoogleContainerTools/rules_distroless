@@ -102,7 +102,7 @@ dpkg_status(
     controls = select({{
         "//:linux_%s" % arch: ["//%s:control" % package for package in packages]
         for arch, packages in _PACKAGES.items()
-    }}),
+    }}) if _PACKAGES else {{}},
     visibility = ["//visibility:public"],
 )
 
@@ -111,7 +111,7 @@ filegroup(
     srcs = select({{
         "//:linux_%s" % arch: ["//%s" % package for package in packages]
         for arch, packages in _PACKAGES.items()
-    }}),
+    }}) if _PACKAGES else {{}},
     visibility = ["//visibility:public"],
 )
 
