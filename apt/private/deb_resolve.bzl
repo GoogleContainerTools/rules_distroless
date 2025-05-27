@@ -105,6 +105,8 @@ def internal_resolve(rctx, yq_toolchain_prefix, manifest, include_transitive):
     return lockf
 
 _BUILD_TMPL = """
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
 filegroup(
     name = "lockfile",
     srcs = ["lock.json"],
