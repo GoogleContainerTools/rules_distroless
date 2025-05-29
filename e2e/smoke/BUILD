@@ -140,3 +140,33 @@ container_structure_test(
     image = ":image_platform",
     target_compatible_with = COMPATIBLE_WITH,
 )
+
+oci_image(
+    name = "noble",
+    architecture = select({
+        "@platforms//cpu:arm64": "arm64",
+        "@platforms//cpu:x86_64": "amd64",
+    }),
+    os = "linux",
+    target_compatible_with = COMPATIBLE_WITH,
+    tars = [
+        "@noble//:flat",
+    ],
+)
+
+platform_transition_filegroup(
+    name = "noble_target",
+    srcs = [":noble"],
+    target_platform = select({
+        "@platforms//cpu:arm64": ":linux_arm64",
+        "@platforms//cpu:x86_64": ":linux_amd64",
+    }),
+)
+
+oci_load(
+    name = "noble_tarball",
+    image = ":noble_target",
+    repo_tags = [
+        "distroless/test:latest",
+    ],
+)

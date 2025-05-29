@@ -21,6 +21,12 @@ apt.install(
     manifest = ":bullseye.yaml",
     nolock = True,
 )
+apt.install(
+    name = "noble",
+    lock = ":noble.lock.json",
+    manifest = ":noble.yaml",
+    mergedusr = True,
+)
 
 # bazel run @bullseye//:lock
-use_repo(apt, "bullseye", "bullseye_nolock")
+use_repo(apt, "bullseye", "bullseye_nolock", "noble")
