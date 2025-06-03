@@ -8,7 +8,7 @@ apt extensions
 
 <pre>
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
-apt.install(<a href="#apt.install-name">name</a>, <a href="#apt.install-lock">lock</a>, <a href="#apt.install-manifest">manifest</a>, <a href="#apt.install-nolock">nolock</a>, <a href="#apt.install-package_template">package_template</a>, <a href="#apt.install-resolve_transitive">resolve_transitive</a>)
+apt.install(<a href="#apt.install-name">name</a>, <a href="#apt.install-lock">lock</a>, <a href="#apt.install-manifest">manifest</a>, <a href="#apt.install-mergedusr">mergedusr</a>, <a href="#apt.install-nolock">nolock</a>, <a href="#apt.install-package_template">package_template</a>, <a href="#apt.install-resolve_transitive">resolve_transitive</a>)
 </pre>
 
 
@@ -110,6 +110,7 @@ https://snapshot.ubuntu.com.
 | <a id="apt.install-name"></a>name |  Name of the generated repository   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="apt.install-lock"></a>lock |  The lock file to use for the index.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
 | <a id="apt.install-manifest"></a>manifest |  The file used to generate the lock file   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
+| <a id="apt.install-mergedusr"></a>mergedusr |  Whether packges should be normalized following mergedusr conventions. Turning this on might fix the following error thrown by docker for ambigious paths: `duplicate of paths are supported.` For more context please see https://salsa.debian.org/md/usrmerge/-/raw/master/debian/README.Debian?ref_type=heads   | Boolean | optional |  `False`  |
 | <a id="apt.install-nolock"></a>nolock |  If you explicitly want to run without a lock, set it to `True` to avoid the DEBUG messages.   | Boolean | optional |  `False`  |
 | <a id="apt.install-package_template"></a>package_template |  (EXPERIMENTAL!) a template file for generated BUILD files.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
 | <a id="apt.install-resolve_transitive"></a>resolve_transitive |  Whether dependencies of dependencies should be resolved and added to the lockfile.   | Boolean | optional |  `True`  |

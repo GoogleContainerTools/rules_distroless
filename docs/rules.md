@@ -7,6 +7,8 @@ Public API re-exports
 ## cacerts
 
 <pre>
+load("@rules_distroless//distroless:defs.bzl", "cacerts")
+
 cacerts(<a href="#cacerts-name">name</a>, <a href="#cacerts-mode">mode</a>, <a href="#cacerts-package">package</a>, <a href="#cacerts-time">time</a>)
 </pre>
 
@@ -66,6 +68,8 @@ oci_image(
 ## flatten
 
 <pre>
+load("@rules_distroless//distroless:defs.bzl", "flatten")
+
 flatten(<a href="#flatten-name">name</a>, <a href="#flatten-compress">compress</a>, <a href="#flatten-deduplicate">deduplicate</a>, <a href="#flatten-tars">tars</a>)
 </pre>
 
@@ -87,6 +91,8 @@ Flatten multiple archives into single archive.
 ## java_keystore
 
 <pre>
+load("@rules_distroless//distroless:defs.bzl", "java_keystore")
+
 java_keystore(<a href="#java_keystore-name">name</a>, <a href="#java_keystore-certificates">certificates</a>, <a href="#java_keystore-mode">mode</a>, <a href="#java_keystore-time">time</a>)
 </pre>
 
@@ -110,6 +116,8 @@ Currently only public  X.509 are supported as part of the PUBLIC API contract.
 ## locale
 
 <pre>
+load("@rules_distroless//distroless:defs.bzl", "locale")
+
 locale(<a href="#locale-name">name</a>, <a href="#locale-charset">charset</a>, <a href="#locale-package">package</a>, <a href="#locale-time">time</a>)
 </pre>
 
@@ -153,7 +161,9 @@ locale(
 ## group
 
 <pre>
-group(<a href="#group-name">name</a>, <a href="#group-entries">entries</a>, <a href="#group-time">time</a>, <a href="#group-mode">mode</a>, <a href="#group-kwargs">kwargs</a>)
+load("@rules_distroless//distroless:defs.bzl", "group")
+
+group(<a href="#group-name">name</a>, <a href="#group-entries">entries</a>, <a href="#group-time">time</a>, <a href="#group-mode">mode</a>, <a href="#group-kwargs">**kwargs</a>)
 </pre>
 
 Create a group file from array of dicts.
@@ -178,7 +188,9 @@ https://www.ibm.com/docs/en/aix/7.2?topic=files-etcgroup-file#group_security__a2
 ## home
 
 <pre>
-home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#home-kwargs">kwargs</a>)
+load("@rules_distroless//distroless:defs.bzl", "home")
+
+home(<a href="#home-name">name</a>, <a href="#home-dirs">dirs</a>, <a href="#home-kwargs">**kwargs</a>)
 </pre>
 
 Create home directories with specific uid and gids.
@@ -198,7 +210,9 @@ Create home directories with specific uid and gids.
 ## os_release
 
 <pre>
-os_release(<a href="#os_release-name">name</a>, <a href="#os_release-content">content</a>, <a href="#os_release-path">path</a>, <a href="#os_release-mode">mode</a>, <a href="#os_release-time">time</a>, <a href="#os_release-kwargs">kwargs</a>)
+load("@rules_distroless//distroless:defs.bzl", "os_release")
+
+os_release(<a href="#os_release-name">name</a>, <a href="#os_release-content">content</a>, <a href="#os_release-path">path</a>, <a href="#os_release-mode">mode</a>, <a href="#os_release-time">time</a>, <a href="#os_release-kwargs">**kwargs</a>)
 </pre>
 
 Create an Operating System Identification file from a key, value dictionary.
@@ -224,7 +238,9 @@ https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 ## passwd
 
 <pre>
-passwd(<a href="#passwd-name">name</a>, <a href="#passwd-entries">entries</a>, <a href="#passwd-mode">mode</a>, <a href="#passwd-time">time</a>, <a href="#passwd-kwargs">kwargs</a>)
+load("@rules_distroless//distroless:defs.bzl", "passwd")
+
+passwd(<a href="#passwd-name">name</a>, <a href="#passwd-entries">entries</a>, <a href="#passwd-mode">mode</a>, <a href="#passwd-time">time</a>, <a href="#passwd-kwargs">**kwargs</a>)
 </pre>
 
 Create a passwd file from array of dicts.
