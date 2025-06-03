@@ -11,6 +11,8 @@ them and available to use in Bazel.
 ## apt.install
 
 <pre>
+load("@rules_distroless//apt:apt.bzl", "apt")
+
 apt.install(<a href="#apt.install-name">name</a>, <a href="#apt.install-manifest">manifest</a>, <a href="#apt.install-lock">lock</a>, <a href="#apt.install-nolock">nolock</a>, <a href="#apt.install-package_template">package_template</a>, <a href="#apt.install-resolve_transitive">resolve_transitive</a>)
 </pre>
 

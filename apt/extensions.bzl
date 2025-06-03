@@ -40,6 +40,7 @@ def _distroless_extension(module_ctx):
                     name = "%s_%s" % (install.name, package_key),
                     urls = package["urls"],
                     sha256 = package["sha256"],
+                    mergedusr = install.mergedusr,
                 )
 
             deb_resolve(
@@ -184,6 +185,12 @@ install = tag_class(
             doc = "Whether dependencies of dependencies should be " +
                   "resolved and added to the lockfile.",
             default = True,
+        ),
+        "mergedusr": attr.bool(
+            doc = "Whether packges should be normalized following mergedusr conventions.\n" +
+                  "Turning this on might fix the following error thrown by docker for ambigious paths: `duplicate of paths are supported.` \n" +
+                  "For more context please see https://salsa.debian.org/md/usrmerge/-/raw/master/debian/README.Debian?ref_type=heads",
+            default = False,
         ),
     },
     doc = _install_doc,
