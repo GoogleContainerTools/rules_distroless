@@ -80,8 +80,8 @@ apt.install(
 )
 apt.install(
     name = "resolution_test_empty_lock",
-    manifest = "apt/tests/resolution/security.yaml",
     lock = "//apt/tests/resolution:empty.lock.json",
+    manifest = "apt/tests/resolution/security.yaml",
 )
 apt.install(
     name = "arch_all_test",
@@ -93,4 +93,4 @@ apt.install(
     manifest = "apt/tests/resolution/clang.yaml",
     nolock = True,
 )
-use_repo(apt, "arch_all_test", "arch_all_test_resolve", "bullseye", "bullseye_nolock", "clang", "noble", "resolution_test", "resolution_test_resolve", "resolution_test_empty_lock_resolve")
+use_repo(apt, "arch_all_test", "arch_all_test_resolve", "bullseye", "bullseye_nolock", "clang", "noble", "resolution_test", "resolution_test_empty_lock_resolve", "resolution_test_resolve")
