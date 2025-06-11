@@ -64,6 +64,9 @@ def _empty(rctx):
     return _create(rctx, lock)
 
 def _from_json(rctx, content):
+    if not content:
+        return _empty(rctx)
+
     lock = json.decode(content)
     if lock["version"] != 1:
         fail("invalid lockfile version")
