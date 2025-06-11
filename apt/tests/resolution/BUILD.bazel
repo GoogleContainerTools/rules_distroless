@@ -18,6 +18,21 @@ assert_contains(
 )
 
 jq(
+    name = "pick_libuuid_version_empty_lock",
+    srcs = [
+        "@resolution_test_empty_lock_resolve//:lockfile",
+    ],
+    args = ["-rj"],
+    filter = '.packages | map(select(.name == "libuuid1")) | .[0].version',
+)
+
+assert_contains(
+    name = "test_libuuid_version_empty_lock",
+    actual = ":pick_libuuid_version_empty_lock",
+    expected = "2.38.1-5+deb12u1",
+)
+
+jq(
     name = "pick_quake_arch",
     srcs = [
         "@arch_all_test_resolve//:lockfile",
