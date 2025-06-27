@@ -1,7 +1,16 @@
 "https://wiki.debian.org/DebianRepository"
 
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "read_netrc", "read_user_netrc", "use_netrc")
 load(":util.bzl", "util")
 load(":version_constraint.bzl", "version_constraint")
+
+def _get_auth(ctx, urls):
+    """Given the list of URLs obtain the correct auth dict."""
+    if "NETRC" in ctx.os.environ:
+        netrc = read_netrc(ctx, ctx.os.environ["NETRC"])
+    else:
+        netrc = read_user_netrc(ctx)
+    return use_netrc(netrc, urls, {})
 
 def _fetch_package_index(rctx, urls, dist, comp, arch, integrity):
     target_triple = "{dist}/{comp}/{arch}".format(dist = dist, comp = comp, arch = arch)
@@ -21,16 +30,21 @@ def _fetch_package_index(rctx, urls, dist, comp, arch, integrity):
     failed_attempts = []
 
     url = None
+    base_auth = _get_auth(rctx, urls)
     for url in urls:
         download = None
         for (ext, cmd) in supported_extensions:
             output = "{}/Packages{}".format(target_triple, ext)
             dist_url = "{}/dists/{}/{}/binary-{}/Packages{}".format(url, dist, comp, arch, ext)
+            auth = {}
+            if url in base_auth:
+                auth = {dist_url: base_auth[url]}
             download = rctx.download(
                 url = dist_url,
                 output = output,
                 integrity = integrity,
                 allow_fail = True,
+                auth = auth,
             )
             decompress_r = None
             if download.success:
