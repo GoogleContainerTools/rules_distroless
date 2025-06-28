@@ -37,7 +37,7 @@ formats other than `.deb`).
 Add the following to your `MODULE.bazel` file:
 
 ```starlark
-bazel_dep(name = "rules_distroless", version = "0.3.9")
+bazel_dep(name = "rules_distroless", version = "0.5.1")
 ```
 
 You can find the latest release version in the [Bazel Central Registry].
@@ -50,12 +50,12 @@ You can use [`git_override`], [`archive_override`], etc (or
 [`local_path_override`] if you want to test a local patch):
 
 ```starlark
-bazel_dep(name = "rules_distroless", version = "0.3.9")
+bazel_dep(name = "rules_distroless", version = "0.5.1")
 
 git_override(
     module_name = "rules_distroless",
     remote = "https://github.com/GoogleContainerTools/rules_distroless.git",
-    commit = "6ccc0307f618e67a9252bc6ce2112313c2c42b7f",
+    commit = "a69bc1949d5daf2d1b0906890667d69b0897688b",
 )
 ```
 
