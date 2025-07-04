@@ -29,6 +29,7 @@ def _distroless_extension(module_ctx):
                 if module_ctx.path(install.lock).exists:
                     lockf = lockfile.from_json(module_ctx, module_ctx.read(install.lock))
                 else:
+                    # buildifier: disable=print
                     print("\nSpecified lockfile '%s' not found. An empty lockfile is assumed." % install.lock)
                     lockf = lockfile.from_json(module_ctx, None)
                 reproducible = True
